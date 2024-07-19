@@ -1,0 +1,65 @@
+scoped .main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.header-table {
+    font-size: 0.9em;
+}
+
+.welcome {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.welcome span {
+    font-size: 2em;
+    color: #d1cece;
+}
+
+.name-category {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 1.3em;
+    height: 2em;
+    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(255, 255, 255));
+    color: white;
+}
+
+.name-category p {
+    width: 13em;
+    margin-left: 1em;
+    overflow: hidden;
+}
+
+.name-category button {
+    border: none;
+    width: 10em;
+    height: 2em;
+    font-size: 13px;
+    margin-right: 5em;
+    transition: 0.5s;
+    border-radius: 10px;
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    margin-left: 10em;
+    cursor: pointer;
+}
+
+.name-category button:hover {
+    background-color: white;
+    color: black;
+}
+
+.line-table button {
+    width: 10em;
+    font-size: 0.6em;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
