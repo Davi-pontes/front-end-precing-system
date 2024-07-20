@@ -87,7 +87,7 @@ export default {
 
 <template>
     <main>
-        <NavBar @newCategory="addNewCategory" v-if="!showAddCategory" />
+        <NavBar :showButtonAddCategory=true @newCategory="addNewCategory" v-if="!showAddCategory" />
         <AddCategory v-if="showAddCategory" @updateCategory="updateCategory" />
         <div class="welcome" v-if="allProduct.length === 0">
             <span>Adicione uma categoria</span>

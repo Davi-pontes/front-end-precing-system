@@ -26,7 +26,7 @@ scoped .main {
     width: 100%;
     font-size: 1.3em;
     height: 2em;
-    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(255, 255, 255));
+    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(231, 231, 231));
     color: white;
 }
 

@@ -2,10 +2,18 @@
 import '../assets/navbar.css'
 export default {
     name: 'NavBar',
-
+    props: {
+        showButtonAddCategory: Boolean
+    },
     methods: {
         addNewCategory() {
             this.$emit('newCategory')
+        },
+        goAllIngredients() {
+            this.$router.push({ name: 'allIngredients' })
+        },
+        backHome() {
+            this.$router.push({ name: 'home' })
         }
     }
 }
@@ -14,8 +22,9 @@ export default {
 <template>
     <main>
         <div class="head">
-            <p>Jhenifer Doces</p>
-            <button @click="addNewCategory">Adicionar Categoria</button>
+            <p @click="backHome">Jhenifer Doces</p>
+            <button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button>
+            <button @click="goAllIngredients">Todos ingredientes</button>
         </div>
     </main>
 </template>
