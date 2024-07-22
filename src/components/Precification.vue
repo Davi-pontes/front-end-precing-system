@@ -26,12 +26,13 @@ interface IProduct {
     revenue_cost: number
     profit: number
     price_per_unit: number
+    costOfAllIngredients: number
 }
 
 export default {
     data() {
         return {
-            costOfIngredient: 0,
+            costOfAllIngredients: 0,
             operationalCost: 0,
             fixedCost: 0,
             profit: 0,
@@ -69,30 +70,30 @@ export default {
             }
         },
         updateAllNumbers() {
-            this.calculateCostOfIngredient()
+            this.calculatecostOfAllIngredients()
             this.calculateCostFixed()
             this.calculateProfit()
             this.calculateFinalRevenuePrice()
             this.calculatePricePerUnit()
             this.calculateCostOfRevenue()
         },
-        calculateCostOfIngredient(): void {
+        calculatecostOfAllIngredients(): void {
             if (this.all) {
                 const totalCost = this.all.reduce((acc, data) => acc + data.ingredient_cost, 0);
-                this.costOfIngredient = totalCost;
+                this.costOfAllIngredients = totalCost;
             }
         },
         calculateCostFixed(): void {
-            const result = this.costOfIngredient * this.operationalCost / 100
+            const result = this.costOfAllIngredients * this.operationalCost / 100
             this.fixedCost = parseFloat(result.toFixed(2))
         },
         calculateProfit(): void {
-            const resultCalculateProfit = (this.costOfIngredient + this.fixedCost) * this.profitPecentage / 100
+            const resultCalculateProfit = (this.costOfAllIngredients + this.fixedCost) * this.profitPecentage / 100
 
             this.profit = parseFloat(resultCalculateProfit.toFixed(2))
         },
         calculateFinalRevenuePrice(): void {
-            const resultCalculatepriceFinalRevenue = this.costOfIngredient + this.fixedCost + this.profit
+            const resultCalculatepriceFinalRevenue = this.costOfAllIngredients + this.fixedCost + this.profit
 
             this.priceFinalRevenue = parseFloat(resultCalculatepriceFinalRevenue.toFixed(2))
         },
@@ -102,7 +103,7 @@ export default {
             this.pricePerUnit = parseFloat(resultCalculatePricePerUnit.toFixed(2))
         },
         calculateCostOfRevenue(): void {
-            const resultCalculateCostOfRevenue = this.costOfIngredient + this.fixedCost
+            const resultCalculateCostOfRevenue = this.costOfAllIngredients + this.fixedCost
 
             this.costOfRevenue = parseFloat(resultCalculateCostOfRevenue.toFixed(2))
         },
@@ -152,7 +153,8 @@ export default {
                     price_per_unit: this.pricePerUnit,
                     operacional_cost: this.operationalCost,
                     id_category: this.id_category,
-                    is_joker: this.isJoker
+                    is_joker: this.isJoker,
+                    cost_of_all_ingredients: this.costOfAllIngredients
                 },
                 productIngredients: this.all
             }
@@ -345,7 +347,7 @@ export default {
                 <div class="cost">
                     <div class="cost-information">
                         <p>Custo da receita: </p>
-                        <p>R$ {{ costOfIngredient }}</p>
+                        <p>R$ {{ costOfAllIngredients }}</p>
                     </div>
                     <div class="cost-information">
                         <p>Custo fixo: </p>
