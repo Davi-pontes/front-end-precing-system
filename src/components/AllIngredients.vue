@@ -35,10 +35,7 @@ export default {
     },
     methods: {
         async updateProductIngredient(datas: IIngredient) {
-            console.log(datas);
-
             await axios.patch(urlApiBackEnd + "/product/ingredient/specific", datas)
-
         }
     }
 }

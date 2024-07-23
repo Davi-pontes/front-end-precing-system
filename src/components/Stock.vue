@@ -34,8 +34,10 @@ export default {
         this.allIngredients = getAllIngredients.data
     },
     methods: {
-        updateTotalInStock(index: number) {
-            this.allIngredients[index].total_cash_in_stock = this.allIngredients[index].price * this.allIngredients[index].quantity_in_stock
+        async updateTotalInStock(index: number) {
+            const calculateTotalCash = this.allIngredients[index].price * this.allIngredients[index].quantity_in_stock
+            this.allIngredients[index].total_cash_in_stock = parseFloat(calculateTotalCash.toFixed(2))
+            await axios.patch(urlApiBackEnd + '/product/ingredient/stock', this.allIngredients[index])
         }
     }
 }
