@@ -14,6 +14,9 @@ export default {
         },
         backHome() {
             this.$router.push({ name: 'home' })
+        },
+        goStock() {
+            this.$router.push({ name: 'stock' })
         }
     }
 }
@@ -25,6 +28,7 @@ export default {
             <p @click="backHome">Jhenifer Doces</p>
             <button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button>
             <button @click="goAllIngredients">Todos ingredientes</button>
+            <button @click="goStock">Estoque</button>
         </div>
     </main>
 </template>

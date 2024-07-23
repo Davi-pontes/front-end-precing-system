@@ -5,7 +5,7 @@ import '../assets/allIngredients.css'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
-interface IAllIngredient {
+interface IIngredient {
     id: number,
     name: string,
     weight: number,
@@ -15,6 +15,8 @@ interface IAllIngredient {
     unit2: string,
     ingredient_cost: number,
     id_product: string
+    quantity_in_stock: number
+    total_cash_in_stock: number
 }
 
 export default {
@@ -24,7 +26,7 @@ export default {
     },
     data() {
         return {
-            allIngredients: [] as IAllIngredient[]
+            allIngredients: [] as IIngredient[]
         }
     },
     async created() {
@@ -32,7 +34,7 @@ export default {
         this.allIngredients = getAllIngredients.data
     },
     methods: {
-        async updateProductIngredient(datas: IAllIngredient) {
+        async updateProductIngredient(datas: IIngredient) {
             console.log(datas);
 
             await axios.patch(urlApiBackEnd + "/product/ingredient/specific", datas)

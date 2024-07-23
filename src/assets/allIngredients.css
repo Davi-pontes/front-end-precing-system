@@ -1,4 +1,4 @@
-.content-table {
+scoped .content-table {
     border-collapse: collapse;
     font-size: 1em;
 }
@@ -10,6 +10,10 @@
     font-weight: bold;
     position: sticky;
     top: 0;
+}
+
+.content-table th {
+    width: 18%;
 }
 
 .content-table th,

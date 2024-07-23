@@ -63,3 +63,7 @@ scoped .main {
     padding: 5px;
     cursor: pointer;
 }
+
+th {
+    width: 18%;
+}

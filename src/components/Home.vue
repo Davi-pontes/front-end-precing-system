@@ -99,7 +99,7 @@ export default {
                 </p>
                 <button @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
             </div>
-            <table>
+            <table tyle="width:100%">
                 <tr class="header-table">
                     <th colspan="2"></th>
                     <th>PRODUTO</th>
