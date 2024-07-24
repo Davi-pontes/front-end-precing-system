@@ -1,5 +1,4 @@
 <script lang="ts">
-import '../assets/home.css'
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios';
 import AddCategory from './AddCategory.vue'
@@ -124,3 +123,86 @@ export default {
         </div>
     </main>
 </template>
+
+<style scoped>
+.main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.header-table {
+    font-size: 0.9em;
+}
+
+.welcome {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.welcome span {
+    font-size: 2em;
+    color: #d1cece;
+}
+
+.name-category {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 1.3em;
+    height: 2em;
+    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(231, 231, 231));
+    color: white;
+}
+
+.name-category p {
+    width: 13em;
+    margin-left: 1em;
+    overflow: hidden;
+}
+
+.name-category button {
+    border: none;
+    width: 10em;
+    height: 2em;
+    font-size: 13px;
+    margin-right: 5em;
+    transition: 0.5s;
+    border-radius: 10px;
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    margin-left: 10em;
+    cursor: pointer;
+}
+
+.name-category button:hover {
+    background-color: white;
+    color: black;
+}
+
+.line-table button {
+    width: 10em;
+    font-size: 0.8em;
+    border-radius: 5px;
+    background-color: transparent;
+    padding: 5px;
+    cursor: pointer;
+    border: 2px solid rgb(179, 175, 175);
+}
+
+th {
+    width: 18%;
+}
+
+tr td {
+    text-align: center;
+    border-bottom: 1px solid #c8cacc;
+}
+
+tr:hover {
+    box-shadow: 1px 1px 5.5px #8b8b8b;
+}
+</style>
