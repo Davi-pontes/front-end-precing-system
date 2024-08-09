@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Precification  from '../views/PrecificationView.vue'
 import HomeView from '@/views/HomeView.vue'
+import HomePrecificationView from '@/views/HomePrecificationView.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
 
@@ -11,6 +12,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/precification',
+      name: 'homePrecification',
+      component: HomePrecificationView
     },
     {
       path: '/register',

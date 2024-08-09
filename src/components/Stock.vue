@@ -220,12 +220,12 @@ table {
     width: 50%;
     border-collapse: collapse;
     font-size: 1em;
-    border: 1px solid #4c5b7c;
+    border: 1px solid rgb(128, 149, 199);
     border-radius: 5px;
 }
 
 thead tr {
-    background-color: #4c5b7c;
+    background-color: rgb(128, 149, 199);
     color: white;
     font-weight: bold;
     text-align: center;
@@ -250,7 +250,7 @@ tbody tr {
     width: 10em;
     font-size: 0.9em;
     border-radius: 5px;
-    border: 1px solid #0c2b6e;
+    border: 1px solid rgb(128, 149, 199);
     transition: 0.8s;
     cursor: pointer;
 }
@@ -263,7 +263,7 @@ tbody tr {
     width: 10em;
     font-size: 0.9em;
     border-radius: 5px;
-    border: 1px solid #0c2b6e;
+    border: 1px solid rgb(128, 149, 199);
     padding-left: 0.5em;
 }
 
@@ -293,7 +293,7 @@ tbody tr input {
     width: 100%;
     height: 2em;
     border: 1px solid white;
-    background-color: #4c5b7c;
+    background-color: rgb(128, 149, 199);
     color: white;
     font-size: 1em;
     border-radius: 5px;

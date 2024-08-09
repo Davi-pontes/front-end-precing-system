@@ -22,6 +22,9 @@ export default {
             await axios.post(urlApiBackEnd + '/category', dataFormated).then((response) => {
                 this.$emit('updateCategory', response.data)
             }).catch()
+        },
+        cancel(): void {
+            this.$emit('cancelAddNewCategory')
         }
 
     }
@@ -43,6 +46,9 @@ export default {
             <div class="form-button">
                 <button @click="dataSend">
                     Salvar
+                </button>
+                <button @click="cancel">
+                    Cancelar
                 </button>
             </div>
         </div>
@@ -99,23 +105,25 @@ export default {
     color: white;
     width: 100%;
     height: 3em;
-    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(255, 255, 255));
+    background: rgb(128, 149, 199);
 }
 
 .form-button {
+    display: flex;
+    justify-content: space-between;
     width: 90%;
     height: 2em;
     margin: 1em;
-    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(255, 255, 255));
-    border-radius: 8px;
 }
 
 .form-button button {
-    width: 100%;
+    width: 15em;
     height: 100%;
     border: none;
     background-color: transparent;
     color: white;
     cursor: pointer;
+    background: rgb(128, 149, 199);
+    border-radius: 8px;
 }
 </style>

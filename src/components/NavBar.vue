@@ -12,7 +12,7 @@ export default {
             this.$router.push({ name: 'allIngredients' })
         },
         backHome() {
-            this.$router.push({ name: 'home' })
+            this.$router.push({ name: 'homePrecification' })
         },
         goStock() {
             this.$router.push({ name: 'stock' })
@@ -25,9 +25,12 @@ export default {
     <main>
         <div class="head">
             <p @click="backHome">Jhenifer Doces</p>
-            <button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button>
-            <button @click="goAllIngredients">Todos ingredientes</button>
-            <button @click="goStock">Estoque</button>
+            <ul class="nav-list">
+                <li><button @click="backHome">Início</button></li>
+                <li><button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button></li>
+                <li><button @click="goAllIngredients">Todos ingredientes</button></li>
+                <li><button @click="goStock">Estoque</button></li>
+            </ul>
         </div>
     </main>
 </template>
@@ -39,21 +42,16 @@ export default {
     justify-content: space-around;
     width: 100%;
     height: 3em;
-    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(231, 231, 231));
+    background: rgb(128, 149, 199);
     margin-bottom: 1em;
     color: white;
 }
 
 .head button {
     border: none;
-    width: 20em;
-    height: 2.5em;
     font-size: 14px;
-    margin-right: 5em;
     transition: 0.5s;
-    border-radius: 10px;
     background-color: transparent;
-    border: 1px solid white;
     color: white;
 }
 
@@ -63,8 +61,16 @@ export default {
 }
 
 .head button:hover {
-    background-color: white;
-    border: 1px solid white;
     color: black;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+}
+
+.nav-list li {
+    letter-spacing: 3px;
+    margin-left: 3em;
 }
 </style>

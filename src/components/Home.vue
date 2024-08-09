@@ -1,208 +1,175 @@
 <script lang="ts">
-import NavBar from '@/components/NavBar.vue'
-import axios from 'axios';
-import AddCategory from './AddCategory.vue'
-
-const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
-interface IProduct {
-    category: {
-        id: string | null
-        name: string
-    }
-    products: {
-        id_product: string
-        name: string
-        weight: number
-        unit1: string
-        price: number
-        unit2: number
-        quantity: number
-        ingredientCost: number
-        income: number
-        revenue_cost: number
-        profit: number
-        price_per_unit: number
-    }[]
-}
 export default {
     name: 'Home',
-    components: {
-        NavBar,
-        AddCategory
-    },
     data() {
         return {
-            allProduct: [] as IProduct[],
-            showAddCategory: false
+            fullText: `A precificação é a alma do seu negócio. Determinar o preço correto para seus produtos é
+                essencial para garantir a sustentabilidade e o crescimento da sua empresa. Com a Helqui, uma boa
+                estratégia de precificação não só cobre os custos e gera lucro, mas também posiciona o seu negócio
+                de maneira competitiva no mercado.`,
+            textForParagraph: '',
+            index: 0,
+            controllStock: `Com o Helqui, você monitora seu estoque em tempo real, 
+            evitando rupturas e excessos. Tenha sempre a quantidade certa de produtos para atender 
+            seus clientes, maximizando suas vendas e minimizando custos.`
         }
     },
-    created() {
-        console.log(urlApiBackEnd);
-
-        this.getAllProduct()
-
+    mounted() {
+        this.toWrite()
     },
     methods: {
-        async getAllProduct() {
-            await axios.get(urlApiBackEnd + '/category').then((response) => {
-                this.allProduct = response.data
-            }).catch()
-        },
-        goToEdit(idProduct: string, idCategory: string | null): void {
-            this.$router.push({ name: 'precification', query: { idC: idCategory, idP: idProduct } })
-        },
-        goToAddProductCategory(idCategory: string | null): void {
-            this.$router.push({ name: 'precification', query: { idC: idCategory } })
-        },
-        addNewCategory(): void {
-            this.showAddCategory = true
-        },
-        updateCategory(newCategory: object): void {
-            this.allProduct.unshift({
-                category: newCategory,
-                products: []
-            } as IProduct
-            )
-            this.closeAddNewCategory()
-        },
-        closeAddNewCategory(): void {
-            this.showAddCategory = false
-        },
-        async deleteProduct(id_product: string, index: number) {
-            await axios.delete(urlApiBackEnd + "/product", {
-                params: {
-                    id: id_product
-                }
-            }).then(() => {
-                const indexTheDataDeleted = this.allProduct[index].products.findIndex(it => it.id_product === id_product)
-
-                this.allProduct[index].products.splice(indexTheDataDeleted, 1)
-            }).catch()
+        toWrite() {
+            if (this.index < this.fullText.length) {
+                this.textForParagraph = this.fullText.substring(0, this.index) + '|'
+                this.index++
+                setTimeout(this.toWrite, 20)
+            } else {
+                this.textForParagraph = this.fullText
+            }
         }
-
     }
 }
 </script>
-
 <template>
     <main>
-        <NavBar :showButtonAddCategory=true @newCategory="addNewCategory" v-if="!showAddCategory" />
-        <AddCategory v-if="showAddCategory" @updateCategory="updateCategory" />
-        <div class="welcome" v-if="allProduct.length === 0">
-            <span>Adicione uma categoria</span>
-        </div>
-        <div class="main" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
-            <div class="name-category">
-                <p>
-                    {{ categoryAndProducts.category.name }}
-                </p>
-                <button @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
+        <div class="content">
+            <div class="text">
+                <h1>Precifique certo!</h1>
+                <p> {{ textForParagraph }}</p>
             </div>
-            <table tyle="width:100%">
-                <tr class="header-table">
-                    <th colspan="2"></th>
-                    <th>PRODUTO</th>
-                    <th>RENDIMENTO</th>
-                    <th>CUSTO TOTAL</th>
-                    <th>LUCRO</th>
-                    <th>PREÇO DE VENDA</th>
-                </tr>
-                <tr class="line-table" v-for="(product, indexProduct) of categoryAndProducts.products"
-                    :key="indexProduct">
-                    <td><button @click="goToEdit(product.id_product, categoryAndProducts.category.id)">Editar</button>
-                    </td>
-                    <td><button @click="deleteProduct(product.id_product, indexCategory)">Excluir</button>
-                    </td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.income }}</td>
-                    <td style="color: red;">R$ {{ product.revenue_cost }}</td>
-                    <td style="color: green;">R$ {{ product.profit }}</td>
-                    <td style="color: green;">R$ {{ product.price_per_unit }}</td>
-                </tr>
-            </table>
+            <div class="benefits">
+                <h1>
+                    benefícios
+                </h1>
+            </div>
+            <div class="description-benefits">
+                <div class="card">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <h1>Maximização do Lucro.</h1>
+                    <span>Garanta que todos os custos sejam cobertos e aumente sua margem de lucro sem perder
+                        competitividade.</span>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-arrow-up-right-dots"></i>
+                    <h1>Competitividade no Mercado.</h1>
+                    <span>
+                        Posicione-se de forma estratégica com preços que atraem clientes e destacam a qualidade do seu
+                        produto.
+                    </span>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <h1>Sustentabilidade do Negócio.</h1>
+                    <span>
+                        Assegure a saúde financeira a longo prazo, possibilitando reinvestimentos e crescimento
+                        contínuo.
+                    </span>
+                </div>
+            </div>
+            <div class="text">
+                <h1>Controle de Estoque Simplificado!</h1>
+                <p> {{ controllStock }}</p>
+            </div>
         </div>
+        <footer class="powered-by">
+            <p>&copy;copyright 2024 Powered by <strong>GroupDI</strong></p>
+        </footer>
     </main>
 </template>
 
 <style scoped>
-.main {
+main {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 100;
+    background: rgb(128, 149, 199);
+}
+
+.content {
+    display: flex;
     width: 100%;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-.header-table {
-    font-size: 0.9em;
+.text {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 50vh;
+    color: white;
 }
 
-.welcome {
+.text h1 {
+    font-size: 4em;
+}
+
+.text p {
+    width: 100%;
+    margin-top: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-family: Poppins, sans-serif;
+}
+
+.benefits {
     display: flex;
     justify-content: center;
+    align-items: center;
+    font-size: x-large;
     width: 100%;
-    height: 100%;
+    height: 12vh;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
 }
 
-.welcome span {
-    font-size: 2em;
-    color: #d1cece;
-}
-
-.name-category {
+.description-benefits {
     display: flex;
+    align-self: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 25em;
+    flex-wrap: wrap;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 15em;
+    height: 20em;
+    color: white;
+    box-shadow: 20px 20px 50px #748abe;
+    border-radius: 8px;
+}
+
+.card i {
+    margin-top: 1em;
+    font-size: 3em;
+}
+
+.card h1 {
+    margin-top: 0.5em;
+    font-size: 1.5em;
+}
+
+.card span {
+    margin-top: 1.5em;
+}
+
+.powered-by {
+    color: white;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    font-size: 1.3em;
     height: 2em;
-    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(231, 231, 231));
-    color: white;
-}
-
-.name-category p {
-    width: 13em;
-    margin-left: 1em;
-    overflow: hidden;
-}
-
-.name-category button {
-    border: none;
-    width: 10em;
-    height: 2em;
-    font-size: 13px;
-    margin-right: 5em;
-    transition: 0.5s;
-    border-radius: 10px;
-    background-color: transparent;
-    border: 1px solid white;
-    color: white;
-    margin-left: 10em;
-    cursor: pointer;
-}
-
-.name-category button:hover {
-    background-color: white;
-    color: black;
-}
-
-.line-table button {
-    width: 10em;
-    font-size: 0.8em;
-    border-radius: 5px;
-    background-color: transparent;
-    padding: 5px;
-    cursor: pointer;
-    border: 2px solid rgb(179, 175, 175);
-}
-
-th {
-    width: 18%;
-}
-
-tr td {
-    text-align: center;
-    border-bottom: 1px solid #c8cacc;
-}
-
-tr:hover {
-    box-shadow: 1px 1px 5.5px #8b8b8b;
 }
 </style>
