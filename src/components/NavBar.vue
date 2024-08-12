@@ -4,7 +4,21 @@ export default {
     props: {
         showButtonAddCategory: Boolean
     },
+    data() {
+        return {
+            nameUser: null,
+            idUser: null
+        }
+    },
+    created() {
+        this.getLocalStorage()
+    },
     methods: {
+        getLocalStorage() {
+            const localStorageObject = JSON.parse(localStorage.getItem('User'))
+            this.nameUser = localStorageObject.name
+            this.idUser = localStorageObject.id
+        },
         addNewCategory() {
             this.$emit('newCategory')
         },
@@ -24,7 +38,7 @@ export default {
 <template>
     <main>
         <div class="head">
-            <p @click="backHome">Jhenifer Doces</p>
+            <p @click="backHome">{{ nameUser }}</p>
             <ul class="nav-list">
                 <li><button @click="backHome">Início</button></li>
                 <li><button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button></li>
@@ -43,7 +57,6 @@ export default {
     width: 100%;
     height: 3em;
     background: rgb(128, 149, 199);
-    margin-bottom: 1em;
     color: white;
 }
 

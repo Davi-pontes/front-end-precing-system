@@ -3,7 +3,7 @@ export default {
     name: 'NavBarLadingPage',
     methods: {
         gotHomePrecification() {
-            this.$router.push({ name: 'homePrecification' })
+            this.$router.push({ name: 'login' })
         }
     }
 }

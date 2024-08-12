@@ -33,12 +33,11 @@ export default {
     data() {
         return {
             allProduct: [] as IProduct[],
-            showAddCategory: false
+            showAddCategory: false,
         }
     },
     created() {
         this.getAllProduct()
-
     },
     methods: {
         async getAllProduct() {
