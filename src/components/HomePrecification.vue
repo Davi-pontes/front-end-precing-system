@@ -58,7 +58,7 @@ export default {
             this.allProduct = data
         },
         goToEdit(idProduct: string, idCategory: string | null): void {
-            this.$router.push({ name: 'precification', query: { idC: idCategory, idP: idProduct } })
+            this.$router.push({ name: 'precification', query: { idC: idCategory, idP: idProduct, idU: this.idUser } })
         },
         goToAddProductCategory(idCategory: string | null): void {
             this.$router.push({ name: 'precification', query: { idC: idCategory } })

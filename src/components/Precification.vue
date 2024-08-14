@@ -1,5 +1,6 @@
 <script lang="ts">
 import axios from 'axios';
+import type { LocationQueryValue } from 'vue-router';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface Ingredient {
@@ -49,13 +50,18 @@ export default {
             structureIngredient: { name: null, weight: 0, unit1: null, price: 0, unit2: null, quantity: 0, ingredient_cost: 0 },
             all: [] as Ingredient[],
             productsJoker: [] as IProduct[],
-            productJokerSelected: {} as IProduct
+            productJokerSelected: {} as IProduct,
+            idUser: null as LocationQueryValue | LocationQueryValue[]
         }
     },
     async created() {
+        await this.getQuery()
         this.controllerCreated()
     },
     methods: {
+        async getQuery() {
+            this.idUser = this.$route.query.idU;
+        },
         controllerCreated() {
             if (this.$route.query.idP) {
                 this.getQueryIdProduct()
@@ -227,12 +233,13 @@ export default {
             }).catch(() => {
             })
         },
-        getProducsJoker(): void {
-            axios.get(urlApiBackEnd + '/product/joker', {
-            }).then((response) => {
-                this.productsJoker = response.data
-            }).catch(() => {
+        async getProducsJoker() {
+            const { data } = await axios.get(urlApiBackEnd + '/product/joker', {
+                params: { idUser: this.idUser },
+                withCredentials: true
             })
+
+            this.productsJoker = data
         },
         returnToHomePage(): void {
             this.$router.push({ name: 'homePrecification' })
@@ -398,7 +405,7 @@ export default {
     width: 98%;
     height: 2em;
     font-size: 30px;
-    background-color: rgb(65, 81, 117);
+    background-color: rgb(128, 149, 199);
     justify-content: space-around;
 }
 
@@ -441,23 +448,31 @@ export default {
 .line-table input {
     height: 1.5em;
     border: 1px solid black;
-    border-radius: 10px;
-
+    border-radius: 5px;
+    padding-left: 0.5em;
 }
 
 .line-table button {
-    vertical-align: middle;
+    width: 5em;
+    height: 1.5em;
     font-size: 0.9em;
     font-weight: 400;
     letter-spacing: 0.1em;
     background-color: transparent;
     border: 1px solid black;
+    border-radius: 5px;
     color: black;
+    transition: 0.5s;
+}
+
+.line-table button:hover {
+    background-color: rgb(128, 149, 199);
+    color: white;
 }
 
 .line-table select {
     width: 7em;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 .line-table input[type=number]::-webkit-inner-spin-button {
@@ -518,7 +533,7 @@ export default {
 }
 
 .buttons button:hover {
-    background-color: rgb(65, 81, 117);
+    background-color: rgb(128, 149, 199);
     color: white;
 }
 
@@ -548,20 +563,30 @@ td {
 }
 
 .preparation {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     width: 31vw;
 }
 
 .preparation-information {
     display: flex;
     align-items: center;
+    white-space: nowrap;
+}
+
+.preparation-information p {
+    width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .preparation input {
     width: 5em;
     height: 1.5em;
-    border: 1px solid black;
-    border-radius: 10px;
-    margin-left: 1em;
+    border: none;
+    border-radius: 5px;
+    padding-left: 0.5em;
 }
 
 .preparation-information input[type=number]::-webkit-inner-spin-button {
@@ -583,7 +608,7 @@ td {
     border-right: 1px solid black;
     border-left: 1px solid black;
     flex-wrap: wrap;
-    background-color: rgb(65, 81, 117);
+    background-color: rgb(128, 149, 199);
     color: white;
 
 }
