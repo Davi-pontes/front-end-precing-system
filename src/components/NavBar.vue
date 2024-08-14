@@ -23,13 +23,13 @@ export default {
             this.$emit('newCategory')
         },
         goAllIngredients() {
-            this.$router.push({ name: 'allIngredients' })
+            this.$router.push({ name: 'allIngredients', query: { id: this.idUser } })
         },
         backHome() {
             this.$router.push({ name: 'homePrecification' })
         },
         goStock() {
-            this.$router.push({ name: 'stock' })
+            this.$router.push({ name: 'stock', query: { id: this.idUser } })
         }
     }
 }
@@ -55,17 +55,19 @@ export default {
     align-items: center;
     justify-content: space-around;
     width: 100%;
-    height: 3em;
+    height: 4em;
     background: rgb(128, 149, 199);
     color: white;
+    margin-bottom: 0.3em;
 }
 
 .head button {
     border: none;
-    font-size: 14px;
+    font-size: 15px;
     transition: 0.5s;
     background-color: transparent;
     color: white;
+    cursor: pointer;
 }
 
 .head p {

@@ -235,7 +235,7 @@ export default {
             })
         },
         returnToHomePage(): void {
-            this.$router.push({ name: 'home' })
+            this.$router.push({ name: 'homePrecification' })
         },
         deletedMaterialOfArray(index: number) {
             this.all.splice(index, 1)

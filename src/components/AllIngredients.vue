@@ -1,6 +1,7 @@
 <script lang="ts">
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios';
+import type { LocationQueryValue } from 'vue-router';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
@@ -17,7 +18,6 @@ interface IIngredient {
     quantity_in_stock: number
     total_cash_in_stock: number
 }
-
 export default {
     name: "AllIngredients",
     components: {
@@ -25,14 +25,25 @@ export default {
     },
     data() {
         return {
-            allIngredients: [] as IIngredient[]
+            allIngredients: [] as IIngredient[],
+            idUser: null as LocationQueryValue | LocationQueryValue[]
         }
     },
     async created() {
-        const getAllIngredients = await axios.get(urlApiBackEnd + '/product/ingredient/all')
-        this.allIngredients = getAllIngredients.data
+        this.getQuery()
+        this.getAllIngredients()
     },
     methods: {
+        getQuery() {
+            this.idUser = this.$route.query.id;
+        },
+        async getAllIngredients() {
+            const { data } = await axios.get(urlApiBackEnd + '/product/ingredient/all', {
+                params: { idUser: this.idUser },
+                withCredentials: true
+            })
+            this.allIngredients = data
+        },
         async updateProductIngredient(datas: IIngredient) {
             await axios.patch(urlApiBackEnd + "/product/ingredient/specific", datas)
         }

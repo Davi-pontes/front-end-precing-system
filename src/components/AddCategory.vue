@@ -4,15 +4,21 @@ import axios from 'axios';
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 export default {
     name: "AddCategory",
-
+    props: {
+        nameUser: null,
+        idUser: null
+    },
     data() {
         return {
-            nameCategory: null
+            nameCategory: null,
         }
+    },
+    created() {
+
     },
     methods: {
         prepareData(): object {
-            const dataForSend = { name: this.nameCategory }
+            const dataForSend = { name: this.nameCategory, user_id: this.idUser }
 
             return dataForSend
         },

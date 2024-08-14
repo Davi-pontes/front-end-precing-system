@@ -8,6 +8,7 @@ interface IProduct {
     category: {
         id: string | null
         name: string
+        user_id: string
     }
     products: {
         id_product: string
@@ -34,16 +35,27 @@ export default {
         return {
             allProduct: [] as IProduct[],
             showAddCategory: false,
+            nameUser: null,
+            idUser: null
         }
     },
     created() {
+        this.getLocalStorage()
         this.getAllProduct()
     },
     methods: {
+        getLocalStorage() {
+            const localStorageObject = JSON.parse(localStorage.getItem('User'))
+            this.nameUser = localStorageObject.name
+            this.idUser = localStorageObject.id
+        },
         async getAllProduct() {
-            await axios.get(urlApiBackEnd + '/category').then((response) => {
-                this.allProduct = response.data
-            }).catch()
+            const { data } = await axios.get(urlApiBackEnd + '/category', {
+                params: { idUser: this.idUser },
+                withCredentials: true
+            })
+
+            this.allProduct = data
         },
         goToEdit(idProduct: string, idCategory: string | null): void {
             this.$router.push({ name: 'precification', query: { idC: idCategory, idP: idProduct } })
@@ -87,7 +99,8 @@ export default {
 <template>
     <main>
         <NavBar :showButtonAddCategory=true @newCategory="addNewCategory" v-if="!showAddCategory" />
-        <AddCategory v-if="showAddCategory" @updateCategory="updateCategory" @cancelAddNewCategory="closeAddCategory" />
+        <AddCategory v-if="showAddCategory" :nameUser="nameUser" :idUser="idUser" @updateCategory="updateCategory"
+            @cancelAddNewCategory="closeAddCategory" />
         <div class="welcome" v-if="allProduct.length === 0">
             <button @click="addNewCategory">Adicione uma categoria</button>
         </div>
@@ -109,7 +122,8 @@ export default {
                 </tr>
                 <tr class="line-table" v-for="(product, indexProduct) of categoryAndProducts.products"
                     :key="indexProduct">
-                    <td><button @click="goToEdit(product.id_product, categoryAndProducts.category.id)">Editar</button>
+                    <td><button
+                            @click="goToEdit(product.id_product, categoryAndProducts.category.id)">Visualizar</button>
                     </td>
                     <td><button @click="deleteProduct(product.id_product, indexCategory)">Excluir</button>
                     </td>

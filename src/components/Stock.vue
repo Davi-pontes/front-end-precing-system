@@ -1,6 +1,7 @@
 <script lang="ts">
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios';
+import type { LocationQueryValue } from 'vue-router';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
@@ -52,21 +53,32 @@ export default {
             allIngredients: [] as IIngredient[],
             allProducts: [] as IProduct[],
             stockToPeriod: [] as IStockToPeriod[],
+            idUser: null as LocationQueryValue | LocationQueryValue[],
             quantityDays: 0
         }
     },
     async created() {
+        this.getQuery()
         this.getAllIngredients()
         this.getProducts()
     },
     methods: {
+        getQuery() {
+            this.idUser = this.$route.query.id;
+        },
         async getAllIngredients() {
-            const getAllIngredients = await axios.get(urlApiBackEnd + '/product/ingredient/all')
-            this.allIngredients = getAllIngredients.data
+            const { data } = await axios.get(urlApiBackEnd + '/product/ingredient/all', {
+                params: { idUser: this.idUser },
+                withCredentials: true
+            })
+            this.allIngredients = data
         },
         async getProducts() {
-            const products = await axios.get(urlApiBackEnd + '/product')
-            this.allProducts = products.data
+            const { data } = await axios.get(urlApiBackEnd + '/product', {
+                params: { idUser: this.idUser },
+                withCredentials: true
+            })
+            this.allProducts = data
         },
         async updateTotalInStock(index: number) {
             const calculateTotalCash = this.allIngredients[index].price * this.allIngredients[index].quantity_in_stock
@@ -89,7 +101,6 @@ export default {
             const formateDatas = { allProducts: this.allProducts, allIngredients: this.allIngredients, quantityDays: this.quantityDays }
 
             const calculateDatas = await axios.post(urlApiBackEnd + '/stock', formateDatas)
-            console.log(calculateDatas.data);
 
             await calculateDatas.data.map((it: IStockToPeriod) => {
                 if (it.state === 'inStock') {
@@ -125,7 +136,7 @@ export default {
                     <th>Total R$ em estoque</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="stock-control">
                 <tr v-for="(ingredient, index) in allIngredients" :key="index">
                     <td>{{ ingredient.name }}</td>
                     <td>{{ ingredient.weight }}</td>
