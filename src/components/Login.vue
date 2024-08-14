@@ -1,5 +1,6 @@
 <script lang="ts">
 import axios from "axios";
+import type { RouteRecordName } from "vue-router";
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
@@ -8,10 +9,17 @@ export default {
     data() {
         return {
             email: null,
-            password: null
+            password: null,
+            routeName: null as RouteRecordName | null | undefined
         }
     },
+    created() {
+        this.getRouteName()
+    },
     methods: {
+        getRouteName() {
+            this.routeName = this.$route.name
+        },
         async login() {
             try {
                 const { data } = await axios.post(urlApiBackEnd + '/login', {
@@ -20,10 +28,15 @@ export default {
                 }, {
                     withCredentials: true
                 })
-                await localStorage.setItem("User", JSON.stringify(data))
+                localStorage.setItem("User", JSON.stringify(data))
 
-                this.$router.push({ name: 'homePrecification' })
-            } catch (error) {
+                if (this.routeName && this.routeName === 'loginAdmin') {
+                    this.$router.push({ name: 'listUsersAdmin' })
+                } else {
+                    this.$router.push({ name: 'homePrecification' })
+                }
+
+            } catch (error: any) {
                 if (error.response && error.response.status) {
                     alert('Login ou/e senha incorreto.')
                 } else {

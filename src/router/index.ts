@@ -5,6 +5,8 @@ import HomePrecificationView from '@/views/HomePrecificationView.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
 import LoginView from '@/views/LoginView.vue'
+import LoginViewAdmin from '@/views/admin/LoginViewAdmin.vue'
+import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
 import { Auth } from '@/auth/auth'
 
 const router = createRouter({
@@ -22,6 +24,22 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/admin/login',
+      name: 'loginAdmin',
+      component: LoginViewAdmin,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/admin/users',
+      name: 'listUsersAdmin',
+      component: ListUsersViewAdmin,
       meta: {
         public: true
       }

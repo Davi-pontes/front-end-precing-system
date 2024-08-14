@@ -54,13 +54,15 @@ export default {
             allProducts: [] as IProduct[],
             stockToPeriod: [] as IStockToPeriod[],
             idUser: null as LocationQueryValue | LocationQueryValue[],
-            quantityDays: 0
+            quantityDays: 0,
+            totalMoneyInStock: 0
         }
     },
     async created() {
         this.getQuery()
-        this.getAllIngredients()
-        this.getProducts()
+        await this.getAllIngredients()
+        await this.getProducts()
+        this.calculateMoneyInStock()
     },
     methods: {
         getQuery() {
@@ -79,6 +81,13 @@ export default {
                 withCredentials: true
             })
             this.allProducts = data
+        },
+        calculateMoneyInStock() {
+            const moneyInstock = this.allIngredients.reduce((accumulator, ingredient) => {
+                return accumulator + ingredient.total_cash_in_stock;
+            }, 0);
+            this.totalMoneyInStock = moneyInstock
+
         },
         async updateTotalInStock(index: number) {
             const calculateTotalCash = this.allIngredients[index].price * this.allIngredients[index].quantity_in_stock
@@ -147,6 +156,12 @@ export default {
                     <td class="table-number">R$ {{ ingredient.total_cash_in_stock }}</td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row" colspan="4">Total de R$ em estoque.</th>
+                    <td>R$ {{ totalMoneyInStock }}</td>
+                </tr>
+            </tfoot>
         </table>
         <div class="calculate-container">
             <table>
@@ -220,7 +235,12 @@ export default {
 .container {
     display: flex;
     width: 100%;
+    height: 100%;
     justify-content: space-between;
+}
+
+.all-ingredient {
+    height: 100%;
 }
 
 .calculate-container table {
@@ -230,9 +250,6 @@ export default {
 table {
     width: 50%;
     border-collapse: collapse;
-    font-size: 1em;
-    border: 1px solid rgb(128, 149, 199);
-    border-radius: 5px;
 }
 
 thead tr {
@@ -245,6 +262,14 @@ thead tr {
 tbody tr {
     height: 2em;
     border-bottom: 1px solid #c8cacc;
+}
+
+tfoot td {
+    text-align: center;
+}
+
+tfoot {
+    border-bottom: 2px solid rgb(72, 85, 117);
 }
 
 .table-number {
