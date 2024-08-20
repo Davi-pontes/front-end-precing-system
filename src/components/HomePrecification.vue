@@ -25,6 +25,11 @@ interface IProduct {
         price_per_unit: number
     }[]
 }
+interface ICategory {
+    id: string | null
+    name: string
+    user_id: string
+}
 export default {
     name: 'HomePrecification',
     components: {
@@ -90,6 +95,16 @@ export default {
         },
         closeAddCategory() {
             this.showAddCategory = false
+        },
+        async sendUpdateCategory(specificCategory: ICategory) {
+            try {
+                await axios.patch(urlApiBackEnd + "/category", {
+                    idCategory: specificCategory.id,
+                    params: { name: specificCategory.name, user_id: specificCategory.user_id }
+                })
+            } catch (error) {
+                alert('Não foi possível atualizar o nome da categoria.')
+            }
         }
 
     }
@@ -106,9 +121,8 @@ export default {
         </div>
         <div class="main" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
             <div class="name-category">
-                <p>
-                    {{ categoryAndProducts.category.name }}
-                </p>
+                <input type="text" v-model="categoryAndProducts.category.name"
+                    @change="sendUpdateCategory(categoryAndProducts.category)">
                 <button @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
             </div>
             <table tyle="width:100%">
@@ -182,10 +196,22 @@ export default {
     color: white;
 }
 
-.name-category p {
+.name-category input {
     width: 13em;
+    height: 1.5em;
     margin-left: 1em;
+    padding-left: 0.8em;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid white;
+    color: white;
+    font-size: 1em;
     overflow: hidden;
+    outline: none;
+}
+
+.name-category input:focus {
+    border-bottom: 1px solid white;
 }
 
 .name-category button {

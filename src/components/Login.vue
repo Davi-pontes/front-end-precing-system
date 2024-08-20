@@ -58,7 +58,7 @@ export default {
             <div class="content">
                 <h1>LOGIN</h1>
                 <input type="email" placeholder="E-mail" v-model="email">
-                <input type="password" placeholder="Senha" v-model="password">
+                <input type="password" placeholder="Senha" v-model="password" @keyup.enter="login">
                 <button @click="login">Login</button>
                 <span>Ao se conectar, você concorda com os
                     Termos, Condições e Políticas de Privacidade da Relqui.
