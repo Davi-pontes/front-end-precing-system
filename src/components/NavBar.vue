@@ -6,8 +6,8 @@ export default {
     },
     data() {
         return {
-            nameUser: null,
-            idUser: null
+            nameUser: '' as string | null,
+            idUser: '' as string | null
         }
     },
     created() {
@@ -15,9 +15,12 @@ export default {
     },
     methods: {
         getLocalStorage() {
-            const localStorageObject = JSON.parse(localStorage.getItem('User'))
-            this.nameUser = localStorageObject.name
-            this.idUser = localStorageObject.id
+            const localStorageObject = localStorage.getItem('User');
+            if (localStorageObject) {
+                const parsedObject = JSON.parse(localStorageObject);
+                this.nameUser = parsedObject.name || '';
+                this.idUser = parsedObject.id || '';
+            }
         },
         addNewCategory() {
             this.$emit('newCategory')
