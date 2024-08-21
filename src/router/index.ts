@@ -85,8 +85,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   try {
-    console.log(from);
-
     if (to.meta?.public) {
       next()
     } else {
