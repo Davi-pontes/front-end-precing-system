@@ -85,10 +85,15 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   try {
+    console.log(from);
+
     if (to.meta?.public) {
       next()
     } else {
       const validate = await Auth.validate()
+      // if (from.name === 'home' && validate) {
+      //   next({ name: 'homePrecification' })
+      // }
 
       if (validate) {
         next()

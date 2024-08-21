@@ -33,6 +33,9 @@ export default {
         },
         goStock() {
             this.$router.push({ name: 'stock', query: { id: this.idUser } })
+        },
+        exit() {
+            this.$router.push({ name: 'home' })
         }
     }
 }
@@ -47,6 +50,7 @@ export default {
                 <li><button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button></li>
                 <li><button @click="goAllIngredients">Todos ingredientes</button></li>
                 <li><button @click="goStock">Estoque</button></li>
+                <li><button @click="exit">Sair</button></li>
             </ul>
         </div>
     </main>

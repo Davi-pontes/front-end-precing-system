@@ -93,6 +93,7 @@ export default {
             const calculateTotalCash = this.allIngredients[index].price * this.allIngredients[index].quantity_in_stock
             this.allIngredients[index].total_cash_in_stock = parseFloat(calculateTotalCash.toFixed(2))
             await axios.patch(urlApiBackEnd + '/product/ingredient/stock', this.allIngredients[index])
+            this.calculateMoneyInStock()
         },
         updateQuantityDays(value: number) {
             if (value === 0) this.quantityDays = 7
