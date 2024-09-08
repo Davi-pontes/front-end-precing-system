@@ -85,22 +85,23 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   try {
-    if (to.meta?.public) {
-      next()
-    } else {
-      const validate = await Auth.validate()
-      // if (from.name === 'home' && validate) {
-      //   next({ name: 'homePrecification' })
-      // }
+    const validate = await Auth.validate();
 
-      if (validate) {
-        next()
-      } else {
-        next({ name: 'login' })
-      }
+    if (from.name === 'home' && to.name !== 'homePrecification' && validate) {
+      return next({ name: 'homePrecification' });
+    }
+
+    if (to.meta?.public) {
+      return next();
+    }
+
+    if (validate) {
+      return next();
+    } else {
+      return next({ name: 'login' });
     }
   } catch (error) {
-    next({ name: 'login' })
+    return next({ name: 'login' });
   }
 })
 export default router

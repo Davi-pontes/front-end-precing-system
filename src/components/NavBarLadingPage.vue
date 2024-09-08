@@ -38,6 +38,7 @@ export default {
     transition: 0.5s;
     background-color: rgb(30, 50, 97);
     color: white;
+    cursor: pointer;
 }
 
 .head p {
