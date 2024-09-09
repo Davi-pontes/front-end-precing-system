@@ -242,6 +242,7 @@ export default {
             this.productsJoker = data
         },
         returnToHomePage(): void {
+            this.sendDataToTheBackend()
             this.$router.push({ name: 'homePrecification' })
         },
         deletedMaterialOfArray(index: number) {
