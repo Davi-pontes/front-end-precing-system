@@ -41,7 +41,7 @@ const router = createRouter({
       name: 'listUsersAdmin',
       component: ListUsersViewAdmin,
       meta: {
-        public: true
+        auth: true
       }
     },
     {
@@ -87,12 +87,11 @@ router.beforeEach(async (to, from, next) => {
   try {
     const validate = await Auth.validate();
 
-    if (from.name === 'home' && to.name !== 'homePrecification' && validate) {
-      return next({ name: 'homePrecification' });
-    }
-
-    if (to.meta?.public) {
+    if (to.meta?.public && to.name !== 'login') {
       return next();
+    } else if (to.name === 'login') {
+
+      return next()
     }
 
     if (validate) {
@@ -101,7 +100,10 @@ router.beforeEach(async (to, from, next) => {
       return next({ name: 'login' });
     }
   } catch (error) {
-    return next({ name: 'login' });
+    if (to.name !== 'home') {
+      return next({ name: 'home' });
+    }
+    next();
   }
 })
 export default router

@@ -2,16 +2,21 @@ import axios from "axios";
 
 export class Auth {
     static async validate() {
-        const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
+        try {
+            const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
-        const { data } = await axios.get(urlApiBackEnd + '/login/validate', {
-            withCredentials: true
-        })
+            const { data } = await axios.get(urlApiBackEnd + '/login/validate', {
+                withCredentials: true
+            })
 
-        if (data === 'unauthorized') {
+            if (data === 'unauthorized') {
+                return false
+            }
+
+            return true
+
+        } catch (error) {
             return false
         }
-
-        return true
     }
 }
