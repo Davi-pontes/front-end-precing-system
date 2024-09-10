@@ -241,8 +241,7 @@ export default {
 
             this.productsJoker = data
         },
-        returnToHomePage(): void {
-            this.sendDataToTheBackend()
+        async returnToHomePage() {
             this.$router.push({ name: 'homePrecification' })
         },
         deletedMaterialOfArray(index: number) {
@@ -328,7 +327,7 @@ export default {
                         </option>
                     </select>
                 </div>
-                <button @click="returnToHomePage">Voltar</button>
+                <button @click="sendDataToTheBackend">Voltar</button>
                 <button @click="addNewIngredient">Adicionar novo ingrediente</button>
                 <button @click="sendDataToTheBackend">Salvar</button>
             </div>
