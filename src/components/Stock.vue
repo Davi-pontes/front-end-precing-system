@@ -133,71 +133,75 @@ export default {
 <template>
     <NavBar :showButtonAddCategory=false />
     <div class="container">
-        <table class="all-ingredient">
-            <thead>
-                <tr>
-                    <th colspan="5">Controle de estoque</th>
-                </tr>
-                <tr>
-                    <th>Ingrediente</th>
-                    <th>Peso</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
-                    <th>Total R$ em estoque</th>
-                </tr>
-            </thead>
-            <tbody class="stock-control">
-                <tr v-for="(ingredient, index) in allIngredients" :key="index">
-                    <td>{{ ingredient.name }}</td>
-                    <td>{{ ingredient.weight }}</td>
-                    <td>R$ {{ ingredient.price }}</td>
-                    <td class="table-number"><input type="number" v-model="ingredient.quantity_in_stock"
-                            @change="updateTotalInStock(index)">
-                    </td>
-                    <td class="table-number">R$ {{ ingredient.total_cash_in_stock }}</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th scope="row" colspan="4">Total de R$ em estoque.</th>
-                    <td>R$ {{ totalMoneyInStock }}</td>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="calculate-container">
+        <div class="container-control">
             <table>
                 <thead>
                     <tr>
-                        <th colspan="3">Calcular estoque por periodo.</th>
+                        <th colspan="5">Controle de estoque</th>
                     </tr>
                     <tr>
-                        <th colspan="3">
-                            <div class="specification-period">
-                                <button @click="updateQuantityDays(0)">Semanal</button>
-                                <button @click="updateQuantityDays(1)">Mensal</button>
-                                <input type="number" @change="inputUpdateQuantityDays">
-                            </div>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>Produto</th>
+                        <th>Ingrediente</th>
+                        <th>Peso</th>
+                        <th>Preço</th>
                         <th>Quantidade</th>
-                        <th>Dias</th>
+                        <th>Total R$ em estoque</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-for="(product, index) in allProducts" :key="index">
-                        <td>{{ product.name }}</td>
-                        <td class="table-number">
-                            <input v-if="product.chengeIncome" type="number" :value="product.chengeIncome"
-                                @change="(event) => updateIncome(event, index)">
-                            <input v-else type="number" :value="product.income"
-                                @change="(event) => updateIncome(event, index)">
+                <tbody class="stock-control">
+                    <tr v-for="(ingredient, index) in allIngredients" :key="index">
+                        <td>{{ ingredient.name }}</td>
+                        <td>{{ ingredient.weight }}</td>
+                        <td>R$ {{ ingredient.price }}</td>
+                        <td class="table-number"><input type="number" v-model="ingredient.quantity_in_stock"
+                                @change="updateTotalInStock(index)">
                         </td>
-                        <td class="table-number">{{ quantityDays }}</td>
+                        <td class="table-number">R$ {{ ingredient.total_cash_in_stock }}</td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row" colspan="4">Total de R$ em estoque.</th>
+                        <td>R$ {{ totalMoneyInStock }}</td>
+                    </tr>
+                </tfoot>
             </table>
+        </div>
+        <div class="container-calculate">
+            <div class="calculate-period">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="3">Calcular estoque por periodo.</th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">
+                                <div class="specification-period">
+                                    <button @click="updateQuantityDays(0)">Semanal</button>
+                                    <button @click="updateQuantityDays(1)">Mensal</button>
+                                    <input type="number" @change="inputUpdateQuantityDays">
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Dias</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(product, index) in allProducts" :key="index">
+                            <td>{{ product.name }}</td>
+                            <td class="table-number">
+                                <input v-if="product.chengeIncome" type="number" :value="product.chengeIncome"
+                                    @change="(event) => updateIncome(event, index)">
+                                <input v-else type="number" :value="product.income"
+                                    @change="(event) => updateIncome(event, index)">
+                            </td>
+                            <td class="table-number">{{ quantityDays }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <button @click="sendDatasToCalculate" class="btn-calculate">Calcular</button>
             <div class="container-result">
                 <table class="table-result">
@@ -228,6 +232,7 @@ export default {
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
 </template>
@@ -237,19 +242,38 @@ export default {
     display: flex;
     width: 100%;
     height: 100%;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
-.all-ingredient {
-    height: 100%;
+.container-control {
+    width: 45%;
+    height: 80vh;
+    overflow: auto;
 }
 
-.calculate-container table {
-    width: 45vw;
+.container-control thead {
+    position: sticky;
+    top: 0;
+}
+
+.container-calculate {
+    width: 45%;
+    height: 80vh;
+}
+
+.calculate-period {
+    width: 100%;
+    height: 50vh;
+    overflow: auto;
+}
+
+.calculate-period thead {
+    position: sticky;
+    top: 0;
 }
 
 table {
-    width: 50%;
+    width: 100%;
     border-collapse: collapse;
 }
 
@@ -263,6 +287,7 @@ thead tr {
 tbody tr {
     height: 2em;
     border-bottom: 1px solid #c8cacc;
+    border-right: 1px solid #c8cacc;
 }
 
 tfoot td {
@@ -270,7 +295,9 @@ tfoot td {
 }
 
 tfoot {
-    border-bottom: 2px solid rgb(72, 85, 117);
+    background-color: white;
+    position: sticky;
+    bottom: 0;
 }
 
 .table-number {
@@ -310,10 +337,6 @@ tbody tr:hover {
 
 tbody tr:nth-of-type(even) {
     background-color: #e0e2e475;
-}
-
-tbody tr:last-of-type {
-    border-bottom: 2px solid rgb(72, 85, 117);
 }
 
 tbody tr input {
