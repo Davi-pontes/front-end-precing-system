@@ -1,6 +1,7 @@
 <script lang="ts">
 import axios from 'axios';
 import type { LocationQueryValue } from 'vue-router';
+import MessageAlert from './MessageAlert.vue';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface Ingredient {
@@ -30,6 +31,9 @@ interface IProduct {
 }
 
 export default {
+    components: {
+        MessageAlert
+    },
     data() {
         return {
             costOfAllIngredients: 0,
@@ -51,7 +55,9 @@ export default {
             all: [] as Ingredient[],
             productsJoker: [] as IProduct[],
             productJokerSelected: {} as IProduct,
-            idUser: null as LocationQueryValue | LocationQueryValue[]
+            idUser: null as LocationQueryValue | LocationQueryValue[],
+            showMessage: false,
+            message: ''
         }
     },
     async created() {
@@ -166,14 +172,38 @@ export default {
             return dataAssembly
         },
         sendDataToTheBackend(): void {
-            const dataFormated = this.prepareData()
+            const validateIngredients = this.validateIngredients()
 
-            if (this.id_product) {
-                this.sendUpdateData(dataFormated, this.id_product)
+            if (!validateIngredients) {
+                this.message = 'Não é possível salvar sem passar todas informações.'
+                this.showMessage = true
+                setTimeout(() => {
+                    this.showMessage = false;
+                }, 5000);
             } else {
-                this.sendNewData(dataFormated)
+                const dataFormated = this.prepareData()
+
+                if (this.id_product) {
+                    this.sendUpdateData(dataFormated, this.id_product)
+                } else {
+                    this.sendNewData(dataFormated)
+                }
             }
 
+        },
+        validateIngredients(): boolean {
+            const isValid = this.all.every(item => {
+                return (
+                    item.name !== null && item.name !== '' &&
+                    item.weight !== 0 &&
+                    item.unit1 !== '' &&
+                    item.price !== 0 &&
+                    item.unit2 !== null && item.unit2 !== '' &&
+                    item.quantity !== 0 &&
+                    item.ingredient_cost !== 0
+                )
+            })
+            return isValid
         },
         sendNewData(data: object): void {
             axios.post(urlApiBackEnd + '/product', data).then(() => {
@@ -247,7 +277,7 @@ export default {
         deletedMaterialOfArray(index: number) {
             this.all.splice(index, 1)
             this.updateAllNumbers()
-        }
+        },
 
     }
 }
@@ -271,6 +301,7 @@ export default {
                     </div>
                 </div>
             </div>
+            <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
             <div class="specification">
                 <div class="list">
                     <table>

@@ -2,7 +2,6 @@
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios';
 import AddCategory from './AddCategory.vue'
-
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface IProduct {
     category: {
@@ -34,14 +33,14 @@ export default {
     name: 'HomePrecification',
     components: {
         NavBar,
-        AddCategory
+        AddCategory,
     },
     data() {
         return {
             allProduct: [] as IProduct[],
             showAddCategory: false,
             nameUser: '' as string | null,
-            idUser: '' as string | null
+            idUser: '' as string | null,
         }
     },
     created() {
@@ -108,6 +107,14 @@ export default {
             } catch (error) {
                 alert('Não foi possível atualizar o nome da categoria.')
             }
+        },
+        async deleteCategory(idCategory: string | null) {
+            const { data } = await axios.delete(urlApiBackEnd + "/category", {
+                params: { id: idCategory }
+            })
+            const productDeleted = data
+
+            this.allProduct = this.allProduct.filter(category => category.category.id !== productDeleted)
         }
 
     }
@@ -126,7 +133,9 @@ export default {
             <div class="name-category">
                 <input type="text" v-model="categoryAndProducts.category.name"
                     @change="sendUpdateCategory(categoryAndProducts.category)">
-                <button @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
+                <button class="btn-add-product"
+                    @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
+                <button class="btn-delete" @click="deleteCategory(categoryAndProducts.category.id)">X</button>
             </div>
             <table tyle="width:100%">
                 <tr class="header-table">
@@ -217,7 +226,7 @@ export default {
     border-bottom: 1px solid white;
 }
 
-.name-category button {
+.btn-add-product {
     border: none;
     width: 10em;
     height: 2em;
@@ -232,9 +241,27 @@ export default {
     cursor: pointer;
 }
 
-.name-category button:hover {
+.btn-add-product:hover {
     background-color: white;
     color: black;
+}
+
+.btn-delete {
+    margin-left: 55vw;
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 0.7em;
+    background-color: transparent;
+    border: 1px solid red;
+    border-radius: 5px;
+    color: red;
+    cursor: pointer;
+    transition: 0.7s;
+}
+
+.btn-delete:hover {
+    background-color: red;
+    color: white;
 }
 
 .line-table button {
