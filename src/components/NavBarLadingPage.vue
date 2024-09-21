@@ -10,48 +10,14 @@ export default {
 </script>
 <template>
     <main>
-        <div class="head">
-            <img src="../assets/logo-relqui.png" alt="logo-up">
+        <div class="head flex items-center justify-around w-full h-24 bg-colorBgPattern text-white">
+            <img class="w-[35vw] h-[20vh] md:w-40 md:h-40" src="../assets/logo-relqui.png" alt="logo-up">
 
-            <button @click="gotHomePrecification">Login</button>
+            <button class="border-0 rounded-md text-xs 
+            w-20 h-9 md:w-20 md:h-10
+            transition duration-500 
+            bg-[rgb(30,50,97)]
+            text-white *:cursor-pointer" @click="gotHomePrecification">Login</button>
         </div>
     </main>
 </template>
-
-<style scoped>
-.head {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    height: 5em;
-    background: rgb(128, 149, 199);
-    color: white;
-}
-
-.head button {
-    border: none;
-    width: 5em;
-    height: 1.8em;
-    border-radius: 10px;
-    font-size: 1.5em;
-    transition: 0.5s;
-    background-color: rgb(30, 50, 97);
-    color: white;
-    cursor: pointer;
-}
-
-.head p {
-    font-size: 2em;
-    cursor: pointer;
-}
-
-.head button:hover {
-    background: rgb(65, 89, 145);
-}
-
-.head img {
-    width: 10em;
-    height: 10em;
-}
-</style>

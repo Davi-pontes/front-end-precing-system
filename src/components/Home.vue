@@ -31,73 +31,93 @@ export default {
 }
 </script>
 <template>
-    <main>
-        <div class="content">
-            <div class="text">
-                <h1>Precifique certo!</h1>
-                <p> {{ textForParagraph }}</p>
+    <main class="w-full h-full bg-colorBgPattern text-white">
+        <div className="w-full md:w-full">
+            <div class="flex flex-col items-center w-[100vw] h-[63vh] md:items-center md:h-[40vh] md:w-[100vw]">
+                <h1 class="text-4xl md:text-6xl text-center my-4 font-bold md:my-10">Precifique certo!</h1>
+                <p class="text-xl items-start w-[90vw] md:text-2xl md:w-[80vw] font-poppins uppercase text-left"> {{
+                    textForParagraph }}
+                </p>
             </div>
-            <div class="benefits">
+
+
+            <div class="text-4xl md:text-6xl text-center my-4 md:my-10 font-bold">
                 <h1>
-                    benefícios
+                    Benefícios
                 </h1>
             </div>
-            <div class="description-benefits">
+            <div class="flex self-center justify-around w-full h-[150vh] md:h-[45vh] flex-wrap">
                 <div class="card">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <h1>Maximização do Lucro.</h1>
-                    <span>Garanta que todos os custos sejam cobertos e aumente sua margem de lucro sem perder
-                        competitividade.</span>
+                    <i class="fa-solid fa-chart-line text-2xl"></i>
+                    <h1 class="text-xl font-bold">Maximização do Lucro.</h1>
+                    <span class="mt-2">Garanta que todos os custos sejam cobertos e aumente sua margem de lucro sem
+                        perder competitividade.</span>
                 </div>
+
                 <div class="card">
-                    <i class="fa-solid fa-arrow-up-right-dots"></i>
-                    <h1>Competitividade no Mercado.</h1>
-                    <span>
-                        Posicione-se de forma estratégica com preços que atraem clientes e destacam a qualidade do seu
-                        produto.
-                    </span>
+                    <i class="fa-solid fa-arrow-up-right-dots text-2xl"></i>
+                    <h1 class="text-xl font-bold">Competitividade no Mercado.</h1>
+                    <span class="mt-2">Posicione-se de forma estratégica com preços que atraem clientes e destacam a
+                        qualidade do seu produto.</span>
                 </div>
+
                 <div class="card">
-                    <i class="fa-solid fa-notes-medical"></i>
-                    <h1>Sustentabilidade do Negócio.</h1>
-                    <span>
-                        Assegure a saúde financeira a longo prazo, possibilitando reinvestimentos e crescimento
-                        contínuo.
-                    </span>
+                    <i class="fa-solid fa-notes-medical text-2xl"></i>
+                    <h1 class="text-xl font-bold">Sustentabilidade do Negócio.</h1>
+                    <span class="mt-2">Assegure a saúde financeira a longo prazo, possibilitando reinvestimentos e
+                        crescimento contínuo.</span>
                 </div>
+
             </div>
-            <div class="text">
-                <h1>Controle de Estoque Simplificado!</h1>
-                <p> {{ controllStock }}</p>
+            <div class=" flex flex-col w-[100vw] h-[60vh] md:h-[50vh] items-center">
+                <h1 class="text-4xl md:text-6xl text-center my-4 font-bold md:my-10">Controle de Estoque Simplificado!
+                </h1>
+                <p class="text-xl font-poppins uppercase md:text-2xl w-[80vw]"> {{ controllStock }}</p>
             </div>
         </div>
-        <footer class="powered-by">
+        <footer class="flex justify-center items-center ">
             <p>&copy;copyright 2024 Powered by <strong>GroupDI</strong></p>
         </footer>
     </main>
 </template>
 
 <style scoped>
-main {
+.card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100;
-    background: rgb(128, 149, 199);
+    text-align: center;
+    justify-content: center;
+    width: 15em;
+    height: 20em;
+    color: #7386b3;
+    box-shadow: 20px 20px 50px #96aee4;
+    border-radius: 8px;
+    background-color: white;
 }
 
-.content {
+/* main {
     display: flex;
-    width: 100%;
     flex-direction: column;
     align-items: center;
-    flex-wrap: wrap;
+    width: 100vw;
+    height: 100dvh;
+    background: rgb(128, 149, 199);
+} */
+
+/* .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    height: 100dvh;
+    background: rgb(128, 149, 199);
 }
 
 .text {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 50vw;
     height: 50vh;
     color: white;
 }
@@ -171,5 +191,5 @@ footer {
     align-items: center;
     width: 100%;
     height: 2em;
-}
+} */
 </style>

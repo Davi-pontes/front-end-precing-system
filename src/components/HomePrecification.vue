@@ -201,7 +201,7 @@ export default {
 .name-category {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 100vw;
     font-size: 1.3em;
     height: 2em;
     background: linear-gradient(120deg, rgb(65, 81, 117), rgb(231, 231, 231));
@@ -209,8 +209,8 @@ export default {
 }
 
 .name-category input {
-    width: 13em;
-    height: 1.5em;
+    width: 13%;
+    height: 3vh;
     margin-left: 1em;
     padding-left: 0.8em;
     border: none;
@@ -228,8 +228,8 @@ export default {
 
 .btn-add-product {
     border: none;
-    width: 10em;
-    height: 2em;
+    width: 10vw;
+    height: 4vh;
     font-size: 13px;
     margin-right: 5em;
     transition: 0.5s;
@@ -247,10 +247,10 @@ export default {
 }
 
 .btn-delete {
-    margin-left: 55vw;
-    width: 1.5em;
-    height: 1.5em;
-    font-size: 0.7em;
+    margin-left: 55%;
+    width: 1.5vw;
+    height: 3vh;
+    font-size: 2vh;
     background-color: transparent;
     border: 1px solid red;
     border-radius: 5px;
