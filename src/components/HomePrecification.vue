@@ -61,7 +61,6 @@ export default {
                 params: { idUser: this.idUser },
                 withCredentials: true
             })
-
             this.allProduct = data
         },
         goToEdit(idProduct: string, idCategory: string | null): void {
@@ -108,6 +107,16 @@ export default {
                 alert('Não foi possível atualizar o nome da categoria.')
             }
         },
+        async duplicateProdut(id_product: string, id_category: string | null) {
+            const { data } = await axios.post(urlApiBackEnd + "/product/duplicate", {
+                idProduct: id_product, idCategory: id_category
+            })
+            const category = this.allProduct.find(category => category.category.id === data.id_category)
+
+            if (category) {
+                category.products.unshift(data)
+            }
+        },
         async deleteCategory(idCategory: string | null) {
             const { data } = await axios.delete(urlApiBackEnd + "/category", {
                 params: { id: idCategory }
@@ -139,7 +148,7 @@ export default {
             </div>
             <table tyle="width:100%">
                 <tr class="header-table">
-                    <th colspan="2"></th>
+                    <th colspan="3"></th>
                     <th>PRODUTO</th>
                     <th>RENDIMENTO</th>
                     <th>CUSTO TOTAL</th>
@@ -152,6 +161,9 @@ export default {
                             @click="goToEdit(product.id_product, categoryAndProducts.category.id)">Visualizar</button>
                     </td>
                     <td><button @click="deleteProduct(product.id_product, indexCategory)">Excluir</button>
+                    </td>
+                    <td><button
+                            @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)">Duplicar</button>
                     </td>
                     <td>{{ product.name }}</td>
                     <td>{{ product.income }}</td>
@@ -265,7 +277,7 @@ export default {
 }
 
 .line-table button {
-    width: 10em;
+    width: 7em;
     font-size: 0.8em;
     border-radius: 5px;
     background-color: transparent;

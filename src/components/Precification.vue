@@ -468,6 +468,7 @@ export default {
 }
 
 .header-table {
+    font-size: 14px;
     border-bottom: 2px solid #c8cacc;
 }
 
@@ -618,6 +619,7 @@ td {
     border: none;
     border-radius: 5px;
     padding-left: 0.5em;
+    color: black;
 }
 
 .preparation-information input[type=number]::-webkit-inner-spin-button {
