@@ -2,6 +2,8 @@
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios';
 import AddCategory from './AddCategory.vue'
+import Loading from './Loading.vue';
+
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface IProduct {
     category: {
@@ -34,6 +36,7 @@ export default {
     components: {
         NavBar,
         AddCategory,
+        Loading
     },
     data() {
         return {
@@ -41,6 +44,7 @@ export default {
             showAddCategory: false,
             nameUser: '' as string | null,
             idUser: '' as string | null,
+            showLoading: false
         }
     },
     created() {
@@ -84,6 +88,7 @@ export default {
             this.showAddCategory = false
         },
         async deleteProduct(id_product: string, index: number) {
+            this.showLoading = true
             await axios.delete(urlApiBackEnd + "/product", {
                 params: {
                     id: id_product
@@ -92,7 +97,8 @@ export default {
                 const indexTheDataDeleted = this.allProduct[index].products.findIndex(it => it.id_product === id_product)
 
                 this.allProduct[index].products.splice(indexTheDataDeleted, 1)
-            }).catch()
+                this.showLoading = false
+            }).catch(() => this.showLoading = false)
         },
         closeAddCategory() {
             this.showAddCategory = false
@@ -108,6 +114,7 @@ export default {
             }
         },
         async duplicateProdut(id_product: string, id_category: string | null) {
+            this.showLoading = true
             const { data } = await axios.post(urlApiBackEnd + "/product/duplicate", {
                 idProduct: id_product, idCategory: id_category
             })
@@ -116,6 +123,7 @@ export default {
             if (category) {
                 category.products.unshift(data)
             }
+            this.showLoading = false
         },
         async deleteCategory(idCategory: string | null) {
             const { data } = await axios.delete(urlApiBackEnd + "/category", {
@@ -132,6 +140,7 @@ export default {
 
 <template>
     <main>
+        <Loading v-if="showLoading" />
         <NavBar :showButtonAddCategory=true @newCategory="addNewCategory" v-if="!showAddCategory" />
         <AddCategory v-if="showAddCategory" :nameUser="nameUser" :idUser="idUser" @updateCategory="updateCategory"
             @cancelAddNewCategory="closeAddCategory" />
@@ -184,6 +193,7 @@ export default {
 }
 
 .header-table {
+    height: 3em;
     font-size: 0.9em;
 }
 
@@ -225,6 +235,7 @@ export default {
     height: 3vh;
     margin-left: 1em;
     padding-left: 0.8em;
+    padding-bottom: 0.3em;
     border: none;
     background-color: transparent;
     border-bottom: 1px solid white;
@@ -259,8 +270,11 @@ export default {
 }
 
 .btn-delete {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-left: 55%;
-    width: 1.5vw;
+    width: 3vw;
     height: 3vh;
     font-size: 2vh;
     background-color: transparent;
@@ -284,6 +298,12 @@ export default {
     padding: 5px;
     cursor: pointer;
     border: 2px solid rgb(179, 175, 175);
+    transition: 0.4s;
+}
+
+.line-table button:hover {
+    background-color: rgb(128, 149, 199);
+    color: white;
 }
 
 th {
@@ -291,8 +311,14 @@ th {
 }
 
 tr td {
+    align-items: center;
     text-align: center;
+    height: 3em;
     border-bottom: 1px solid #c8cacc;
+}
+
+tr {
+    border-bottom: 2px solid #c8cacc;
 }
 
 tr:hover {

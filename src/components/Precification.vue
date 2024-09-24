@@ -478,6 +478,7 @@ export default {
 }
 
 .line-table input {
+    width: 10em;
     height: 1.5em;
     border: 1px solid black;
     border-radius: 5px;
@@ -491,14 +492,14 @@ export default {
     font-weight: 400;
     letter-spacing: 0.1em;
     background-color: transparent;
-    border: 1px solid black;
+    border: 1px solid red;
     border-radius: 5px;
-    color: black;
+    color: red;
     transition: 0.5s;
 }
 
 .line-table button:hover {
-    background-color: rgb(128, 149, 199);
+    background-color: red;
     color: white;
 }
 
@@ -590,7 +591,7 @@ table {
 th,
 td {
     text-align: center;
-    height: 2em;
+    height: 3em;
     padding: 8px;
 }
 

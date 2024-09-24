@@ -78,6 +78,7 @@ export default {
 }
 
 .head p {
+    font-family: sans-serif;
     font-size: 2em;
     cursor: pointer;
 }

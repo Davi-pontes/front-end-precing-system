@@ -2,7 +2,6 @@
 import NavBarLadingPage from '@/components/NavBarLadingPage.vue';
 import Home from '@/components/Home.vue';
 
-
 export default {
     name: 'HomeView',
     components: {
