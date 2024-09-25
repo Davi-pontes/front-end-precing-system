@@ -77,14 +77,26 @@ main {
     justify-content: space-around;
     width: 100%;
     height: 100vh;
-    background: rgb(128, 149, 199);
+    background: white;
     flex-wrap: wrap;
 }
 
 .image img {
-    width: 30em;
-    height: 30em;
+    display: none;
 }
+
+@media (min-width: 728px) {
+    .image img {
+        display: block;
+        width: 480px;
+        height: 480px;
+    }
+
+    main {
+        background: rgb(128, 149, 199);
+    }
+}
+
 
 .form {
     display: flex;

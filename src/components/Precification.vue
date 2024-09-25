@@ -91,7 +91,8 @@ export default {
         calculatecostOfAllIngredients(): void {
             if (this.all) {
                 const totalCost = this.all.reduce((acc, data) => acc + data.ingredient_cost, 0);
-                this.costOfAllIngredients = totalCost;
+
+                this.costOfAllIngredients = parseFloat(totalCost.toFixed(2));
             }
         },
         calculateCostFixed(): void {
