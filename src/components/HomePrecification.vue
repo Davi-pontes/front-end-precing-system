@@ -141,22 +141,39 @@ export default {
 <template>
     <main>
         <Loading v-if="showLoading" />
-        <NavBar :showButtonAddCategory=true @newCategory="addNewCategory" v-if="!showAddCategory" />
+        <NavBar class="hidden md:block" :showButtonAddCategory=true @newCategory="addNewCategory"
+            v-if="!showAddCategory" />
         <AddCategory v-if="showAddCategory" :nameUser="nameUser" :idUser="idUser" @updateCategory="updateCategory"
             @cancelAddNewCategory="closeAddCategory" />
-        <div class="welcome" v-if="allProduct.length === 0">
-            <button @click="addNewCategory">Adicione uma categoria</button>
+        <div class="flex justify-center w-full h-full" v-if="allProduct.length === 0">
+            <button class="border 
+                border-[#8095c7] 
+                bg-transparent 
+                rounded-md p-1.5 
+                text-xl 
+                text-[#d1cece] 
+                cursor-pointer 
+                transition duration-800 
+                hover:bg-transparent
+                 hover:text-black" @click="addNewCategory">Adicione uma categoria</button>
         </div>
-        <div class="main" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
-            <div class="name-category">
-                <input type="text" v-model="categoryAndProducts.category.name"
+        <div class="flex flex-col w-auto" v-for="(categoryAndProducts, indexCategory) of allProduct"
+            :key="indexCategory">
+            <div
+                class="name-category flex items-center justify-between w-screen text-base h-10 bg-gradient-to-r from-[#415175] to-[#e7e7e7] text-white">
+                <input
+                    class="w-[13vw] h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"
+                    type="text" v-model="categoryAndProducts.category.name"
                     @change="sendUpdateCategory(categoryAndProducts.category)">
-                <button class="btn-add-product"
-                    @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
-                <button class="btn-delete" @click="deleteCategory(categoryAndProducts.category.id)">X</button>
+                <div class="flex w-[50em] justify-between">
+                    <button class="btn-add-product hidden md:flex 
+                        " @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar produto</button>
+                    <button class="btn-delete hidden md:flex items-center justify-center"
+                        @click="deleteCategory(categoryAndProducts.category.id)">X</button>
+                </div>
             </div>
-            <table tyle="width:100%">
-                <tr class="header-table">
+            <table class="w-full text-xs md:text-base">
+                <tr class="h-10">
                     <th colspan="3"></th>
                     <th>PRODUTO</th>
                     <th>RENDIMENTO</th>
@@ -166,12 +183,13 @@ export default {
                 </tr>
                 <tr class="line-table" v-for="(product, indexProduct) of categoryAndProducts.products"
                     :key="indexProduct">
-                    <td><button
+                    <td><button class="hidden md:block"
                             @click="goToEdit(product.id_product, categoryAndProducts.category.id)">Visualizar</button>
                     </td>
-                    <td><button @click="deleteProduct(product.id_product, indexCategory)">Excluir</button>
+                    <td><button class="hidden md:block"
+                            @click="deleteProduct(product.id_product, indexCategory)">Excluir</button>
                     </td>
-                    <td><button
+                    <td><button class="hidden md:block"
                             @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)">Duplicar</button>
                     </td>
                     <td>{{ product.name }}</td>
@@ -186,52 +204,8 @@ export default {
 </template>
 
 <style scoped>
-.main {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.header-table {
-    height: 3em;
-    font-size: 0.9em;
-}
-
-.welcome {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
-.welcome button {
-    border: 1px solid rgb(128, 149, 199);
-    background-color: transparent;
-    border-radius: 5px;
-    padding: 5px;
-    font-size: 1.5em;
-    color: #d1cece;
-    cursor: pointer;
-    transition: 0.8s;
-}
-
-.welcome button:hover {
-    background-color: transparent;
-    color: black;
-}
-
-.name-category {
-    display: flex;
-    align-items: center;
-    width: 100vw;
-    font-size: 1.3em;
-    height: 2em;
-    background: linear-gradient(120deg, rgb(65, 81, 117), rgb(231, 231, 231));
-    color: white;
-}
-
 .name-category input {
-    width: 13%;
+    width: 30vw;
     height: 3vh;
     margin-left: 1em;
     padding-left: 0.8em;
@@ -250,11 +224,9 @@ export default {
 }
 
 .btn-add-product {
-    border: none;
-    width: 10vw;
+    justify-content: center;
+    width: 15vw;
     height: 4vh;
-    font-size: 13px;
-    margin-right: 5em;
     transition: 0.5s;
     border-radius: 10px;
     background-color: transparent;
@@ -270,13 +242,7 @@ export default {
 }
 
 .btn-delete {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 55%;
-    width: 3vw;
-    height: 3vh;
-    font-size: 2vh;
+    width: 5em;
     background-color: transparent;
     border: 1px solid red;
     border-radius: 5px;
