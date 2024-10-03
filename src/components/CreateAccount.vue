@@ -6,48 +6,23 @@ const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 export default {
     name: 'CreateAccount',
+    components: {
+
+    },
     data() {
         return {
-            name: null,
-            email: null,
-            phone: null,
-            password: null,
-            confirmPassword: null,
-            routeName: null as RouteRecordName | null | undefined
+            user: { name: null, phone_number: null, email: null, password: null },
+            routeName: null as RouteRecordName | null | undefined,
+            showMessage: true,
+            message: ''
         }
     },
-    created() {
-        this.getRouteName()
-    },
     methods: {
-        getRouteName() {
-            this.routeName = this.$route.name
-        },
-        async login() {
-            try {
-                const { data } = await axios.post(urlApiBackEnd + '/login', {
-                    email: this.email,
-                    password: this.password
-                }, {
-                    withCredentials: true
-                })
-                localStorage.setItem("User", JSON.stringify(data))
-
-                if (this.routeName && this.routeName === 'loginAdmin') {
-                    this.$router.push({ name: 'listUsersAdmin' })
-                } else {
-                    this.$router.push({ name: 'homePrecification' })
-                }
-
-            } catch (error: any) {
-                if (error.response && error.response.status) {
-                    alert('Login ou/e senha incorreto.')
-                } else {
-                    alert('Não foi possível fazer o login, por favor entre em contato com o suporte.')
-                }
-
-            }
-        },
+        async registrationUser() {
+            const { data } = await axios.post(urlApiBackEnd + '/user', this.user, { withCredentials: true })
+            this.message = 'Conta criada com sucesso!'
+            this.showMessage = true
+        }
     }
 }
 </script>
@@ -60,12 +35,12 @@ export default {
         <div class="form">
             <div class="content">
                 <h1>Criar conta</h1>
-                <input type="text" placeholder="Nome" v-model="name">
-                <input type="text" placeholder="Número de telefone" v-model="phone">
-                <input type="email" placeholder="E-mail" v-model="email">
-                <input type="password" placeholder="Senha" v-model="password">
-                <input type="password" placeholder="Confirmar senha" v-model="confirmPassword" @keyup.enter="login">
-                <button @click="login">Cadastrar</button>
+                <input type="text" placeholder="Nome" v-model="user.name">
+                <input type="text" placeholder="Número de telefone" v-model="user.phone_number">
+                <input type="email" placeholder="E-mail" v-model="user.email">
+                <input type="password" placeholder="Senha" v-model="user.password">
+                <input type="password" placeholder="Confirmar senha" @keyup.enter="registrationUser">
+                <button @click="registrationUser">Cadastrar</button>
                 <span>Ao clicar em cadastrar, você concorda com os
                     Termos, Condições e Políticas de Privacidade da Helqui.
                 </span>
