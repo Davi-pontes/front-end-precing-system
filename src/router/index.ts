@@ -7,6 +7,7 @@ import StockView from '@/views/StockView.vue'
 import LoginView from '../views/LoginView.vue'
 import LoginViewAdmin from '../views/admin/LoginViewAdmin.vue'
 import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
+import CreateAccountView from '@/views/CreateAccountView.vue'
 import { Auth } from '@/auth/auth'
 
 const router = createRouter({
@@ -24,6 +25,14 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/create/account',
+      name: 'createAccount',
+      component: CreateAccountView,
       meta: {
         public: true
       }

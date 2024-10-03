@@ -5,11 +5,14 @@ import type { RouteRecordName } from "vue-router";
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 export default {
-    name: 'Login',
+    name: 'CreateAccount',
     data() {
         return {
+            name: null,
             email: null,
+            phone: null,
             password: null,
+            confirmPassword: null,
             routeName: null as RouteRecordName | null | undefined
         }
     },
@@ -56,16 +59,16 @@ export default {
         </div>
         <div class="form">
             <div class="content">
-                <h1>LOGIN</h1>
+                <h1>Criar conta</h1>
+                <input type="text" placeholder="Nome" v-model="name">
+                <input type="text" placeholder="Número de telefone" v-model="phone">
                 <input type="email" placeholder="E-mail" v-model="email">
-                <input type="password" placeholder="Senha" v-model="password" @keyup.enter="login">
-                <button @click="login">Login</button>
-                <span>Ao se conectar, você concorda com os
-                    Termos, Condições e Políticas de Privacidade da Relqui.
+                <input type="password" placeholder="Senha" v-model="password">
+                <input type="password" placeholder="Confirmar senha" v-model="confirmPassword" @keyup.enter="login">
+                <button @click="login">Cadastrar</button>
+                <span>Ao clicar em cadastrar, você concorda com os
+                    Termos, Condições e Políticas de Privacidade da Helqui.
                 </span>
-                <router-link to="/create/account">
-                    Não tem uma conta? Registre-se agora!
-                </router-link>
             </div>
 
         </div>
