@@ -3,7 +3,7 @@ import AllIngredients from '../components/AllIngredients.vue'
 </script>
 
 <template>
-    <main>
-        <AllIngredients />
-    </main>
+  <main>
+    <AllIngredients />
+  </main>
 </template>

@@ -3,7 +3,7 @@ import Precification from '../components/Precification.vue'
 </script>
 
 <template>
-    <main>
-        <Precification/>
-    </main>
+  <main>
+    <Precification />
+  </main>
 </template>
