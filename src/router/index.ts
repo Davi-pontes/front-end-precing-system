@@ -58,61 +58,56 @@ const router = createRouter({
       name: 'homePrecification',
       component: HomePrecificationView,
       meta: {
-        auth: true,
-
-      },
+        auth: true
+      }
     },
     {
       path: '/register',
       name: 'precification',
       component: Precification,
       meta: {
-        auth: true,
-
-      },
+        auth: true
+      }
     },
     {
       path: '/ingredients/all',
       name: 'allIngredients',
       component: AllIngredientView,
       meta: {
-        auth: true,
-
-      },
+        auth: true
+      }
     },
     {
       path: '/stock',
       name: 'stock',
       component: StockView,
       meta: {
-        auth: true,
-
-      },
+        auth: true
+      }
     }
   ]
 })
 
 router.beforeEach(async (to, from, next) => {
   try {
-    const validate = await Auth.validate();
+    const validate = await Auth.validate()
 
     if (to.meta?.public && to.name !== 'login') {
-      return next();
+      return next()
     } else if (to.name === 'login') {
-
       return next()
     }
 
     if (validate) {
-      return next();
+      return next()
     } else {
-      return next({ name: 'login' });
+      return next({ name: 'login' })
     }
   } catch (error) {
     if (to.name !== 'home') {
-      return next({ name: 'home' });
+      return next({ name: 'home' })
     }
-    next();
+    next()
   }
 })
 export default router

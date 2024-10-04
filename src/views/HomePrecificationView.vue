@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Home from '@/components/HomePrecification.vue';
+import Home from '@/components/HomePrecification.vue'
 </script>
 
 <template>
-    <main>
-        <Home />
-    </main>
+  <main>
+    <Home />
+  </main>
 </template>

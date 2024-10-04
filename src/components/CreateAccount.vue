@@ -20,7 +20,7 @@ export default {
             this.message = 'Conta criada com sucesso!'
             this.showMessage = true
         }
-    }
+    },
 }
 </script>
 
@@ -42,7 +42,6 @@ export default {
                     Termos, Condições e Políticas de Privacidade da Helqui.
                 </span>
             </div>
-
         </div>
     </main>
 </template>
@@ -73,7 +72,6 @@ main {
         background: rgb(128, 149, 199);
     }
 }
-
 
 .form {
     display: flex;
