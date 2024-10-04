@@ -1,18 +1,15 @@
 <script lang="ts">
 import axios from "axios";
-import type { RouteRecordName } from "vue-router";
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 export default {
     name: 'CreateAccount',
     components: {
-
     },
     data() {
         return {
             user: { name: null, phone_number: null, email: null, password: null },
-            routeName: null as RouteRecordName | null | undefined,
             showMessage: true,
             message: ''
         }
@@ -36,7 +33,7 @@ export default {
             <div class="content">
                 <h1>Criar conta</h1>
                 <input type="text" placeholder="Nome" v-model="user.name">
-                <input type="text" placeholder="Número de telefone" v-model="user.phone_number">
+                <MaskInput placeholder="Número de telefone" v-model="user.phone_number" mask="(##) 9 ####-####" />
                 <input type="email" placeholder="E-mail" v-model="user.email">
                 <input type="password" placeholder="Senha" v-model="user.password">
                 <input type="password" placeholder="Confirmar senha" @keyup.enter="registrationUser">
