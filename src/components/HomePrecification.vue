@@ -177,7 +177,7 @@ export default {
       :key="indexCategory"
     >
       <div
-        class="name-category flex items-center justify-between w-screen text-base h-10 bg-gradient-to-r from-[#415175] to-[#e7e7e7] text-white"
+        class="name-category"
       >
         <input
           class="w-[13vw] h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"
@@ -185,15 +185,15 @@ export default {
           v-model="categoryAndProducts.category.name"
           @change="sendUpdateCategory(categoryAndProducts.category)"
         />
-        <div class="flex w-[50em] justify-between">
+        <div class="flex w-[45em] items-center justify-between">
           <button
-            class="btn-add-product hidden md:flex"
+            class="btn-add-product hidden md:flex md:items-center md:justify-center"
             @click="goToAddProductCategory(categoryAndProducts.category.id)"
           >
             Adicionar produto
           </button>
           <button
-            class="btn-delete hidden md:flex items-center justify-center"
+            class="btn-delete hidden md:flex md:items-center md:justify-center h-7 w-10"
             @click="deleteCategory(categoryAndProducts.category.id)"
           >
             X
@@ -250,6 +250,15 @@ export default {
 </template>
 
 <style scoped>
+.name-category{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  height: 2.5rem;
+  background:  linear-gradient(to right, #415175, #e7e7e7);
+  color: white;
+}
 .name-category input {
   width: 30vw;
   height: 3vh;
@@ -272,13 +281,12 @@ export default {
 .btn-add-product {
   justify-content: center;
   width: 15vw;
-  height: 4vh;
+  height: 2rem;
   transition: 0.5s;
   border-radius: 10px;
   background-color: transparent;
   border: 1px solid white;
   color: white;
-  margin-left: 10em;
   cursor: pointer;
 }
 
@@ -295,6 +303,7 @@ export default {
   color: red;
   cursor: pointer;
   transition: 0.7s;
+  margin-right: 3rem;
 }
 
 .btn-delete:hover {

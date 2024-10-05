@@ -66,7 +66,7 @@ export default {
           >Ao se conectar, você concorda com os Termos, Condições e Políticas de Privacidade da
           Relqui.
         </span>
-        <router-link to="/create/account"> Não tem uma conta? Registre-se agora! </router-link>
+        <router-link class="btn-create-new-account" to="/create/account"> Não tem uma conta? Registre-se agora! </router-link>
       </div>
     </div>
   </main>
@@ -146,6 +146,11 @@ main {
 
 .content span {
   font-size: 13px;
+  text-align: center;
+}
+
+.btn-create-new-account{
+  font-size: 16px;
   text-align: center;
 }
 </style>
