@@ -3,7 +3,17 @@ export default {
   name: 'MessageAlert',
   props: {
     message: { type: String }
-  }
+  },
+  created() {
+    this.removeAlert()
+  },
+  methods: {
+    removeAlert(){
+      setTimeout(() => {
+        this.$emit('removeAlert')
+      },4000)
+    }
+  },
 }
 </script>
 
@@ -19,12 +29,13 @@ export default {
 <style scoped>
 .banner {
   position: absolute;
-  max-width: 20%;
+  min-width: 30%;
+  max-width: 50%;
   padding: 1.25rem 1rem;
   border-radius: 0.25rem;
-  background-color: #8095c7;
+  background-color: white;
   margin-left: 40vw;
-  color: white;
+  color: black;
   transform: translateY(2rem);
   opacity: 0;
   pointer-events: none;
@@ -33,13 +44,15 @@ export default {
   overflow-wrap: break-word;
   white-space: normal;
   display: inline-block;
+  text-align: center;
+  z-index: 999;
 }
 
 .progress {
   position: absolute;
   inset: auto 0.625rem 0.375rem;
   height: 0.2rem;
-  background-color: #c6c9d0;
+  background-color: #8095c7;
   transform: scaleX(0);
   transform-origin: left;
   border-radius: 0.5rem;

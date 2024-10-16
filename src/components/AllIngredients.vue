@@ -2,6 +2,7 @@
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios'
 import type { LocationQueryValue } from 'vue-router'
+import MessageAlert from './MessageAlert.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
@@ -21,12 +22,15 @@ interface IIngredient {
 export default {
   name: 'AllIngredients',
   components: {
-    NavBar
+    NavBar,
+    MessageAlert
   },
   data() {
     return {
       allIngredients: [] as IIngredient[],
-      idUser: null as LocationQueryValue | LocationQueryValue[]
+      idUser: null as LocationQueryValue | LocationQueryValue[],
+      messageAlert: '',
+      showAlert: false
     }
   },
   async created() {
@@ -45,7 +49,20 @@ export default {
       this.allIngredients = data
     },
     async updateProductIngredient(datas: IIngredient) {
-      await axios.patch(urlApiBackEnd + '/product/ingredient/specific', datas)
+      const formatedData = {
+        changeInformation: {
+          name: datas.name,
+          price: datas.price
+        },
+        idUser: this.idUser
+      }
+      const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
+      this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produtos foram alterados.`
+      this.showAlert = true
+    },
+    timeoutAlert() {
+      this.showAlert = false
+
     }
   }
 }
@@ -54,6 +71,7 @@ export default {
 <template>
   <main>
     <NavBar :showButtonAddCategory="false" />
+    <MessageAlert v-if="showAlert" :message="messageAlert" @removeAlert="timeoutAlert()" />
     <div class="showAllIngredients">
       <table class="content-table">
         <thead>
@@ -71,11 +89,7 @@ export default {
             <td>{{ ingredient.weight }}</td>
             <td>
               R$
-              <input
-                type="number"
-                v-model="ingredient.price"
-                @change="updateProductIngredient(ingredient)"
-              />
+              <input type="number" v-model="ingredient.price" @change="updateProductIngredient(ingredient)" />
             </td>
           </tr>
         </tbody>
