@@ -22,7 +22,6 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
-    "v-mask": "^2.3.0",
     "vue": "^3.4.21",
     "vue-3-mask": "^0.0.1-alpha",
     "vue-router": "^4.3.0"

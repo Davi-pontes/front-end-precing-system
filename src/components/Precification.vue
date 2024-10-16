@@ -76,16 +76,16 @@ export default {
     async getQuery() {
       this.idUser = this.$route.query.idU
     },
-    controllerCreated() {
+    async controllerCreated() {
       if (this.$route.query.idP) {
         this.getQueryIdProduct()
         this.getQueryIdCategory()
         this.getProduct()
         this.getProductIngredient()
-        this.getProducsJoker()
+        await this.getProducsJoker()
       } else {
         this.getQueryIdCategory()
-        this.getProducsJoker()
+        await this.getProducsJoker()
       }
     },
     updateAllNumbers() {
@@ -243,7 +243,7 @@ export default {
         .then(() => {
           this.returnToHomePage()
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     sendUpdateData(data: object, id_product: string): void {
       axios
@@ -256,7 +256,7 @@ export default {
         .then(() => {
           this.returnToHomePage()
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     getQueryIdProduct(): void {
       this.id_product = this.$route.query.idP as string
@@ -285,7 +285,7 @@ export default {
           this.pricePerUnit = response.data.price_per_unit
           this.isJoker = response.data.is_joker
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     getProductIngredient(): void {
       axios
@@ -298,7 +298,7 @@ export default {
           this.all = response.data
           this.updateAllNumbers()
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     async getProducsJoker() {
       const { data } = await axios.get(urlApiBackEnd + '/product/joker', {
@@ -356,12 +356,8 @@ export default {
 
               <td><input type="text" placeholder="MATERIAL" v-model="data.name" /></td>
               <td>
-                <input
-                  type="number"
-                  placeholder="PESO"
-                  v-model="data.weight"
-                  @change="calculateCostOfAnIngredient(index)"
-                />
+                <input type="number" placeholder="PESO" v-model="data.weight"
+                  @change="calculateCostOfAnIngredient(index)" />
               </td>
               <td>
                 <select name="SelectedUnit1" v-model="data.unit1">
@@ -373,20 +369,12 @@ export default {
               </td>
               <td>
                 <span>R$ </span>
-                <input
-                  type="NUMBER"
-                  placeholder="CUSTO"
-                  v-model="data.price"
-                  @change="calculateCostOfAnIngredient(index)"
-                />
+                <input type="NUMBER" placeholder="CUSTO" v-model="data.price"
+                  @change="calculateCostOfAnIngredient(index)" />
               </td>
               <td>
-                <input
-                  type="NUMBER"
-                  placeholder="QUANTIDADE"
-                  v-model="data.quantity"
-                  @change="calculateCostOfAnIngredient(index)"
-                />
+                <input type="NUMBER" placeholder="QUANTIDADE" v-model="data.quantity"
+                  @change="calculateCostOfAnIngredient(index)" />
               </td>
               <td>
                 <select name="SelectedUnit2" v-model="data.unit2">
@@ -406,18 +394,9 @@ export default {
       <div class="buttons">
         <div class="product-joker">
           <p>Produtos coringa:</p>
-          <select
-            name="productsJoker"
-            id="productsJoker"
-            v-model="productJokerSelected"
-            @change="addProductJoker"
-          >
+          <select name="productsJoker" id="productsJoker" v-model="productJokerSelected" @change="addProductJoker">
             <option disabled selected>Produtos Coringa</option>
-            <option
-              :value="productJoker"
-              v-for="(productJoker, index) in productsJoker"
-              :key="index"
-            >
+            <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
               {{ productJoker.name }}
             </option>
           </select>
