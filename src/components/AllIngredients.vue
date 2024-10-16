@@ -57,7 +57,12 @@ export default {
         idUser: this.idUser
       }
       const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
-      this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produtos foram alterados.`
+      
+      if(data.updatedNumbersIngredient.quantityOfProductsChanged > 1){
+        this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produtos foram alterados.`
+      }else {
+        this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produto foram alterados.`
+      }
       this.showAlert = true
     },
     timeoutAlert() {

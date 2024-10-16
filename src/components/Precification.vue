@@ -469,14 +469,14 @@ export default {
 .header {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 102%;
   height: 100%;
 }
 
 .header-label {
   display: flex;
   align-items: center;
-  width: 98%;
+  width: 100%;
   height: 2em;
   font-size: 30px;
   background-color: rgb(128, 149, 199);
