@@ -61,7 +61,7 @@ export default {
       if(data.updatedNumbersIngredient.quantityOfProductsChanged > 1){
         this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produtos foram alterados.`
       }else {
-        this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produto foram alterados.`
+        this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produto foi alterado.`
       }
       this.showAlert = true
     },
