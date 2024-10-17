@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar.vue'
 import axios from 'axios'
 import AddCategory from './AddCategory.vue'
 import Loading from './Loading.vue'
+import ConfirmationModal from './ConfirmationModal.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface IProduct {
@@ -36,7 +37,8 @@ export default {
   components: {
     NavBar,
     AddCategory,
-    Loading
+    Loading,
+    ConfirmationModal
   },
   data() {
     return {
@@ -45,7 +47,9 @@ export default {
       nameUser: '' as string | null,
       idUser: '' as string | null,
       showLoading: false,
-      isBlur: false
+      isBlur: false,
+      textModel: '',
+      showModal: false
     }
   },
   created() {
@@ -146,6 +150,9 @@ export default {
     },
     toggleBlur() {
       this.isBlur = !this.isBlur;
+    },
+    showModalFunction(){
+      this.showModal = true
     }
   }
 }
@@ -160,6 +167,7 @@ export default {
       @newCategory="addNewCategory"
       v-if="!showAddCategory"
     />
+    <ConfirmationModal v-if="showModal" :text="textModel"/>
     <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
       {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
     </button>

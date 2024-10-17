@@ -8,6 +8,7 @@ import LoginView from '../views/LoginView.vue'
 import LoginViewAdmin from '../views/admin/LoginViewAdmin.vue'
 import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
 import CreateAccountView from '@/views/CreateAccountView.vue'
+import HomePageView from '@/views/Menu/HomePageView.vue'
 import { Auth } from '@/auth/auth'
 
 const router = createRouter({
@@ -17,6 +18,14 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/menu',
+      name: 'homePageMenu',
+      component: HomePageView,
       meta: {
         public: true
       }
