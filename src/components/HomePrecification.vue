@@ -44,7 +44,8 @@ export default {
       showAddCategory: false,
       nameUser: '' as string | null,
       idUser: '' as string | null,
-      showLoading: false
+      showLoading: false,
+      isBlur: false
     }
   },
   created() {
@@ -142,6 +143,9 @@ export default {
       this.allProduct = this.allProduct.filter(
         (category) => category.category.id !== productDeleted
       )
+    },
+    toggleBlur() {
+      this.isBlur = !this.isBlur;
     }
   }
 }
@@ -156,6 +160,9 @@ export default {
       @newCategory="addNewCategory"
       v-if="!showAddCategory"
     />
+    <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
+      {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
+    </button>
     <AddCategory
       v-if="showAddCategory"
       :nameUser="nameUser"
@@ -239,10 +246,10 @@ export default {
             </button>
           </td>
           <td>{{ product.name }}</td>
-          <td>{{ product.income }}</td>
-          <td style="color: red">R$ {{ product.revenue_cost }}</td>
-          <td style="color: green">R$ {{ product.profit }}</td>
-          <td style="color: green">R$ {{ product.price_per_unit }}</td>
+          <td :class="{ 'blur-sm': isBlur }">{{ product.income }}</td>
+          <td :class="['text-red-500', { 'blur-sm': isBlur }]">R$ {{ product.revenue_cost }}</td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.profit }}</td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.price_per_unit }}</td>
         </tr>
       </table>
     </div>
