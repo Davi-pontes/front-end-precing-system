@@ -201,12 +201,13 @@ export default {
           @change="sendUpdateCategory(categoryAndProducts.category)"
         />
         <div class="flex w-[45em] items-center justify-between">
-          <button
+          <select
             class="btn-add-product hidden md:flex md:items-center md:justify-center"
-            @click="goToAddProductCategory(categoryAndProducts.category.id)"
           >
-            Adicionar produto
-          </button>
+          <option disabled>Adicionar produto</option>
+          <option class="text-black" @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar com precificação</option>
+          <option class="text-black">Adicionar sem precificação</option>
+          </select>
           <button
             class="btn-delete hidden md:flex md:items-center md:justify-center h-7 w-10"
             @click="deleteCategory(categoryAndProducts.category.id)"
