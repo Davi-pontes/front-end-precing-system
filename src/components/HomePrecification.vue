@@ -4,7 +4,7 @@ import axios from 'axios'
 import AddCategory from './AddCategory.vue'
 import Loading from './Loading.vue'
 import ConfirmationModal from './ConfirmationModal.vue'
-
+import Product from './Product.vue'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface IProduct {
   category: {
@@ -38,7 +38,8 @@ export default {
     NavBar,
     AddCategory,
     Loading,
-    ConfirmationModal
+    ConfirmationModal,
+    Product
   },
   data() {
     return {
@@ -49,7 +50,8 @@ export default {
       showLoading: false,
       isBlur: false,
       textModel: '',
-      showModal: false
+      showModal: false,
+      showAddOnlyProduct: false
     }
   },
   created() {
@@ -151,8 +153,21 @@ export default {
     toggleBlur() {
       this.isBlur = !this.isBlur;
     },
-    showModalFunction(){
+    showModalFunction() {
       this.showModal = true
+    },
+    handleSelectChange(idCategory: string | null, event: Event) {
+      const target = event.target as HTMLSelectElement;
+
+      if (target && target.value === 'addOnlyProduct') {
+        this.showComponentAddOnlyProduct();
+      } else {
+        this.goToAddProductCategory(idCategory)
+      }
+
+    },
+    showComponentAddOnlyProduct() {
+      this.showAddOnlyProduct = true
     }
   }
 }
@@ -161,57 +176,37 @@ export default {
 <template>
   <main>
     <Loading v-if="showLoading" />
-    <NavBar
-      class="hidden md:block"
-      :showButtonAddCategory="true"
-      @newCategory="addNewCategory"
-      v-if="!showAddCategory"
-    />
-    <ConfirmationModal v-if="showModal" :text="textModel"/>
+    <Product v-if="showAddOnlyProduct"></Product>
+    <NavBar class="hidden md:block" :showButtonAddCategory="true" @newCategory="addNewCategory"
+      v-if="!showAddCategory" />
+    <ConfirmationModal v-if="showModal" :text="textModel" />
     <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
       {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
     </button>
-    <AddCategory
-      v-if="showAddCategory"
-      :nameUser="nameUser"
-      :idUser="idUser"
-      @updateCategory="updateCategory"
-      @cancelAddNewCategory="closeAddCategory"
-    />
+    <AddCategory v-if="showAddCategory" :nameUser="nameUser" :idUser="idUser" @updateCategory="updateCategory"
+      @cancelAddNewCategory="closeAddCategory" />
     <div class="flex justify-center w-full h-full" v-if="allProduct.length === 0">
       <button
         class="border border-[#8095c7] bg-transparent rounded-md p-1.5 text-xl text-[#d1cece] cursor-pointer transition duration-800 hover:bg-transparent hover:text-black"
-        @click="addNewCategory"
-      >
+        @click="addNewCategory">
         Adicione uma categoria
       </button>
     </div>
-    <div
-      class="flex flex-col w-auto"
-      v-for="(categoryAndProducts, indexCategory) of allProduct"
-      :key="indexCategory"
-    >
-      <div
-        class="name-category"
-      >
+    <div class="flex flex-col w-auto" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
+      <div class="name-category">
         <input
           class="w-[13vw] h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"
-          type="text"
-          v-model="categoryAndProducts.category.name"
-          @change="sendUpdateCategory(categoryAndProducts.category)"
-        />
+          type="text" v-model="categoryAndProducts.category.name"
+          @change="sendUpdateCategory(categoryAndProducts.category)" />
         <div class="flex w-[45em] items-center justify-between">
-          <select
-            class="btn-add-product hidden md:flex md:items-center md:justify-center"
-          >
-          <option disabled>Adicionar produto</option>
-          <option class="text-black" @click="goToAddProductCategory(categoryAndProducts.category.id)">Adicionar com precificação</option>
-          <option class="text-black">Adicionar sem precificação</option>
+          <select class="btn-add-product hidden md:flex md:items-center md:justify-center"
+            @change.prevent="handleSelectChange(categoryAndProducts.category.id, $event)">
+            <option disabled selected>Adicionar produto</option>
+            <option value="addWithPricing" class="text-black">Adicionar com precificação</option>
+            <option value="addOnlyProduct" class="text-black">Adicionar sem precificação</option>
           </select>
-          <button
-            class="btn-delete hidden md:flex md:items-center md:justify-center h-7 w-10"
-            @click="deleteCategory(categoryAndProducts.category.id)"
-          >
+          <button class="btn-delete hidden md:flex md:items-center md:justify-center h-7 w-10"
+            @click="deleteCategory(categoryAndProducts.category.id)">
             X
           </button>
         </div>
@@ -225,32 +220,20 @@ export default {
           <th>LUCRO</th>
           <th>PREÇO DE VENDA</th>
         </tr>
-        <tr
-          class="line-table"
-          v-for="(product, indexProduct) of categoryAndProducts.products"
-          :key="indexProduct"
-        >
+        <tr class="line-table" v-for="(product, indexProduct) of categoryAndProducts.products" :key="indexProduct">
           <td>
-            <button
-              class="hidden md:block"
-              @click="goToEdit(product.id_product, categoryAndProducts.category.id)"
-            >
+            <button class="hidden md:block" @click="goToEdit(product.id_product, categoryAndProducts.category.id)">
               Visualizar
             </button>
           </td>
           <td>
-            <button
-              class="hidden md:block"
-              @click="deleteProduct(product.id_product, indexCategory)"
-            >
+            <button class="hidden md:block" @click="deleteProduct(product.id_product, indexCategory)">
               Excluir
             </button>
           </td>
           <td>
-            <button
-              class="hidden md:block"
-              @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)"
-            >
+            <button class="hidden md:block"
+              @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)">
               Duplicar
             </button>
           </td>
@@ -266,15 +249,16 @@ export default {
 </template>
 
 <style scoped>
-.name-category{
+.name-category {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100vw;
   height: 2.5rem;
-  background:  linear-gradient(to right, #415175, #e7e7e7);
+  background: linear-gradient(to right, #415175, #e7e7e7);
   color: white;
 }
+
 .name-category input {
   width: 30vw;
   height: 3vh;
