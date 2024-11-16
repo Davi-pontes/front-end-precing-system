@@ -65,7 +65,8 @@ export default {
       productJokerSelected: {} as IProduct,
       idUser: null as LocationQueryValue | LocationQueryValue[],
       showMessage: false,
-      message: ''
+      message: '',
+      changedSomething: false
     }
   },
   async created() {
@@ -88,7 +89,8 @@ export default {
         await this.getProducsJoker()
       }
     },
-    updateAllNumbers() {
+    updateAllNumbers(functionThatCalled: boolean) {
+      if(this.id_product && !functionThatCalled) this.changedSomething = true
       this.calculatecostOfAllIngredients()
       this.calculateCostFixed()
       this.calculateProfit()
@@ -156,21 +158,24 @@ export default {
       }
       this.all.push(addProductJoker)
 
-      this.updateAllNumbers()
+      this.updateAllNumbers(true)
     },
     calculateCostOfAnIngredient(index: number): void {
+
+      if(this.id_product) this.changedSomething = true
+
       const resultvalidate = this.validateIfThereIsANumber0(index)
 
       if (resultvalidate) {
         this.all[index].ingredient_cost = 0
-        this.updateAllNumbers()
+        this.updateAllNumbers(true)
       } else {
         const updateingredientCost =
           (this.all[index].quantity * this.all[index].price) / this.all[index].weight
 
         this.all[index].ingredient_cost = parseFloat(updateingredientCost.toFixed(2))
 
-        this.updateAllNumbers()
+        this.updateAllNumbers(true)
       }
     },
     validateIfThereIsANumber0(index: number) {
@@ -213,11 +218,14 @@ export default {
         }, 5000)
       } else {
         const dataFormated = this.prepareData()
-
-        if (this.id_product) {
+        console.log(this.changedSomething);
+        
+        if (this.changedSomething && this.id_product) {
           this.sendUpdateData(dataFormated, this.id_product)
-        } else {
+        } else if(!this.id_product){
           this.sendNewData(dataFormated)
+        } else {
+          this.$router.push({name: 'homePrecification'})
         }
       }
     },
@@ -264,8 +272,8 @@ export default {
     getQueryIdCategory(): void {
       this.id_category = this.$route.query.idC as string
     },
-    getProduct() {
-      axios
+    async getProduct() {
+      await axios
         .get(urlApiBackEnd + '/product/specific', {
           params: {
             id: this.id_product
@@ -287,8 +295,8 @@ export default {
         })
         .catch(() => { })
     },
-    getProductIngredient(): void {
-      axios
+    async getProductIngredient() {
+      await axios
         .get(urlApiBackEnd + '/product/ingredient', {
           params: {
             id: this.id_product
@@ -296,7 +304,7 @@ export default {
         })
         .then((response) => {
           this.all = response.data
-          this.updateAllNumbers()
+          this.updateAllNumbers(true)
         })
         .catch(() => { })
     },
@@ -313,7 +321,10 @@ export default {
     },
     deletedMaterialOfArray(index: number) {
       this.all.splice(index, 1)
-      this.updateAllNumbers()
+      this.updateAllNumbers(true)
+    },
+    updateNameProduct(){
+      if(this.id_product) this.changedSomething = true
     }
   }
 }
@@ -323,7 +334,7 @@ export default {
     <div class="header">
       <div class="header-label">
         <div class="name-product">
-          <input type="text" v-model="nameProduct" />
+          <input type="text" v-model="nameProduct" @change="updateNameProduct" />
         </div>
         <div class="joker">
           <p>Produto coringa?</p>
@@ -409,19 +420,19 @@ export default {
         <div class="preparation">
           <div class="preparation-information">
             <p>Rendimentos:</p>
-            <input type="number" v-model="income" @change="updateAllNumbers" />
+            <input type="number" v-model="income" @change="updateAllNumbers(false)" />
           </div>
           <div class="preparation-information">
             <p>Tempo da receita (Em minutos):</p>
-            <input type="number" v-model="recipeTime" @change="updateAllNumbers" />
+            <input type="number" v-model="recipeTime" @change="updateAllNumbers(false)" />
           </div>
           <div class="preparation-information">
             <p>Custo Operacional(GAS,LUZ, AGUA E ETC..):</p>
-            <input type="number" v-model="operationalCost" @change="updateAllNumbers" />
+            <input type="number" v-model="operationalCost" @change="updateAllNumbers(false)" />
           </div>
           <div class="preparation-information">
             <p>Porcentagem(%) de lucro:</p>
-            <input type="number" v-model="profitPecentage" @change="updateAllNumbers" />
+            <input type="number" v-model="profitPecentage" @change="updateAllNumbers(false)" />
           </div>
         </div>
         <div class="cost">
