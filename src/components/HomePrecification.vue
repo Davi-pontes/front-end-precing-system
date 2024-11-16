@@ -2,9 +2,11 @@
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios'
 import AddCategory from './AddCategory.vue'
-import Loading from './Loading.vue'
+import Loading from './animations/Loading.vue'
 import ConfirmationModal from './ConfirmationModal.vue'
 import Product from './Product.vue'
+
+
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface IProduct {
   category: {
@@ -39,7 +41,7 @@ export default {
     AddCategory,
     Loading,
     ConfirmationModal,
-    Product
+    Product,
   },
   data() {
     return {
@@ -54,9 +56,11 @@ export default {
       showAddOnlyProduct: false
     }
   },
-  created() {
+  async created() {
+    this.showLoading = true
     this.getLocalStorage()
-    this.getAllProduct()
+    await this.getAllProduct()
+    this.showLoading = false
   },
   methods: {
     getLocalStorage() {
@@ -81,7 +85,7 @@ export default {
       })
     },
     goToAddProductCategory(idCategory: string | null): void {
-      this.$router.push({ name: 'precification', query: { idC: idCategory } })
+      this.$router.push({ name: 'precification', query: { idC: idCategory, idU: this.idUser } })
     },
     addNewCategory(): void {
       this.showAddCategory = true
@@ -192,7 +196,7 @@ export default {
         Adicione uma categoria
       </button>
     </div>
-    <div class="flex flex-col w-auto" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
+    <div class="flex flex-col w-auto mt-1" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
       <div class="name-category">
         <input
           class="w-[13vw] h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"

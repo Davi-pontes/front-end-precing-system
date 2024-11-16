@@ -2,6 +2,7 @@
 import axios from 'axios'
 import type { LocationQueryValue } from 'vue-router'
 import MessageAlert from './MessageAlert.vue'
+import Loading from './animations/Loading.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface Ingredient {
@@ -32,7 +33,8 @@ interface IProduct {
 
 export default {
   components: {
-    MessageAlert
+    MessageAlert,
+    Loading
   },
   data() {
     return {
@@ -66,12 +68,15 @@ export default {
       idUser: null as LocationQueryValue | LocationQueryValue[],
       showMessage: false,
       message: '',
-      changedSomething: false
+      changedSomething: false,
+      showLoading: false,
     }
   },
   async created() {
+    this.showLoading = true
     await this.getQuery()
-    this.controllerCreated()
+    await this.controllerCreated()
+    this.showLoading = false
   },
   methods: {
     async getQuery() {
@@ -218,8 +223,6 @@ export default {
         }, 5000)
       } else {
         const dataFormated = this.prepareData()
-        console.log(this.changedSomething);
-        
         if (this.changedSomething && this.id_product) {
           this.sendUpdateData(dataFormated, this.id_product)
         } else if(!this.id_product){
@@ -331,6 +334,7 @@ export default {
 </script>
 <template>
   <main>
+    <Loading v-if="showLoading" />
     <div class="header">
       <div class="header-label">
         <div class="name-product">
