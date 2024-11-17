@@ -4,7 +4,9 @@ const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 export default {
     name: "Product",
-
+    props: {
+        idCategory: String
+    },
     data() {
         return {
             textInitialInputFile: 'Selecione uma imagem',
@@ -46,17 +48,33 @@ export default {
             });
         },
         async sendDatasForDataBase() {
-            const formData = new FormData()
+            let formData
 
-            if (this.fileOriginalImage) {
-                formData.append('nameProduct', this.nameProduct);
-                formData.append('priceProduct', this.priceProduct);
-                formData.append('descriptionProduct', this.descriptionProduct);
-                formData.append('image', this.fileOriginalImage, this.fileOriginalImage.name);
+            if(this.imageProduct){
+
+                formData = new FormData()
+    
+                if (this.fileOriginalImage) {
+                    formData.append('nameProduct', this.nameProduct);
+                    formData.append('priceProduct', this.priceProduct);
+                    formData.append('descriptionProduct', this.descriptionProduct);
+                    formData.append('image', this.fileOriginalImage, this.fileOriginalImage.name);
+                    formData.append('idCategory', this.idCategory as string);
+                }
+            }else {
+                formData = {
+                    nameProduct: this.nameProduct,
+                    priceProduct: this.priceProduct,
+                    descriptionProduct: this.descriptionProduct,
+                    idCategory: this.idCategory
+                }
             }
-
-            await axios.post(urlApiBackEnd + '/product/only', formData)
-
+            await axios.post(urlApiBackEnd + '/product/only', formData).then(() => {
+                this.$router.push({name: 'homePrecification'})
+            })
+        },
+        closeScreen(){
+            this.$emit('closeScreenAddOnlyProduct')
         }
     }
 }
@@ -92,7 +110,7 @@ export default {
                     v-model="descriptionProduct"></textarea>
             </div>
             <div class="flex justify-around w-[98%] mx-auto">
-                <button class="w-40 bg-[rgb(128,149,199)]  text-white px-4 py-2 rounded">Cancelar</button>
+                <button class="w-40 bg-[rgb(128,149,199)]  text-white px-4 py-2 rounded" @click="closeScreen">Cancelar</button>
                 <button class="w-40 bg-[rgb(128,149,199)] text-white px-4 py-2 rounded"
                     @click="sendDatasForDataBase()">Salvar</button>
             </div>

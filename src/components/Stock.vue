@@ -2,7 +2,7 @@
 import NavBar from '@/components/NavBar.vue'
 import axios from 'axios'
 import type { LocationQueryValue } from 'vue-router'
-
+import Loading from './animations/Loading.vue'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 interface IIngredient {
@@ -46,7 +46,8 @@ interface IStockToPeriod {
 export default {
   name: 'Stock',
   components: {
-    NavBar
+    NavBar,
+    Loading
   },
   data() {
     return {
@@ -55,14 +56,17 @@ export default {
       stockToPeriod: [] as IStockToPeriod[],
       idUser: null as LocationQueryValue | LocationQueryValue[],
       quantityDays: 0,
-      totalMoneyInStock: 0
+      totalMoneyInStock: 0,
+      showLoading: false
     }
   },
   async created() {
+    this.showLoading = true
     this.getQuery()
     await this.getAllIngredients()
     await this.getProducts()
     this.calculateMoneyInStock()
+    this.showLoading = false
   },
   methods: {
     getQuery() {
@@ -135,6 +139,7 @@ export default {
 </script>
 
 <template>
+  <Loading v-if="showLoading"/>
   <NavBar :showButtonAddCategory="false" />
   <div class="container">
     <div class="container-control">

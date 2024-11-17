@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar.vue'
 import axios from 'axios'
 import type { LocationQueryValue } from 'vue-router'
 import MessageAlert from './MessageAlert.vue'
+import Loading from './animations/Loading.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
@@ -23,19 +24,23 @@ export default {
   name: 'AllIngredients',
   components: {
     NavBar,
-    MessageAlert
+    MessageAlert,
+    Loading
   },
   data() {
     return {
       allIngredients: [] as IIngredient[],
       idUser: null as LocationQueryValue | LocationQueryValue[],
       messageAlert: '',
-      showAlert: false
+      showAlert: false,
+      showLoading: false
     }
   },
   async created() {
+    this.showLoading = true
     this.getQuery()
-    this.getAllIngredients()
+    await this.getAllIngredients()
+    this.showLoading = false
   },
   methods: {
     getQuery() {
@@ -75,6 +80,7 @@ export default {
 
 <template>
   <main>
+    <Loading v-if="showLoading"/>
     <NavBar :showButtonAddCategory="false" />
     <MessageAlert v-if="showAlert" :message="messageAlert" @removeAlert="timeoutAlert()" />
     <div class="showAllIngredients">

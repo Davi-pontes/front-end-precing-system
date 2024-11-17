@@ -53,7 +53,8 @@ export default {
       isBlur: false,
       textModel: '',
       showModal: false,
-      showAddOnlyProduct: false
+      showAddOnlyProduct: false,
+      idCategoryToAddOnlyProduct: ''
     }
   },
   async created() {
@@ -164,13 +165,15 @@ export default {
       const target = event.target as HTMLSelectElement;
 
       if (target && target.value === 'addOnlyProduct') {
-        this.showComponentAddOnlyProduct();
+        this.showComponentAddOnlyProduct(idCategory);
       } else {
         this.goToAddProductCategory(idCategory)
       }
 
     },
-    showComponentAddOnlyProduct() {
+    showComponentAddOnlyProduct(idCategory: string | null) {
+      idCategory ?this.idCategoryToAddOnlyProduct = idCategory: this.idCategoryToAddOnlyProduct = ''
+      
       this.showAddOnlyProduct = true
     }
   }
@@ -180,7 +183,7 @@ export default {
 <template>
   <main>
     <Loading v-if="showLoading" />
-    <Product v-if="showAddOnlyProduct"></Product>
+    <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct" @closeScreenAddOnlyProduct="showAddOnlyProduct = false"></Product>
     <NavBar class="hidden md:block" :showButtonAddCategory="true" @newCategory="addNewCategory"
       v-if="!showAddCategory" />
     <ConfirmationModal v-if="showModal" :text="textModel" />
@@ -203,7 +206,7 @@ export default {
           type="text" v-model="categoryAndProducts.category.name"
           @change="sendUpdateCategory(categoryAndProducts.category)" />
         <div class="flex w-[45em] items-center justify-between">
-          <select class="btn-add-product hidden md:flex md:items-center md:justify-center"
+          <select class="btn-add-product hidden md:flex md:items-center md:justify-center outline-none"
             @change.prevent="handleSelectChange(categoryAndProducts.category.id, $event)">
             <option disabled selected>Adicionar produto</option>
             <option value="addWithPricing" class="text-black">Adicionar com precificação</option>
