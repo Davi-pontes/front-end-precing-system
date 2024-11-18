@@ -54,7 +54,8 @@ export default {
       textModel: '',
       showModal: false,
       showAddOnlyProduct: false,
-      idCategoryToAddOnlyProduct: ''
+      idCategoryToAddOnlyProduct: '',
+      draggedIndex: 0
     }
   },
   async created() {
@@ -172,9 +173,42 @@ export default {
 
     },
     showComponentAddOnlyProduct(idCategory: string | null) {
-      idCategory ?this.idCategoryToAddOnlyProduct = idCategory: this.idCategoryToAddOnlyProduct = ''
-      
+      idCategory ? this.idCategoryToAddOnlyProduct = idCategory : this.idCategoryToAddOnlyProduct = ''
+
       this.showAddOnlyProduct = true
+    },
+    onDragStart(product: any, indexProduct: number) {
+      this.draggedIndex = indexProduct;
+    },
+    onDragOver(indexProduct: number, indexCategory: number) {
+      // Mover o item apenas se o índice atual for diferente do índice arrastado
+      if (this.draggedIndex !== indexProduct) {
+        // Remover o item da posição inicial
+        const movedItem = this.allProduct[indexCategory].products.splice(this.draggedIndex, 1)[0];
+
+        // Inserir o item na nova posição
+        this.allProduct[indexCategory].products.splice(indexProduct, 0, movedItem);
+
+        // Atualizar o índice arrastado para o índice atual
+        this.draggedIndex = indexProduct;
+      }
+    },
+    onDrop(indexProduct: number, indexCategory: number) {
+      // console.log("Dropped at index", indexProduct);
+
+      // // Valida se o índice inicial e o índice de destino são diferentes
+      // if (this.draggedIndex !== null && this.draggedIndex !== indexProduct) {
+      //   // Move o item no array de produtos
+      //   const movedItem = this.allProduct[indexCategory].products.splice(this.draggedIndex, 1)[0];
+      //   this.allProduct[indexCategory].products.splice(indexProduct, 0, movedItem);
+      // }
+
+      // // Limpa o índice inicial após o drop
+      // this.draggedIndex = null;
+    },
+    onDragEnd() {
+      console.log('OndragEnd');
+
     }
   }
 }
@@ -183,7 +217,8 @@ export default {
 <template>
   <main>
     <Loading v-if="showLoading" />
-    <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct" @closeScreenAddOnlyProduct="showAddOnlyProduct = false"></Product>
+    <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct"
+      @closeScreenAddOnlyProduct="showAddOnlyProduct = false"></Product>
     <NavBar class="hidden md:block" :showButtonAddCategory="true" @newCategory="addNewCategory"
       v-if="!showAddCategory" />
     <ConfirmationModal v-if="showModal" :text="textModel" />
@@ -199,7 +234,8 @@ export default {
         Adicione uma categoria
       </button>
     </div>
-    <div class="flex flex-col w-auto mt-1" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
+    <div class="flex flex-col w-auto mt-1" v-for="(categoryAndProducts, indexCategory) of allProduct"
+      :key="indexCategory">
       <div class="name-category">
         <input
           class="w-[13vw] h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"
@@ -227,7 +263,10 @@ export default {
           <th>LUCRO</th>
           <th>PREÇO DE VENDA</th>
         </tr>
-        <tr class="line-table" v-for="(product, indexProduct) of categoryAndProducts.products" :key="indexProduct">
+        <tr class="line-table" draggable="true" v-for="(product, indexProduct) of categoryAndProducts.products"
+          :key="indexProduct" @dragstart="onDragStart(product, indexProduct)"
+          @dragover.prevent="onDragOver(indexProduct, indexCategory)" @drop="onDrop(indexProduct, indexCategory)"
+          @dragend="onDragEnd">
           <td>
             <button class="hidden md:block" @click="goToEdit(product.id_product, categoryAndProducts.category.id)">
               Visualizar
@@ -243,6 +282,9 @@ export default {
               @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)">
               Duplicar
             </button>
+          </td>
+          <td>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
           </td>
           <td>{{ product.name }}</td>
           <td :class="{ 'blur-sm': isBlur }">{{ product.income }}</td>
@@ -317,7 +359,9 @@ export default {
   background-color: red;
   color: white;
 }
-
+.line-table{
+  background-color: white;
+}
 .line-table button {
   width: 7em;
   font-size: 0.8em;
