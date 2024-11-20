@@ -338,7 +338,7 @@ export default {
     <div class="header">
       <div class="header-label">
         <div class="name-product">
-          <input type="text" v-model="nameProduct" @change="updateNameProduct" />
+          <input class="custom-input" type="text" v-model="nameProduct" @change="updateNameProduct" placeholder="Nome do produto">
         </div>
         <div class="joker">
           <p>Produto coringa?</p>
@@ -358,16 +358,16 @@ export default {
           <table>
             <tr class="header-table">
               <th></th>
-              <th>MATERIAL</th>
-              <th>PESO</th>
+              <th>NOME DO INGREDIENTE</th>
+              <th>PESO <span>(Peso que o ingrediente foi comprado.)</span></th>
               <th>UNIDADE</th>
               <th>PREÇO EM R$</th>
-              <th>QUANTIDADE</th>
+              <th>QUANTIDADE <span>(Quantidade que vai ser usada no produto.)</span></th>
               <th>UNIDADE</th>
               <th>CUSTO DO INGREDIENTE</th>
             </tr>
             <tr class="line-table" v-for="(data, index) of all" :key="index">
-              <td><button @click="deletedMaterialOfArray(index)">Excluir</button></td>
+              <td><button @click="deletedMaterialOfArray(index)">X</button></td>
 
               <td><input type="text" placeholder="MATERIAL" v-model="data.name" /></td>
               <td>
@@ -420,55 +420,57 @@ export default {
         <button @click="addNewIngredient">Adicionar novo ingrediente</button>
         <button @click="sendDataToTheBackend">Salvar</button>
       </div>
-      <div class="labor-cost">
-        <div class="preparation">
-          <div class="preparation-information">
-            <p>Rendimentos:</p>
-            <input type="number" v-model="income" @change="updateAllNumbers(false)" />
+      <div class="area-labor-cost">
+        <div class="labor-cost">
+          <div class="preparation">
+            <div class="preparation-information">
+              <p>Rendimentos:</p>
+              <input type="number" v-model="income" @change="updateAllNumbers(false)" />
+            </div>
+            <div class="preparation-information">
+              <p>Tempo da receita (Em minutos):</p>
+              <input type="number" v-model="recipeTime" @change="updateAllNumbers(false)" />
+            </div>
+            <div class="preparation-information">
+              <p>Custo Operacional(GAS,LUZ, AGUA E ETC..):</p>
+              <input type="number" v-model="operationalCost" @change="updateAllNumbers(false)" />
+            </div>
+            <div class="preparation-information">
+              <p>Porcentagem(%) de lucro:</p>
+              <input type="number" v-model="profitPecentage" @change="updateAllNumbers(false)" />
+            </div>
           </div>
-          <div class="preparation-information">
-            <p>Tempo da receita (Em minutos):</p>
-            <input type="number" v-model="recipeTime" @change="updateAllNumbers(false)" />
+          <div class="cost">
+            <div class="cost-information">
+              <p>Custo da receita:</p>
+              <p>R$ {{ costOfAllIngredients }}</p>
+            </div>
+            <div class="cost-information">
+              <p>Custo fixo:</p>
+              <p>R$ {{ fixedCost }}</p>
+            </div>
+            <div class="cost-information">
+              <p>Mão de Obra:</p>
+              <p>R$ {{ labor }}</p>
+            </div>
+            <div class="cost-information">
+              <p>Lucro:</p>
+              <p>R$ {{ profit }}</p>
+            </div>
+            <div class="cost-information">
+              <p>Valor final da receita:</p>
+              <p>R$ {{ priceFinalRevenue }}</p>
+            </div>
+            <div class="cost-information">
+              <p>Valor da unidade:</p>
+              <p>R$ {{ pricePerUnit }}</p>
+            </div>
           </div>
-          <div class="preparation-information">
-            <p>Custo Operacional(GAS,LUZ, AGUA E ETC..):</p>
-            <input type="number" v-model="operationalCost" @change="updateAllNumbers(false)" />
-          </div>
-          <div class="preparation-information">
-            <p>Porcentagem(%) de lucro:</p>
-            <input type="number" v-model="profitPecentage" @change="updateAllNumbers(false)" />
-          </div>
-        </div>
-        <div class="cost">
-          <div class="cost-information">
-            <p>Custo da receita:</p>
-            <p>R$ {{ costOfAllIngredients }}</p>
-          </div>
-          <div class="cost-information">
-            <p>Custo fixo:</p>
-            <p>R$ {{ fixedCost }}</p>
-          </div>
-          <div class="cost-information">
-            <p>Mão de Obra:</p>
-            <p>R$ {{ labor }}</p>
-          </div>
-          <div class="cost-information">
-            <p>Lucro:</p>
-            <p>R$ {{ profit }}</p>
-          </div>
-          <div class="cost-information">
-            <p>Valor final da receita:</p>
-            <p>R$ {{ priceFinalRevenue }}</p>
-          </div>
-          <div class="cost-information">
-            <p>Valor da unidade:</p>
-            <p>R$ {{ pricePerUnit }}</p>
-          </div>
-        </div>
-        <div class="total">
-          <div class="total-information">
-            <p>Custo total da receita:</p>
-            <p>R$ {{ costOfRevenue }}</p>
+          <div class="total">
+            <div class="total-information">
+              <p>Custo total da receita:</p>
+              <p>R$ {{ costOfRevenue }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -484,8 +486,8 @@ export default {
 .header {
   display: flex;
   flex-direction: column;
-  width: 102%;
-  height: 100%;
+  width: 102vw;
+  height: 100dvh;
 }
 
 .header-label {
@@ -493,6 +495,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 2em;
+  padding: 1em;
   font-size: 30px;
   background-color: rgb(128, 149, 199);
   justify-content: space-around;
@@ -508,7 +511,13 @@ export default {
   padding-left: 1em;
   background-color: transparent;
   color: white;
+  outline: none;
 }
+
+.custom-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 
 .joker {
   display: flex;
@@ -529,6 +538,11 @@ export default {
   font-size: 14px;
   border-bottom: 2px solid #c8cacc;
 }
+.header-table span {
+  display: block;
+  font-weight: normal; 
+  font-size: 12px;
+}
 
 .line-table td {
   border-bottom: 1px solid #c8cacc;
@@ -544,21 +558,9 @@ export default {
 }
 
 .line-table button {
-  width: 5em;
-  height: 1.5em;
-  font-size: 0.9em;
-  font-weight: 400;
-  letter-spacing: 0.1em;
   background-color: transparent;
-  border: 1px solid red;
-  border-radius: 5px;
   color: red;
-  transition: 0.5s;
-}
-
-.line-table button:hover {
-  background-color: red;
-  color: white;
+  cursor: pointer;
 }
 
 .line-table select {
@@ -586,7 +588,6 @@ export default {
   flex-direction: column;
   width: 98%;
   height: 30em;
-  border: 1px solid black;
   overflow-x: auto;
   overflow-y: auto;
 }
@@ -596,10 +597,9 @@ export default {
   justify-content: flex-end;
   width: 98%;
   height: 3em;
+  padding: 1em;
   align-items: center;
-  border-right: 1px solid black;
-  border-left: 1px solid black;
-  border-bottom: 1px solid black;
+  border: 1px solid black;
 }
 
 .buttons button {
@@ -690,14 +690,16 @@ td {
 
 .labor-cost {
   display: flex;
-  width: 98%;
+  height: 13em;
   justify-content: space-around;
-  border-bottom: 1px solid black;
-  border-right: 1px solid black;
-  border-left: 1px solid black;
   flex-wrap: wrap;
   background-color: rgb(128, 149, 199);
   color: white;
+}
+.area-labor-cost{
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(128, 149, 199);
 }
 
 .labor {

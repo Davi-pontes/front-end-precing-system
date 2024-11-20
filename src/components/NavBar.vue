@@ -22,9 +22,6 @@ export default {
         this.idUser = parsedObject.id || ''
       }
     },
-    addNewCategory() {
-      this.$emit('newCategory')
-    },
     goAllIngredients() {
       this.$router.push({ name: 'allIngredients', query: { id: this.idUser } })
     },
@@ -47,9 +44,6 @@ export default {
       <p @click="backHome">{{ nameUser }}</p>
       <ul class="nav-list">
         <li><button @click="backHome">Início</button></li>
-        <li>
-          <button @click="addNewCategory" v-if="showButtonAddCategory">Adicionar Categoria</button>
-        </li>
         <li><button @click="goAllIngredients">Todos ingredientes</button></li>
         <li><button @click="goStock">Estoque</button></li>
         <li><button @click="exit">Sair</button></li>

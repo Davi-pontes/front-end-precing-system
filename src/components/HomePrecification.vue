@@ -219,12 +219,16 @@ export default {
     <Loading v-if="showLoading" />
     <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct"
       @closeScreenAddOnlyProduct="showAddOnlyProduct = false"></Product>
-    <NavBar class="hidden md:block" :showButtonAddCategory="true" @newCategory="addNewCategory"
-      v-if="!showAddCategory" />
+    <NavBar class="hidden md:block" :showButtonAddCategory="true" />
     <ConfirmationModal v-if="showModal" :text="textModel" />
-    <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
-      {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
-    </button>
+    <div class="flex w-full h-11 gap-3">
+      <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
+        {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
+      </button>
+      <button @click="addNewCategory" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
+        Adicionar categoria
+      </button>
+    </div>
     <AddCategory v-if="showAddCategory" :nameUser="nameUser" :idUser="idUser" @updateCategory="updateCategory"
       @cancelAddNewCategory="closeAddCategory" />
     <div class="flex justify-center w-full h-full" v-if="allProduct.length === 0">
@@ -260,37 +264,37 @@ export default {
           <th>PRODUTO</th>
           <th>RENDIMENTO</th>
           <th>CUSTO TOTAL</th>
-          <th>LUCRO</th>
           <th>PREÇO DE VENDA</th>
+          <th>LUCRO</th>
         </tr>
         <tr class="line-table" draggable="true" v-for="(product, indexProduct) of categoryAndProducts.products"
           :key="indexProduct" @dragstart="onDragStart(product, indexProduct)"
           @dragover.prevent="onDragOver(indexProduct, indexCategory)" @drop="onDrop(indexProduct, indexCategory)"
           @dragend="onDragEnd">
           <td>
-            <button class="hidden md:block" @click="goToEdit(product.id_product, categoryAndProducts.category.id)">
-              Visualizar
+            <button class="hidden md:block text-red-500" @click="deleteProduct(product.id_product, indexCategory)">
+              X
             </button>
           </td>
           <td>
-            <button class="hidden md:block" @click="deleteProduct(product.id_product, indexCategory)">
-              Excluir
+            <button class="hidden md:block" @click="goToEdit(product.id_product, categoryAndProducts.category.id)">
+              <i class="fa-regular fa-eye"></i>
             </button>
           </td>
           <td>
             <button class="hidden md:block"
               @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)">
-              Duplicar
+              <i class="fa-regular fa-copy"></i>
             </button>
           </td>
-          <td>
+          <!-- <td>
             <i class="fa-solid fa-ellipsis-vertical"></i>
-          </td>
+          </td> -->
           <td>{{ product.name }}</td>
           <td :class="{ 'blur-sm': isBlur }">{{ product.income }}</td>
           <td :class="['text-red-500', { 'blur-sm': isBlur }]">R$ {{ product.revenue_cost }}</td>
-          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.profit }}</td>
           <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.price_per_unit }}</td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.profit }}</td>
         </tr>
       </table>
     </div>
@@ -363,13 +367,12 @@ export default {
   background-color: white;
 }
 .line-table button {
-  width: 7em;
+  width: 100%;
   font-size: 0.8em;
   border-radius: 5px;
   background-color: transparent;
-  padding: 5px;
+  padding: 3px;
   cursor: pointer;
-  border: 2px solid rgb(179, 175, 175);
   transition: 0.4s;
 }
 
