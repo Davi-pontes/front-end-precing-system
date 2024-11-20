@@ -363,9 +363,11 @@ export default {
   background-color: red;
   color: white;
 }
-.line-table{
+
+.line-table {
   background-color: white;
 }
+
 .line-table button {
   width: 100%;
   font-size: 0.8em;
