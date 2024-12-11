@@ -12,10 +12,16 @@ export default {
             textInitialInputFile: 'Selecione uma imagem',
             showInputFile: false,
             showImageProduct: false,
+            datasProduct: {
+                nameProduct: '',
+                priceProduct: 0,
+                descriptionProduct: '',
+                qtdInBox: 1,
+                tax: 0,
+                freigth: 0,
+                fixedCost: 0
+            },
             imageProduct: '',
-            nameProduct: '',
-            priceProduct: '',
-            descriptionProduct: '',
             fileOriginalImage: null as File | null
         }
     },
@@ -50,30 +56,30 @@ export default {
         async sendDatasForDataBase() {
             let formData
 
-            if(this.imageProduct){
+            if (this.imageProduct) {
 
                 formData = new FormData()
-    
+
                 if (this.fileOriginalImage) {
-                    formData.append('nameProduct', this.nameProduct);
-                    formData.append('priceProduct', this.priceProduct);
-                    formData.append('descriptionProduct', this.descriptionProduct);
+                    formData.append('nameProduct', this.datasProduct.nameProduct);
+                    formData.append('priceProduct', this.datasProduct.priceProduct.toString());
+                    formData.append('descriptionProduct', this.datasProduct.descriptionProduct);
                     formData.append('image', this.fileOriginalImage, this.fileOriginalImage.name);
                     formData.append('idCategory', this.idCategory as string);
                 }
-            }else {
+            } else {
                 formData = {
-                    nameProduct: this.nameProduct,
-                    priceProduct: this.priceProduct,
-                    descriptionProduct: this.descriptionProduct,
+                    nameProduct: this.datasProduct.nameProduct,
+                    priceProduct: this.datasProduct.priceProduct,
+                    descriptionProduct: this.datasProduct.descriptionProduct,
                     idCategory: this.idCategory
                 }
             }
             await axios.post(urlApiBackEnd + '/product/only', formData).then(() => {
-                this.$router.push({name: 'homePrecification'})
+                this.$router.push({ name: 'homePrecification' })
             })
         },
-        closeScreen(){
+        closeScreen() {
             this.$emit('closeScreenAddOnlyProduct')
         }
     }
@@ -82,38 +88,68 @@ export default {
 
 <template>
     <main class="absolute bg-gray-400/50 w-full h-screen flex flex-col items-center justify-center">
-        <div class=" bg-white w-[55vw] h-[50dvh] rounded-md">
-            <div class="flex flex-col w-[98%] h-[85%] mx-auto mt-2">
-                <div class="flex w-full gap-4">
-                    <div class="flex flex-col w-[35%]">
-                        <label for="image"
-                            class="flex items-center justify-center text-white w-60 h-60 bg-gray-400 cursor-pointer">
-                            <input type="file" accept="image/*" id="image" v-on:change="imageSelected"
-                                v-show="showInputFile">
-                            <span>
-                                <span v-if="!imageProduct">{{ textInitialInputFile }}</span>
+        <div class="bg-white w-[55vw] h-[50dvh] rounded-md">
+            <!-- Cabeçalho -->
+            <div class="flex justify-between text-2xl w-[98%] h-15 mx-auto mt-2">
+                <span>Adicionar produto</span>
+                <button class="w-8 h-8 bg-[rgb(128,149,199)] rounded-lg" @click="closeScreen">
+                    <i class="fa-solid fa-xmark text-white"></i>
+                </button>
+            </div>
 
-                                <img :src="imageProduct" alt="Imagem selecionada" v-if="imageProduct"
-                                    class="max-w-[100%]">
-                            </span>
-                        </label>
+            <!-- Conteúdo principal -->
+            <div class="flex flex-col w-[98%] h-[75%] mx-auto mt-2">
+                <div class="flex w-full h-full gap-4">
+                    <!-- Primeira coluna -->
+                    <div class="flex flex-col w-1/2">
+                        <label for="name" class="mt-6">Nome do produto</label>
+                        <input type="text" placeholder="Nome do produto" id="name" class="border-2 outline-none mb-4"
+                            v-model="datasProduct.nameProduct">
+                        <label for="description">Descrição</label>
+                        <textarea name="description" id="description" class="w-full h-20 border-2"
+                            v-model="datasProduct.descriptionProduct"></textarea>
                     </div>
-                    <div class="flex flex-col w-[1000%]">
-                        <label for="name">Nome do produto</label>
-                        <input type="text" id="name" class="border-2 outline-none" v-model="nameProduct">
-                        <label for="price">Preço do produto</label>
-                        <input type="number" class="border-2 outline-none" v-model="priceProduct">
+
+                    <!-- Segunda coluna -->
+                    <div class="flex flex-col w-1/2">
+                        <span>Precificação</span>
+                        <div class="flex w-[95%] h-[60%] gap-4">
+                            <!-- Primeiro bloco interno -->
+                            <div class="flex flex-col w-1/2">
+                                <label for="price">Preço de compra</label>
+                                <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.priceProduct">
+                                <label for="price">Quantidade em caixa</label>
+                                <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.qtdInBox">
+                                <label for="price">Frete</label>
+                                <input type="number" placeholder="0" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.freigth">
+                            </div>
+                            <!-- Segundo bloco interno -->
+                            <div class="flex flex-col w-1/2">
+                                <label for="stock">Imposto</label>
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.tax">
+                                <label for="stock">Custo operacional</label>
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.fixedCost">
+                            </div>
+                        </div>
+                        <div class="flex w-[95%] justify-between">
+                            <span>Preço da unidade</span>
+                            <span>R$ 00.00</span>
+                        </div>
                     </div>
                 </div>
-                <label for="description">Descrição</label>
-                <textarea name="description" id="description" class="w-[100%] h-20 border-2"
-                    v-model="descriptionProduct"></textarea>
             </div>
-            <div class="flex justify-around w-[98%] mx-auto">
-                <button class="w-40 bg-[rgb(128,149,199)]  text-white px-4 py-2 rounded" @click="closeScreen">Cancelar</button>
-                <button class="w-40 bg-[rgb(128,149,199)] text-white px-4 py-2 rounded"
-                    @click="sendDatasForDataBase()">Salvar</button>
+
+            <!-- Botão de salvar -->
+            <div class="flex justify-end w-[98%]">
+                <button class=" bg-[rgb(128,149,199)] text-white px-4 py-2 rounded"
+                    @click="sendDatasForDataBase()">SALVAR PRODUTO</button>
             </div>
         </div>
+
     </main>
 </template>
