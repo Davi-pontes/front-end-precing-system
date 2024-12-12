@@ -19,7 +19,11 @@ export default {
                 qtdInBox: 1,
                 tax: 0,
                 freigth: 0,
-                fixedCost: 0
+                fixedCost: 0,
+                pricePerUnit: 0,
+                profitPecentage: 0,
+                costProduct: 0,
+                profit: 0
             },
             imageProduct: '',
             fileOriginalImage: null as File | null
@@ -79,9 +83,30 @@ export default {
                 this.$router.push({ name: 'homePrecification' })
             })
         },
+        updateAllNumbers() {
+            this.calculateCost()
+            this.calculateCostTotal()
+            if(this.datasProduct.profit > 0) this.calculateProfit()
+        },
         closeScreen() {
             this.$emit('closeScreenAddOnlyProduct')
-        }
+        },
+        calculateCostTotal() {
+            this.datasProduct.pricePerUnit = 
+            (this.datasProduct.profit + 
+            this.datasProduct.priceProduct + 
+            this.datasProduct.tax + 
+            this.datasProduct.fixedCost + 
+            this.datasProduct.freigth) / this.datasProduct.qtdInBox
+        },
+        calculateCost() {
+            this.datasProduct.costProduct = this.datasProduct.tax + this.datasProduct.fixedCost +
+                this.datasProduct.freigth + this.datasProduct.priceProduct
+        },
+        calculateProfit(): void {
+            this.datasProduct.profit = (this.datasProduct.costProduct  * this.datasProduct.profitPecentage) / 100
+            this.calculateCostTotal()
+        },
     }
 }
 </script>
@@ -116,29 +141,34 @@ export default {
                         <div class="flex w-[95%] h-[60%] gap-4">
                             <!-- Primeiro bloco interno -->
                             <div class="flex flex-col w-1/2">
-                                <label for="price">Preço de compra</label>
-                                <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
-                                    v-model="datasProduct.priceProduct">
                                 <label for="price">Quantidade em caixa</label>
                                 <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
-                                    v-model="datasProduct.qtdInBox">
+                                    v-model="datasProduct.qtdInBox" @change="updateAllNumbers">
+                                <label for="stock">Imposto</label>
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.tax" @change="updateAllNumbers">
                                 <label for="price">Frete</label>
                                 <input type="number" placeholder="0" class="border-2 outline-none mb-4 pl-2"
-                                    v-model="datasProduct.freigth">
+                                    v-model="datasProduct.freigth" @change="updateAllNumbers">
+                                <span>Custo</span>
+                                <span>Lucro</span>
+                                <span>Preço da unidade</span>
                             </div>
                             <!-- Segundo bloco interno -->
                             <div class="flex flex-col w-1/2">
-                                <label for="stock">Imposto</label>
-                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
-                                    v-model="datasProduct.tax">
+                                <label for="price">Preço de compra</label>
+                                <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.priceProduct" @change="updateAllNumbers">
                                 <label for="stock">Custo operacional</label>
                                 <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
-                                    v-model="datasProduct.fixedCost">
+                                    v-model="datasProduct.fixedCost" @change="updateAllNumbers">
+                                <label for="stock">Porcentagem de lucro</label>
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                    v-model="datasProduct.profitPecentage" @change="calculateProfit">
+                                <span>R$ {{ datasProduct.costProduct.toFixed(2) }}</span>
+                                <span>R$ {{ datasProduct.profit.toFixed(2) }}</span>
+                                <span>R$ {{ datasProduct.pricePerUnit.toFixed(2) }}</span>
                             </div>
-                        </div>
-                        <div class="flex w-[95%] justify-between">
-                            <span>Preço da unidade</span>
-                            <span>R$ 00.00</span>
                         </div>
                     </div>
                 </div>
