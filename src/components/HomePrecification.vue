@@ -27,6 +27,7 @@ interface IProduct {
     revenue_cost: number
     profit: number
     price_per_unit: number
+    only: boolean
   }[]
 }
 interface ICategory {
@@ -55,7 +56,8 @@ export default {
       showModal: false,
       showAddOnlyProduct: false,
       idCategoryToAddOnlyProduct: '',
-      draggedIndex: 0
+      draggedIndex: 0,
+      idProductToPopUp: '' as string
     }
   },
   async created() {
@@ -80,11 +82,17 @@ export default {
       })
       this.allProduct = data
     },
-    goToEdit(idProduct: string, idCategory: string | null): void {
-      this.$router.push({
-        name: 'precification',
-        query: { idC: idCategory, idP: idProduct, idU: this.idUser }
-      })
+    goToEdit(idProduct: string, idCategory: string | null, isOnly: boolean): void {
+      if(isOnly){
+        console.log();
+        this.idProductToPopUp = idProduct
+        this.showAddOnlyProduct = true
+      }else {
+        this.$router.push({
+          name: 'precification',
+          query: { idC: idCategory, idP: idProduct, idU: this.idUser }
+        })
+      }
     },
     goToAddProductCategory(idCategory: string | null): void {
       this.$router.push({ name: 'precification', query: { idC: idCategory, idU: this.idUser } })
@@ -170,12 +178,19 @@ export default {
       } else {
         this.goToAddProductCategory(idCategory)
       }
-
+      target.value = "Adicionar produto";
     },
     showComponentAddOnlyProduct(idCategory: string | null) {
       idCategory ? this.idCategoryToAddOnlyProduct = idCategory : this.idCategoryToAddOnlyProduct = ''
 
       this.showAddOnlyProduct = true
+    },
+    addNewProductInArray(dataProduct: any){
+      const categoryToAddProduct = this.allProduct.findIndex(category => category.category.id === dataProduct.id_category)
+      
+      this.allProduct[categoryToAddProduct].products.push(dataProduct)
+      
+      this.showAddOnlyProduct = false
     },
     onDragStart(product: any, indexProduct: number) {
       this.draggedIndex = indexProduct;
@@ -209,6 +224,11 @@ export default {
     onDragEnd() {
       console.log('OndragEnd');
 
+    },
+    clearDataSentToPopUpAndClose(){
+      this.showAddOnlyProduct = false
+      this.idCategoryToAddOnlyProduct = ''
+      this.idProductToPopUp = ''
     }
   }
 }
@@ -217,8 +237,8 @@ export default {
 <template>
   <main>
     <Loading v-if="showLoading" />
-    <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct"
-      @closeScreenAddOnlyProduct="showAddOnlyProduct = false"></Product>
+    <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct" :idProduct="idProductToPopUp" @addNewProduct="addNewProductInArray"
+      @closeScreenAddOnlyProduct="clearDataSentToPopUpAndClose"></Product>
     <NavBar class="hidden md:block" :showButtonAddCategory="true" />
     <ConfirmationModal v-if="showModal" :text="textModel" />
     <div class="flex w-full h-11 gap-3">
@@ -247,7 +267,7 @@ export default {
           @change="sendUpdateCategory(categoryAndProducts.category)" />
         <div class="flex w-[45em] items-center justify-between">
           <select class="btn-add-product hidden md:flex md:items-center md:justify-center outline-none"
-            @change.prevent="handleSelectChange(categoryAndProducts.category.id, $event)">
+            @change.prevent="handleSelectChange(categoryAndProducts.category.id, $event)" ref="selectElement">
             <option disabled selected>Adicionar produto</option>
             <option value="addWithPricing" class="text-black">Adicionar com precificação</option>
             <option value="addOnlyProduct" class="text-black">Adicionar sem precificação</option>
@@ -277,7 +297,7 @@ export default {
             </button>
           </td>
           <td>
-            <button class="hidden md:block" @click="goToEdit(product.id_product, categoryAndProducts.category.id)">
+            <button class="hidden md:block" @click="goToEdit(product.id_product, categoryAndProducts.category.id, product.only)">
               <i class="fa-regular fa-eye"></i>
             </button>
           </td>
