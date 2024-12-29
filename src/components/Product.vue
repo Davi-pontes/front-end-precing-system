@@ -182,52 +182,51 @@ export default {
         <div class="bg-white w-[55vw] h-[53dvh] rounded-md">
             <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
             <!-- Cabeçalho -->
-            <div class="flex justify-between text-2xl w-[98%] h-15 mx-auto mt-2">
+            <div class="flex justify-between text-2xl w-[95%] h-15 mx-auto mt-4">
                 <span>Adicionar produto</span>
-                <button class="w-8 h-8 bg-[rgb(128,149,199)] rounded-lg" @click="closeScreen">
-                    <i class="fa-solid fa-xmark text-white"></i>
+                <button class="w-8 h-8 rounded-lg" @click="closeScreen">
+                    <i class="fa-solid fa-xmark text-[rgb(128,149,199)]"></i>
                 </button>
             </div>
 
             <!-- Conteúdo principal -->
-            <div class="flex flex-col w-[98%] h-[45%] mx-auto mt-2">
+            <div class="flex flex-col w-[95%] h-[45%] mx-auto mt-2">
                 <div class="flex w-full h-full gap-4">
                     <!-- Primeira coluna -->
                     <div class="flex flex-col w-1/2">
                         <label for="name" class="mt-6">Nome do produto</label>
-                        <input type="text" placeholder="Nome do produto" id="name" class="border-2 outline-none mb-4"
+                        <input type="text" placeholder="Nome do produto" id="name" class="border-2 outline-none rounded-md mb-4"
                             v-model="datasProduct.nameProduct">
                         <label for="description">Descrição</label>
-                        <textarea name="description" id="description" class="w-full h-20 border-2"
+                        <textarea name="description" id="description" class="w-full h-20 rounded-md border-2"
                             v-model="datasProduct.descriptionProduct"></textarea>
                     </div>
 
                     <!-- Segunda coluna -->
-                    <div class="flex flex-col w-1/2">
-                        <span>Precificação</span>
-                        <div class="flex w-[95%] h-[60%] gap-4">
+                    <div class="flex h-full flex-col w-1/2">
+                        <div class="flex w-[95%] h-full gap-4">
                             <!-- Primeiro bloco interno -->
-                            <div class="flex flex-col w-1/2">
+                            <div class="flex flex-col w-1/2 mt-6">
                                 <label for="price">Quantidade em caixa</label>
-                                <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
+                                <input type="number" placeholder="1" class="border-2 outline-none rounded-md mb-4 pl-2"
                                     v-model="datasProduct.qtdInBox" @change="updateAllNumbers">
                                 <label for="stock">Imposto</label>
-                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
                                     v-model="datasProduct.tax" @change="updateAllNumbers">
                                 <label for="price">Frete</label>
-                                <input type="number" placeholder="0" class="border-2 outline-none mb-4 pl-2"
+                                <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
                                     v-model="datasProduct.freigth" @change="updateAllNumbers">
                             </div>
                             <!-- Segundo bloco interno -->
-                            <div class="flex flex-col w-1/2">
+                            <div class="flex flex-col w-1/2 mt-6">
                                 <label for="price">Preço de compra</label>
-                                <input type="number" placeholder="1" class="border-2 outline-none mb-4 pl-2"
+                                <input type="number" placeholder="1" class="border-2 outline-none rounded-md mb-4 pl-2"
                                     v-model="datasProduct.priceProduct" @change="updateAllNumbers">
                                 <label for="stock">Custo operacional</label>
-                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
                                     v-model="datasProduct.fixedCost" @change="updateAllNumbers">
                                 <label for="stock">Porcentagem de lucro</label>
-                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none mb-4 pl-2"
+                                <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
                                     v-model="datasProduct.profitPecentage" @change="calculateProfit">
                                 
                                
@@ -237,7 +236,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="flex justify-around items-center w-[98%] h-[25%] mx-auto mt-4">
+            <div class="flex justify-around items-center w-[95%] h-[25%] mx-auto mt-4">
                 <div class="calculationResults">
                     <span class="value">R$ {{ datasProduct.costProduct.toFixed(2) }}</span>
                     <span>Custo</span>
@@ -252,7 +251,7 @@ export default {
                 </div>
             </div>
             <!-- Botão de salvar -->
-            <div class="flex justify-end w-[98%] mx-auto mt-4">
+            <div class="flex justify-end w-[95%] mx-auto mt-4">
                 <button class=" bg-[rgb(128,149,199)] text-white px-4 py-2 rounded"
                     @click="sendDatasForDataBase()">SALVAR PRODUTO</button>
             </div>
@@ -275,8 +274,15 @@ export default {
 .value{
     font-size: 25px;
 }
-/* .calculationResults span{
-    font-weight: bold;
-    font-size: 20px;
-} */
+input[type="number"]::-webkit-inner-spin-button, 
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; 
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; 
+}
+
+
 </style>
