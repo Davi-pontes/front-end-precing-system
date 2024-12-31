@@ -11,9 +11,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./", // Definindo a base para resolver caminhos
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"] // Configurando o alias `@`
+      "@/*": ["./src/*"]
     }
   }
 }
