@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { useRoute } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { IIngredient } from '@/interface/Ingredient'
 import TableComponent from "@/components/Table.vue"
 import NavBar from '@/components/NavBar.vue'
 import Loading from '@/components/animations/Loading.vue'
-
+import { columnsIngredient } from '@/components/ColumnsIngredient'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 const route = useRoute()
@@ -15,22 +15,23 @@ const ingredients = ref<IIngredient[]>([])
 const isLoading = ref(true)
 let showLoading = ref(false)
 
-const getAllIngredients = async () => {
+const getAllIngredients = async (): Promise<IIngredient[]> => {
   try {
     const { data } = await axios.get<IIngredient[]>(`${urlApiBackEnd}/product/ingredient/all`, {
       params: { idUser },
       withCredentials: true,
     })
-    ingredients.value = data
+    return data
   } catch (error) {
     console.error('Erro ao buscar os ingredientes:', error)
+    throw new Error("Error ao requisitar ingredientes")
   } finally {
     isLoading.value = false
   }
 }
-onBeforeMount(async() => {
+onMounted(async() => {
   showLoading.value = true
-  await getAllIngredients()
+  ingredients.value = await getAllIngredients()
   showLoading.value = false
 })
 </script>
@@ -39,6 +40,6 @@ onBeforeMount(async() => {
   <main>
     <Loading v-if="showLoading"/>
     <NavBar :showButtonAddCategory="false" ></NavBar>
-    <TableComponent v-if="!isLoading" :ingredients=ingredients></TableComponent>
+    <TableComponent v-if="!isLoading" :columns="columnsIngredient" :data="ingredients"></TableComponent>
   </main>
 </template>
