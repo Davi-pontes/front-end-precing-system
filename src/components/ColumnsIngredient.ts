@@ -64,14 +64,19 @@ export const columnsIngredient: ColumnDef<IIngredient>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: ({ row }) => {
-      const ingredient = row.original
-
+    cell: ({ row, onUpdate }) => {
+      const datas = row.original
       return h(
         'div',
         { class: 'relative' },
         h(Dropdown, {
-          ingredient
+          datas,
+          onUpdate: (data) => {
+            console.log('Dados recebidos no nível da célula:', data);
+            if (onUpdate) {
+              onUpdate(data);
+            }
+          }
         })
       )
     }

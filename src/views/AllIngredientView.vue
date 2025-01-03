@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
-import type { IIngredient } from '@/interface/Ingredient'
 import TableComponent from "@/components/Table.vue"
 import NavBar from '@/components/NavBar.vue'
 import Loading from '@/components/animations/Loading.vue'
+import FormIngredient from '@/components/FormIngredient.vue'
+import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import type { IIngredient } from '@/interface/Ingredient'
 import { columnsIngredient } from '@/components/ColumnsIngredient'
+
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 const route = useRoute()
@@ -40,6 +42,9 @@ onMounted(async() => {
   <main>
     <Loading v-if="showLoading"/>
     <NavBar :showButtonAddCategory="false" ></NavBar>
+    <FormIngredient>
+      <slot componentField="uihasdfhiuasdjo"></slot>
+    </FormIngredient>
     <TableComponent v-if="!isLoading" :columns="columnsIngredient" :data="ingredients"></TableComponent>
   </main>
 </template>

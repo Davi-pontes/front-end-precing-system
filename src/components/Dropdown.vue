@@ -10,15 +10,19 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-defineProps<{
-    id: string
+const props = defineProps<{
+    datas: any
+    onUpdate?: (data: any) => void
 }>()
 
-// function copy(id: string) {
-//     console.log(id);
+function update() {
+    console.log('Dropdown emitindo dados:', props.datas);
     
-//   navigator.clipboard.writeText(id)
-// }
+    if (props.onUpdate) {
+        props.onUpdate(props.datas);
+    }
+}
+
 </script>
 
 <template>
@@ -31,7 +35,7 @@ defineProps<{
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ingrediente</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem @click="update()">
                 Alterar
             </DropdownMenuItem>
             <DropdownMenuSeparator />
