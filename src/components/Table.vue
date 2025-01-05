@@ -34,6 +34,7 @@ const props = defineProps<{
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
 }>()
+const emit = defineEmits(['update'])
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
@@ -60,7 +61,7 @@ const table = useVueTable({
 })
 function handleUpdate(updatedData: any) {
   console.log("Dados atualizados:", updatedData);
-  // Implemente a lógica necessária, como atualizar o estado ou chamar uma API
+  emit('update',updatedData)
 }
 </script>
 
