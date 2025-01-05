@@ -3,10 +3,9 @@ import axios from 'axios'
 import TableComponent from "@/components/Table.vue"
 import NavBar from '@/components/NavBar.vue'
 import Loading from '@/components/animations/Loading.vue'
-import FormIngredient from '@/components/FormIngredient.vue'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
-import type { IIngredient, IUpdateIngredient } from '@/interface/Ingredient'
+import type { IIngredient } from '@/interface/Ingredient'
 import { columnsIngredient } from '@/components/ColumnsIngredient'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
@@ -15,9 +14,7 @@ const route = useRoute()
 const idUser = route.query.id as string
 const ingredients = ref<IIngredient[]>([])
 const isLoading = ref(true)
-const selectedIngredient = ref<IUpdateIngredient>()
 let showLoading = ref(false)
-let showFormIngredient = ref(false)
 
 const getAllIngredients = async (): Promise<IIngredient[]> => {
   try {
@@ -33,14 +30,6 @@ const getAllIngredients = async (): Promise<IIngredient[]> => {
     isLoading.value = false
   }
 }
-function handleUpdateIngredien(data: IUpdateIngredient) {
-  selectedIngredient.value = data
-  showFormIngredient.value = true
-
-}
-function closeFormIngredient() {
-  showFormIngredient.value = false
-}
 onMounted(async () => {
   showLoading.value = true
   ingredients.value = await getAllIngredients()
@@ -52,10 +41,7 @@ onMounted(async () => {
   <main>
     <Loading v-if="showLoading" />
     <NavBar :showButtonAddCategory="false"></NavBar>
-    <FormIngredient v-if="showFormIngredient && selectedIngredient" :selectdIngredient="selectedIngredient"
-      @close="closeFormIngredient()">
-    </FormIngredient>
-    <TableComponent v-if="!isLoading" :columns="columnsIngredient" :data="ingredients" @update="handleUpdateIngredien">
+    <TableComponent v-if="!isLoading" :columns="columnsIngredient" :dataProps="ingredients">
     </TableComponent>
   </main>
 </template>

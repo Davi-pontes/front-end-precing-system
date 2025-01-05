@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TData, TValue">
+<script setup lang="ts">
 import type { ColumnDef, SortingState, ColumnFiltersState, VisibilityState } from '@tanstack/vue-table'
 import {
     Table,
@@ -28,21 +28,30 @@ import { ChevronDown } from 'lucide-vue-next'
 import { Button } from './ui/button'
 import { Input } from '@/components/ui/input'
 import { valueUpdater } from '@/lib/utils'
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import type { IColumnsTableIngredient, IIngredient, IUpdatedIngredient, IUpdateIngredient } from '@/interface/Ingredient'
+import FormIngredient from './FormIngredient.vue'
 
 const props = defineProps<{
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    columns: ColumnDef<IColumnsTableIngredient>[]
+
+    dataProps: IIngredient[]
 }>()
-const emit = defineEmits(['update'])
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
+const selectedIngredient = ref<IUpdateIngredient>()
+let showFormIngredient = ref(false)
+const data = ref<IIngredient[]>([])
+
+watch(() => props.dataProps, (newData) => {
+    data.value = newData
+}, { immediate: true })
 
 const table = useVueTable({
-    get data() { return props.data },
+    get data() { return data.value },
     get columns() { return props.columns },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -59,9 +68,30 @@ const table = useVueTable({
         get rowSelection() { return rowSelection.value },
     },
 })
+
 function handleUpdate(updatedData: any) {
-  console.log("Dados atualizados:", updatedData);
-  emit('update',updatedData)
+    selectedIngredient.value = updatedData
+    showFormIngredient.value = true
+
+}
+function closeFormIngredient() {
+    showFormIngredient.value = false
+}
+
+function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
+    const { updatedIngredient } = updatedDatas
+    console.log(updatedIngredient.id);
+    
+    const indexIngredient = data.value.findIndex((ingredient) => ingredient.id === updatedIngredient.id)
+    
+    console.log(indexIngredient);
+    
+    if (updatedIngredient.price && indexIngredient !== -1) {
+        data.value = data.value.map((ingredient, i) =>
+            i === indexIngredient ? { ...ingredient, price: updatedIngredient.price} : ingredient
+        );
+    }
+    closeFormIngredient()
 }
 </script>
 
@@ -89,8 +119,11 @@ function handleUpdate(updatedData: any) {
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
+        <FormIngredient v-if="showFormIngredient && selectedIngredient" :selectdIngredient="selectedIngredient"
+            @close="closeFormIngredient()" @completed="updateSpecificIngredient">
+        </FormIngredient>
         <div class="border rounded-md">
-            <Table>
+            <Table :columns="columns" :data="data">
                 <TableHeader>
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead v-for="header in headerGroup.headers" :key="header.id">
@@ -104,10 +137,8 @@ function handleUpdate(updatedData: any) {
                         <TableRow v-for="row in table.getRowModel().rows" :key="row.id"
                             :data-state="row.getIsSelected() ? 'selected' : undefined">
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                <FlexRender 
-                                :render="cell.column.columnDef.cell" 
-                                :props="{...cell.getContext(),onUpdate:handleUpdate}" 
-                                />
+                                <FlexRender :render="cell.column.columnDef.cell"
+                                    :props="{ ...cell.getContext(), onUpdate: handleUpdate }" />
                             </TableCell>
                         </TableRow>
                     </template>

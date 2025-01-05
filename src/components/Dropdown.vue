@@ -16,8 +16,6 @@ const props = defineProps<{
 }>()
 
 function update() {
-    console.log('Dropdown emitindo dados:', props.datas);
-    
     if (props.onUpdate) {
         props.onUpdate(props.datas);
     }

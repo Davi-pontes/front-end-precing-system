@@ -1,12 +1,16 @@
-import type { IIngredient } from '@/interface/Ingredient'
-import type { ColumnDef } from '@tanstack/vue-table'
+import type { IColumnsTableIngredient } from '@/interface/Ingredient'
+import type { CellContext, ColumnDef } from '@tanstack/vue-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowUpDown } from 'lucide-vue-next'
 import { h } from 'vue'
 import Button from './ui/button/Button.vue'
 import Dropdown from './Dropdown.vue'
 
-export const columnsIngredient: ColumnDef<IIngredient>[] = [
+interface CustomCellContext<TData> extends CellContext<TData, unknown> {
+  onUpdate?: (data: any) => void;
+}
+
+export const columnsIngredient: ColumnDef<IColumnsTableIngredient>[] = [
   {
     id: 'select',
     header: ({ table }) =>
@@ -64,21 +68,22 @@ export const columnsIngredient: ColumnDef<IIngredient>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: ({ row, onUpdate }) => {
-      const datas = row.original
+    cell: (context: CustomCellContext<IColumnsTableIngredient>) => {
+      const { row, onUpdate } = context;
+      const datas = row.original;
+
       return h(
         'div',
         { class: 'relative' },
         h(Dropdown, {
           datas,
-          onUpdate: (data) => {
-            console.log('Dados recebidos no nível da célula:', data);
+          onUpdate: (data: any) => {
             if (onUpdate) {
               onUpdate(data);
             }
-          }
+          },
         })
-      )
-    }
+      );
+    },
   }
 ]

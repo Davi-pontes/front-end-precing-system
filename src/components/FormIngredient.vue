@@ -9,16 +9,18 @@ import {
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { X, RotateCw } from 'lucide-vue-next';
+import type { IUpdateIngredient } from '@/interface/Ingredient';
+import { onMounted, ref } from 'vue';
 import * as z from 'zod'
 import Input from './ui/input/Input.vue'
 import Button from './ui/button/Button.vue'
 import SelectUnit from './SelectUnit.vue'
-import type { IUpdateIngredient } from '@/interface/Ingredient';
-import { onMounted } from 'vue';
+// import Alert from './Alert.vue';
+// import MessageAlert from './MessageAlert.vue';
 import axios from 'axios';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
-
+const showIconRotateCw = ref(false)
 const formSchema = toTypedSchema(z.object({
     name: z.string({ message: "Nome não pode ser vazio!" }).min(2, { message: 'Nome de conter pelo menos 2 caractere(s).' }).max(100, { message: "Texto muito longo." }),
     unit1: z.enum(["GRAMAS", "UNIDADE", "ML"], { message: "Selecione uma opção." }).optional(),
@@ -38,6 +40,8 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit(async (values) => {
     console.log('Form submitted!', values)
+    showIconRotateCw.value = true
+    
     const formatedData = {
         changeInformation: {
           name: values.name,
@@ -45,7 +49,14 @@ const onSubmit = form.handleSubmit(async (values) => {
         },
         idUser: '8oZ_9G8At'
       }
-      const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
+    await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
+    .then((response) => {
+        showIconRotateCw.value = false
+        emit('completed', response.data)
+    })
+    .catch(() => {
+        showIconRotateCw.value = false})
+      
 })
 
 function close() {
@@ -67,23 +78,25 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="absolute flex justify-center w-full h-full" style="z-index: 10;">
-        <div class="flex w-[80%] h-[25dvh] bg-white border border-[#8095c7] rounded-lg overflow-auto">
+    <div class="absolute flex justify-center w-full h-full mt-16" style="z-index: 10;">
+        <!-- <MessageAlert :message="'Tetsttsadkjh'"/>
+        <Alert :title="'Teste'" :description="'jkhasdhkdsakhjsadhjksadhjlkjf'" style="z-index: 10;"></Alert> -->
+        <div class="flex w-[80%] h-[25dvh] bg-white border border-[#d1cece] rounded-lg overflow-auto">
             <form @submit.prevent="onSubmit" class="flex flex-col gap-4 p-4 w-full">
                 <!-- Botão de Fechar e Linha -->
                 <div class="flex flex-col w-full">
                     <!-- Botão X -->
                     <div class="flex justify-end w-full" @click.prevent="close">
                         <Button variant="outline" size="sm" class="p-1">
-                            <X />
+                            <X class="text-[#8095c7]"/>
                         </Button>
                     </div>
                     <!-- Linha de Divisão -->
-                    <div class="w-full h-[1px] bg-slate-400 mt-2"></div>
+                    <!-- <div class="w-full h-[1px] bg-slate-400 mt-2"></div> -->
                 </div>
 
                 <!-- Campos do Formulário -->
-                <div class="grid grid-cols-4 gap-4 w-full">
+                <div class="grid grid-cols-2 gap-4 w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     <!-- Nome -->
                     <FormField name="name" v-slot="{ field }">
                         <FormItem>
@@ -130,10 +143,10 @@ onMounted(() => {
                 </div>
 
                 <!-- Botão de Salvar -->
-                <div class="w-full mt-auto text-right">
+                <div class="w-full mt-auto mb-auto text-right">
                     <Button type="submit" class="bg-[#8095c7]">
-                        Salvar alterações
-                        <RotateCw />
+                        <RotateCw v-if="showIconRotateCw" class=" w-4 h-4 mr-2 animate-spin"/>
+                        <span v-else >Salvar alterações</span>
                     </Button>
                 </div>
             </form>

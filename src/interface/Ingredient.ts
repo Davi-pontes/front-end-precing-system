@@ -1,18 +1,18 @@
 export interface IIngredient {
-    id: number
-    name: string
-    weight: number
-    unit1: string
-    price: number
-    quantity: number
-    unit2: string
-    ingredient_cost: number
-    id_product: string
-    quantity_in_stock: number
-    total_cash_in_stock: number
-  }
+  id: number
+  name: string
+  weight: number
+  unit1: string
+  price: number
+  quantity: number
+  unit2: string
+  ingredient_cost: number
+  id_product: string
+  quantity_in_stock: number
+  total_cash_in_stock: number
+}
 
-export  interface IUpdateIngredient {
+export interface IUpdateIngredient {
   id?: number
   name?: string
   weight?: number
@@ -25,5 +25,18 @@ export  interface IUpdateIngredient {
   quantity_in_stock?: number
   total_cash_in_stock?: number
 }
-
-export type Unit = "GRAMAS" | "UNIDADE" | "ML";
+export interface IUpdatedIngredient {
+  updatedIngredient: IUpdateIngredient
+  updatedNumbersIngredient: {
+    quantityOfProductsChanged: number
+    updatedIngredientCost: number
+  }
+}
+export interface IColumnsTableIngredient{
+  name: string
+  unit1: string
+  weight: string
+  price: string
+  onUpdate: (data: any) => void
+}
+export type Unit = 'GRAMAS' | 'UNIDADE' | 'ML'
