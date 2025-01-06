@@ -80,11 +80,8 @@ function closeFormIngredient() {
 
 function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
     const { updatedIngredient } = updatedDatas
-    console.log(updatedIngredient.id);
     
     const indexIngredient = data.value.findIndex((ingredient) => ingredient.id === updatedIngredient.id)
-    
-    console.log(indexIngredient);
     
     if (updatedIngredient.price && indexIngredient !== -1) {
         data.value = data.value.map((ingredient, i) =>

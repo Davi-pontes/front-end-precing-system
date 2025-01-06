@@ -22,6 +22,7 @@ import axios from 'axios';
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const showIconRotateCw = ref(false)
 const formSchema = toTypedSchema(z.object({
+    id: z.number().optional(),
     name: z.string({ message: "Nome não pode ser vazio!" }).min(2, { message: 'Nome de conter pelo menos 2 caractere(s).' }).max(100, { message: "Texto muito longo." }),
     unit1: z.enum(["GRAMAS", "UNIDADE", "ML"], { message: "Selecione uma opção." }).optional(),
     weight: z.number({ message: "Adicione um peso." }).min(1, { message: "Peso não pode ser 0." }),
@@ -39,24 +40,27 @@ const form = useForm({
 })
 
 const onSubmit = form.handleSubmit(async (values) => {
-    console.log('Form submitted!', values)
     showIconRotateCw.value = true
-    
+
     const formatedData = {
         changeInformation: {
-          name: values.name,
-          price: values.price
+            id: values.id,
+            name: values.name,
+            price: values.price,
+            unit1: values.unit1,
+            weight: values.weight,
         },
         idUser: '8oZ_9G8At'
-      }
+    }
     await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
-    .then((response) => {
-        showIconRotateCw.value = false
-        emit('completed', response.data)
-    })
-    .catch(() => {
-        showIconRotateCw.value = false})
-      
+        .then((response) => {
+            showIconRotateCw.value = false
+            emit('completed', response.data)
+        })
+        .catch(() => {
+            showIconRotateCw.value = false
+        })
+
 })
 
 function close() {
@@ -65,6 +69,7 @@ function close() {
 function propagateInitialValues() {
     if (props.selectdIngredient) {
         form.setValues({
+            id: props.selectdIngredient.id,
             name: props.selectdIngredient.name,
             unit1: props.selectdIngredient.unit1,
             weight: props.selectdIngredient.weight,
@@ -88,7 +93,7 @@ onMounted(() => {
                     <!-- Botão X -->
                     <div class="flex justify-end w-full" @click.prevent="close">
                         <Button variant="outline" size="sm" class="p-1">
-                            <X class="text-[#8095c7]"/>
+                            <X class="text-[#8095c7]" />
                         </Button>
                     </div>
                     <!-- Linha de Divisão -->
@@ -145,8 +150,8 @@ onMounted(() => {
                 <!-- Botão de Salvar -->
                 <div class="w-full mt-auto mb-auto text-right">
                     <Button type="submit" class="bg-[#8095c7]">
-                        <RotateCw v-if="showIconRotateCw" class=" w-4 h-4 mr-2 animate-spin"/>
-                        <span v-else >Salvar alterações</span>
+                        <RotateCw v-if="showIconRotateCw" class=" w-4 h-4 mr-2 animate-spin" />
+                        <span v-else>Salvar alterações</span>
                     </Button>
                 </div>
             </form>
