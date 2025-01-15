@@ -42,14 +42,14 @@ function itemSelected(item:ICommandItem){
           variant="outline"
           role="combobox"
           :aria-expanded="open"
-          class="w-[200px] justify-between"
+          class="w-[400px] justify-between"
         >
           {{ value ? items.find((item) => item.label === value)?.label : titleInput }}
   
           <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent class="w-[200px] p-0">
+      <PopoverContent class="w-[400px] p-0">
         <Command v-model="value">
           <CommandInput :placeholder= titleSearch></CommandInput>
           <CommandEmpty>Nenhum item encontrado.</CommandEmpty>
