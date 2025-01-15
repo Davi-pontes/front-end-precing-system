@@ -10,6 +10,7 @@ import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
 import CreateAccountView from '@/views/CreateAccountView.vue'
 import HomePageView from '@/views/Menu/HomePageView.vue'
 import CartView from '@/views/Menu/CartView.vue'
+import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
 
 const router = createRouter({
@@ -99,6 +100,14 @@ const router = createRouter({
       path: '/stock',
       name: 'stock',
       component: StockView,
+      meta: {
+        auth: true
+      }
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: Order,
       meta: {
         auth: true
       }

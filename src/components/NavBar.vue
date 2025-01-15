@@ -31,6 +31,9 @@ export default {
     goStock() {
       this.$router.push({ name: 'stock', query: { id: this.idUser } })
     },
+    goOrder() {
+      this.$router.push({ name: 'order', query: { id: this.idUser } })
+    },
     exit() {
       this.$router.push({ name: 'home' })
     }
@@ -45,6 +48,7 @@ export default {
       <ul class="nav-list">
         <li><button @click="backHome">Início</button></li>
         <li><button @click="goAllIngredients">Todos ingredientes</button></li>
+        <li><button @click="goOrder">Pedidos</button></li>
         <li><button @click="goStock">Estoque</button></li>
         <li><button @click="exit">Sair</button></li>
       </ul>
