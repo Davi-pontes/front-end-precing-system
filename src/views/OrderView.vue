@@ -17,6 +17,8 @@ import {
 import type { IPaymentMethodParams } from '@/interface/PaymentMethod';
 import { Trash2 } from 'lucide-vue-next';
 import { ChevronsUp } from 'lucide-vue-next';
+import TableComponent from "@/components/Table.vue"
+import { columnsOrder } from '@/components/ColumnsOrder';
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 
 const route = useRoute()
@@ -24,6 +26,7 @@ const idUser = route.query.id
 const dataFormatedToComboBox = ref<ICommandItem[]>([])
 const itemsSelected = ref<IProduct[]>([])
 const allUserProducts = ref<IProduct[]>([])
+const allUserORder = ref([])
 const paymentMethodFormatedToComboBox = ref([])
 const paymentMethod = ref([])
 const applyDiscount = ref(true)
@@ -61,6 +64,12 @@ async function getPaymentMethodByIdUser() {
     })
     paymentMethod.value = data
     formatedTypePayment(data)
+}
+async function getAllOrderByIdUser() {
+    const { data } = await axios.get(urlComunicationBackEnd + '/order', {
+        params: { idUser }
+    })
+    allUserORder.value = data
 }
 async function sendOrder() {
     const formatedSummaryOrderForSend = {
@@ -111,11 +120,6 @@ function handleItemSelected(item: ICommandItem) {
         updateSubtotal(itemInAlluserProduct.price_per_unit)
     }
 }
-// function handlePaymentMehotdSelected(item: ICommandItem) {
-//     const paymentSelected = paymentMethod.value.find((it: any) => it.type === item.value)
-
-//     console.log(paymentSelected);
-// }
 function updateSubtotal(value: number) {
     summaryOrder.value.subTotal += value
     updateTotal(value)
@@ -138,17 +142,6 @@ function handleDiscount(event: Event) {
         updateTotal(-inputTarget.value)
     }
 }
-// function handleTypedQuantity(item: IProduct) {
-//     if(item.quantity > 1){
-//         const quantityUpdated = item.quantity
-//         const newValeu = item.price_per_unit * quantityUpdated
-//         const index = itemsSelected.value.findIndex((it) => it.id_product === item.id_product);
-//         itemsSelected.value[index].quantity = quantityUpdated
-//         updateSubtotal(newValeu)
-//     } else {
-//         updateSubtotal(item.price_per_unit)
-//     }
-// }
 function removerItem(item: IProduct) {
     const index = itemsSelected.value.findIndex(it => it.id_product === item.id_product)
 
@@ -156,13 +149,21 @@ function removerItem(item: IProduct) {
     updateSubtotal(-item.price_per_unit)
 }
 function decrement(item: IProduct) {
+    const index = itemsSelected.value.findIndex((it) => it.id_product === item.id_product);
+
+    itemsSelected.value[index].price_per_unit - item.price_per_unit
     updateSubtotal(-item.price_per_unit)
 }
 function increment(item: IProduct) {
+    const index = itemsSelected.value.findIndex((it) => it.id_product === item.id_product);
+
+    itemsSelected.value[index].price_per_unit += item.price_per_unit
+
     updateSubtotal(item.price_per_unit)
 }
 getAllProductByIdUser()
 getPaymentMethodByIdUser()
+getAllOrderByIdUser()
 </script>
 
 <template>
@@ -204,7 +205,7 @@ getPaymentMethodByIdUser()
                         @paymentMethodSelected="paymentMethodSelected" />
                 </div>
                 <div class="flex flex-col">
-                    <label for="discount">Adicione um desconto.(Opcional)</label>
+                    <label for="discount">Adicione um desconto. (Opcional)</label>
                     <input id="discount" @change.prevent="handleDiscount" type="number" placeholder="Desconto"
                         class="border shadow-sm mt-2" />
                 </div>
@@ -247,5 +248,11 @@ getPaymentMethodByIdUser()
                 <span>R$ {{ summaryOrder.total.toFixed(2) }}</span>
             </div>
         </div>
+    </div>
+    <div class="w-[96%] border shadow-lg rounded-md p-4 mt-7">
+        <span class="text-lg font-semibold">Pedidos.</span>
+        <TableComponent :columns="columnsOrder" :dataProps="allUserORder"
+            :informationsInputSearch="{ placeHolder: 'Filtre pelo número do pedido.', searchProperty: 'id' }">
+        </TableComponent>
     </div>
 </template>

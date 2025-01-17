@@ -41,7 +41,10 @@ onMounted(async () => {
   <main>
     <Loading v-if="showLoading" />
     <NavBar :showButtonAddCategory="false"></NavBar>
-    <TableComponent v-if="!isLoading" :columns="columnsIngredient" :dataProps="ingredients">
+    <TableComponent v-if="!isLoading" 
+    :columns="columnsIngredient" 
+    :dataProps="ingredients" 
+    :informationsInputSearch="{placeHolder:'Filtre por nome.', searchProperty:'name'}">
     </TableComponent>
   </main>
 </template>

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TData,TValue">
 import type { ColumnDef, SortingState, ColumnFiltersState, VisibilityState } from '@tanstack/vue-table'
 import {
     Table,
@@ -29,13 +29,13 @@ import { Button } from './ui/button'
 import { Input } from '@/components/ui/input'
 import { valueUpdater } from '@/lib/utils'
 import { ref, watch } from 'vue';
-import type { IColumnsTableIngredient, IIngredient, IUpdatedIngredient, IUpdateIngredient } from '@/interface/Ingredient'
+import type { IUpdatedIngredient, IUpdateIngredient } from '@/interface/Ingredient'
 import FormIngredient from './FormIngredient.vue'
 
 const props = defineProps<{
-    columns: ColumnDef<IColumnsTableIngredient>[]
-
-    dataProps: IIngredient[]
+    columns: ColumnDef<TData>[]
+    informationsInputSearch: { placeHolder: string, searchProperty: string }
+    dataProps: TValue[]
 }>()
 
 const sorting = ref<SortingState>([])
@@ -44,14 +44,14 @@ const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
 const selectedIngredient = ref<IUpdateIngredient>()
 let showFormIngredient = ref(false)
-const data = ref<IIngredient[]>([])
+const data = ref<typeof props.dataProps>([])
 
 watch(() => props.dataProps, (newData) => {
     data.value = newData
 }, { immediate: true })
 
 const table = useVueTable({
-    get data() { return data.value },
+    get data() { return data.value as any },
     get columns() { return props.columns },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -80,12 +80,12 @@ function closeFormIngredient() {
 
 function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
     const { updatedIngredient } = updatedDatas
-    
-    const indexIngredient = data.value.findIndex((ingredient) => ingredient.id === updatedIngredient.id)
-    
+
+    const indexIngredient = data.value.findIndex((ingredient : any) => ingredient.id === updatedIngredient.id)
+
     if (updatedIngredient.price && indexIngredient !== -1) {
         data.value = data.value.map((ingredient, i) =>
-            i === indexIngredient ? { ...ingredient, price: updatedIngredient.price} : ingredient
+            i === indexIngredient ? { ...ingredient, price: updatedIngredient.price } : ingredient
         );
     }
     closeFormIngredient()
@@ -95,9 +95,9 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
 <template>
     <div>
         <div class="flex items-center py-4">
-            <Input class="max-w-sm" placeholder="Filtre por nome"
-                :model-value="table.getColumn('name')?.getFilterValue() as string"
-                @update:model-value=" table.getColumn('name')?.setFilterValue($event)" />
+            <Input class="max-w-sm" :placeholder="informationsInputSearch.placeHolder"
+                :model-value="table.getColumn(informationsInputSearch.searchProperty)?.getFilterValue() as string"
+                @update:model-value=" table.getColumn(informationsInputSearch.searchProperty)?.setFilterValue($event)" />
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline" class="ml-auto">
@@ -120,7 +120,7 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
             @close="closeFormIngredient()" @completed="updateSpecificIngredient">
         </FormIngredient>
         <div class="border rounded-md">
-            <Table :columns="columns" :data="data">
+            <Table :columns="columns" :informationsInputSearch="informationsInputSearch" :dataProps="dataProps">
                 <TableHeader>
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead v-for="header in headerGroup.headers" :key="header.id">
