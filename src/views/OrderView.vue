@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavBar from '@/components/NavBar.vue';
 import Combobox from '@/components/Combobox.vue';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useRoute } from 'vue-router'
 import { computed, ref } from 'vue';
 import type { ICommandItem } from '@/interface/Combobox';
@@ -20,6 +20,7 @@ import { ChevronsUp } from 'lucide-vue-next';
 import TableComponent from "@/components/Table.vue"
 import { columnsOrder } from '@/components/ColumnsOrder';
 import MessageAlert from '@/components/MessageAlert.vue';
+import MessageError from '@/components/MessageError.vue';
 import type { IOrder } from '@/interface/Order';
 
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
@@ -34,6 +35,10 @@ const paymentMethodFormatedToComboBox = ref([])
 const paymentMethod = ref([])
 const applyDiscount = ref(true)
 const showMessageAlert = ref(false)
+const selectedProduct = ref('');
+const selectedPaymentMethod = ref('')
+const messageErro = ref('')
+const showError = ref(false)
 
 const typeTranslations: Record<string, string> = {
     money: 'Dinheiro',
@@ -49,7 +54,17 @@ const summaryOrder = ref({
     paymentMethod: '',
     total: 0
 })
+function handleError(message: string) {
+    messageErro.value = message
+    showError.value = true
+}
+function handleRemoveAlertError() {
+    showError.value = false
+    messageErro.value = ''
+}
 function clearVariable() {
+    selectedPaymentMethod.value = ''
+    selectedProduct.value = "";
     itemsSelected.value = []
     summaryOrder.value = {
         discount: 0,
@@ -105,10 +120,12 @@ async function sendOrder() {
 
         const { data } = await axios.post(urlComunicationBackEnd + '/order', datasFormated)
         allUserORder.value = [...allUserORder.value, data] as IOrder[]
-        clearVariable()
         if (data) showMessageAlert.value = true
-    } catch (error) {
-        console.error(error);
+        clearVariable()
+    } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            handleError(error.response?.data);
+        }
     }
 
 }
@@ -128,6 +145,8 @@ function formatedTypePayment(methods: any) {
     paymentMethodFormatedToComboBox.value = formattedMethods
 }
 function handleItemSelected(item: ICommandItem) {
+    selectedProduct.value = item.label
+
     const productAlreadyAdded = itemsSelected.value.find((it) => it.id_product === item.value)
 
     if (productAlreadyAdded) {
@@ -199,13 +218,13 @@ getAllOrderByIdUser()
     <NavBar :showButtonAddCategory="false"></NavBar>
     <MessageAlert v-if="showMessageAlert" :message="'Pedido feito com sucesso!'"
         @removeAlert="showMessageAlert = false" />
+    <MessageError v-if="showError" :message="messageErro" @removeAlert="handleRemoveAlertError"/>
     <div class="flex w-full h-[32em] gap-2">
         <!-- Criaçao do pedido -->
         <div class="w-[75%] h-full border shadow-lg rounded-md p-4">
             <div class="flex w-full h-[3em] gap-4">
                 <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"
-                    :items="dataFormatedToComboBox" @itemSelected="handleItemSelected">
-                </Combobox>
+                    :items="dataFormatedToComboBox" v-model="selectedProduct" @itemSelected="handleItemSelected" />
             </div>
             <div class="w-full h-[1px] bg-slate-400"></div>
             <div class="flex flex-col w-full h-[15em]" v-if="itemsSelected.length > 0">
@@ -232,7 +251,7 @@ getAllOrderByIdUser()
             <div class="flex w-full gap-4">
                 <div>
                     <span>Selecione a forma de pagamento.</span>
-                    <RadioGroup class="mt-2" :items="paymentMethodFormatedToComboBox"
+                    <RadioGroup class="mt-2" :items="paymentMethodFormatedToComboBox" v-model="selectedPaymentMethod"
                         @paymentMethodSelected="paymentMethodSelected" />
                 </div>
                 <div class="flex flex-col">

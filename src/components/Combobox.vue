@@ -14,24 +14,39 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Check, ChevronsUpDown } from 'lucide-vue-next'
 import type { ICommandItem } from '@/interface/Combobox'
 
-defineProps<{
-    titleInput : string
-    titleSearch : string
-    items: ICommandItem[]
-}>()
-const emit = defineEmits<{
-    (event: 'itemSelected', value: ICommandItem): void
-}>()
+const props = defineProps<{
+  titleInput: string;
+  titleSearch: string;
+  items: ICommandItem[];
+  modelValue?: string;
+}>();
 
-const open = ref(false)
-const value = ref('')
-function itemSelected(item:ICommandItem){
-    open.value = false
-    emit('itemSelected', item)
+const emit = defineEmits<{
+  (event: 'itemSelected', value: ICommandItem): void;
+  (event: 'update:modelValue', value: string): void;
+}>();
+
+const open = ref(false);
+const value = ref(props.modelValue || "");
+
+//Atualiza `value` local sempre que `modelValue` mudar
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    value.value = newValue || "";
+  }
+);
+
+// Emite eventos ao selecionar um item
+function itemSelected(item: ICommandItem) {
+  open.value = false;
+  value.value = item.label;
+  emit('update:modelValue', item.label);
+  emit('itemSelected', item);
 }
 </script>
 
