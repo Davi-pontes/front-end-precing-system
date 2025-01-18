@@ -3,7 +3,7 @@ import NavBar from '@/components/NavBar.vue';
 import Combobox from '@/components/Combobox.vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router'
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { ICommandItem } from '@/interface/Combobox';
 import type { IProduct } from '@/interface/Product';
 import RadioGroup from '@/components/RadioGroup.vue';
@@ -19,6 +19,9 @@ import { Trash2 } from 'lucide-vue-next';
 import { ChevronsUp } from 'lucide-vue-next';
 import TableComponent from "@/components/Table.vue"
 import { columnsOrder } from '@/components/ColumnsOrder';
+import MessageAlert from '@/components/MessageAlert.vue';
+import type { IOrder } from '@/interface/Order';
+
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 
 const route = useRoute()
@@ -26,10 +29,11 @@ const idUser = route.query.id
 const dataFormatedToComboBox = ref<ICommandItem[]>([])
 const itemsSelected = ref<IProduct[]>([])
 const allUserProducts = ref<IProduct[]>([])
-const allUserORder = ref([])
+const allUserORder = ref<IOrder[]>([])
 const paymentMethodFormatedToComboBox = ref([])
 const paymentMethod = ref([])
 const applyDiscount = ref(true)
+const showMessageAlert = ref(false)
 
 const typeTranslations: Record<string, string> = {
     money: 'Dinheiro',
@@ -45,7 +49,16 @@ const summaryOrder = ref({
     paymentMethod: '',
     total: 0
 })
-
+function clearVariable() {
+    itemsSelected.value = []
+    summaryOrder.value = {
+        discount: 0,
+        tax: 0,
+        subTotal: 0,
+        paymentMethod: '',
+        total: 0
+    }
+}
 async function getAllProductByIdUser() {
     try {
         const { data } = await axios.get(urlComunicationBackEnd + '/product', {
@@ -66,28 +79,37 @@ async function getPaymentMethodByIdUser() {
     formatedTypePayment(data)
 }
 async function getAllOrderByIdUser() {
-    const { data } = await axios.get(urlComunicationBackEnd + '/order', {
-        params: { idUser }
-    })
-    allUserORder.value = data
+    try {
+        const { data } = await axios.get(urlComunicationBackEnd + '/order', {
+            params: { idUser }
+        })
+        allUserORder.value = data
+    } catch (error) {
+        console.log(error);
+    }
 }
 async function sendOrder() {
-    const formatedSummaryOrderForSend = {
-        discount: summaryOrder.value.discount,
-        type_payment_method: summaryOrder.value.paymentMethod,
-        tax: summaryOrder.value.tax,
-        sub_total: summaryOrder.value.subTotal,
-        total: summaryOrder.value.total,
-        id_user: idUser
+    try {
+        const formatedSummaryOrderForSend = {
+            discount: summaryOrder.value.discount,
+            type_payment_method: summaryOrder.value.paymentMethod,
+            tax: summaryOrder.value.tax,
+            sub_total: summaryOrder.value.subTotal,
+            total: summaryOrder.value.total,
+            id_user: idUser
+        }
+        const formatedItemsSelectedForSend = itemsSelected.value.map((item) => {
+            return { quantity: item.quantity, id_product: item.id_product }
+        })
+        const datasFormated = { orderItems: formatedItemsSelectedForSend, orderSummary: formatedSummaryOrderForSend }
+
+        const { data } = await axios.post(urlComunicationBackEnd + '/order', datasFormated)
+        allUserORder.value = [...allUserORder.value, data] as IOrder[]
+        clearVariable()
+        if (data) showMessageAlert.value = true
+    } catch (error) {
+        console.error(error);
     }
-    const formatedItemsSelectedForSend = itemsSelected.value.map((item) => {
-        return { quantity: item.quantity, id_product: item.id_product }
-    })
-    const datasFormated = { orderItems: formatedItemsSelectedForSend, orderSummary: formatedSummaryOrderForSend }
-
-    const { data } = await axios.post(urlComunicationBackEnd + '/order', datasFormated)
-
-    console.log(data);
 
 }
 function formatedDataToCombobox(data: IProduct[]) {
@@ -107,17 +129,21 @@ function formatedTypePayment(methods: any) {
 }
 function handleItemSelected(item: ICommandItem) {
     const productAlreadyAdded = itemsSelected.value.find((it) => it.id_product === item.value)
+
     if (productAlreadyAdded) {
         const index = itemsSelected.value.findIndex((it) => it.id_product === item.value);
 
         itemsSelected.value[index].quantity++
-        updateTotal(itemsSelected.value[index].price_per_unit)
-        return
-    }
-    const itemInAlluserProduct = allUserProducts.value.find((it) => it.id_product === item.value)
-    if (itemInAlluserProduct) {
-        itemsSelected.value.push({ ...itemInAlluserProduct, quantity: 1 })
-        updateSubtotal(itemInAlluserProduct.price_per_unit)
+        itemsSelected.value[index].currentPrice = itemsSelected.value[index].price_per_unit * itemsSelected.value[index].quantity
+
+        updateSubtotal(itemsSelected.value[index].price_per_unit)
+    } else {
+        const itemInAlluserProduct = allUserProducts.value.find((it) => it.id_product === item.value)
+
+        if (itemInAlluserProduct) {
+            itemsSelected.value.push({ ...itemInAlluserProduct, quantity: 1, currentPrice: itemInAlluserProduct.price_per_unit })
+            updateSubtotal(itemInAlluserProduct.price_per_unit)
+        }
     }
 }
 function updateSubtotal(value: number) {
@@ -151,16 +177,19 @@ function removerItem(item: IProduct) {
 function decrement(item: IProduct) {
     const index = itemsSelected.value.findIndex((it) => it.id_product === item.id_product);
 
-    itemsSelected.value[index].price_per_unit - item.price_per_unit
+    itemsSelected.value[index].currentPrice = itemsSelected.value[index].price_per_unit * itemsSelected.value[index].quantity
     updateSubtotal(-item.price_per_unit)
 }
 function increment(item: IProduct) {
     const index = itemsSelected.value.findIndex((it) => it.id_product === item.id_product);
 
-    itemsSelected.value[index].price_per_unit += item.price_per_unit
-
+    itemsSelected.value[index].currentPrice = itemsSelected.value[index].price_per_unit * itemsSelected.value[index].quantity
     updateSubtotal(item.price_per_unit)
 }
+const qtyItemsInOrder = computed(() => {
+    return itemsSelected.value.reduce((accumulator, item) => accumulator + item.quantity, 0)
+})
+
 getAllProductByIdUser()
 getPaymentMethodByIdUser()
 getAllOrderByIdUser()
@@ -168,6 +197,8 @@ getAllOrderByIdUser()
 
 <template>
     <NavBar :showButtonAddCategory="false"></NavBar>
+    <MessageAlert v-if="showMessageAlert" :message="'Pedido feito com sucesso!'"
+        @removeAlert="showMessageAlert = false" />
     <div class="flex w-full h-[32em] gap-2">
         <!-- Criaçao do pedido -->
         <div class="w-[75%] h-full border shadow-lg rounded-md p-4">
@@ -188,7 +219,7 @@ getAllOrderByIdUser()
                             <NumberFieldIncrement class="border-none" @click="increment(item)" />
                         </NumberFieldContent>
                     </NumberField>
-                    <li class="w-[5em] text-right">R$ {{ item.price_per_unit.toFixed(2) }}</li>
+                    <li class="w-[5em] text-right">R$ {{ item.currentPrice.toFixed(2) }}</li>
                     <li class="w-[2em] text-red-500 text-center cursor-pointer" @click="removerItem(item)">
                         <Trash2 :size="20" />
                     </li>
@@ -239,7 +270,7 @@ getAllOrderByIdUser()
                 </div>
                 <div class="flex justify-between">
                     <span class="opacity-40">Qtd items</span>
-                    <span>{{ itemsSelected.length }}</span>
+                    <span>{{ qtyItemsInOrder }}</span>
                 </div>
             </div>
             <div class="w-full h-[1px] bg-slate-400"></div>
