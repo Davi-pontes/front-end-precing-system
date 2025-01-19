@@ -98,7 +98,7 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
                 @update:model-value=" table.getColumn(informationsInputSearch.searchProperty)?.setFilterValue($event)" />
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                    <Button variant="outline" class="ml-auto">
+                    <Button variant="outline" class="ml-auto bg-[#8095c7] text-white">
                         Colunas
                         <ChevronDown class="w-4 h-4 ml-2" />
                     </Button>
@@ -140,7 +140,7 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
                     <template v-else>
                         <TableRow>
                             <TableCell :colspan="columns.length" class="h-24 text-center">
-                                No results.
+                                Nenhum resultado.
                             </TableCell>
                         </TableRow>
                     </template>
@@ -152,10 +152,10 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
                 {{ table.getFilteredSelectedRowModel().rows.length }} de
                 {{ table.getFilteredRowModel().rows.length }} linha(s) selecionada.
             </div>
-            <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
+            <Button class="bg-[#8095c7] text-white" variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
                 Anterior
             </Button>
-            <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
+            <Button class="bg-[#8095c7] text-white" variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
                 Próximo
             </Button>
         </div>
