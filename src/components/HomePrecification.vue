@@ -312,9 +312,9 @@ export default {
           </td> -->
           <td>{{ product.name }}</td>
           <td :class="{ 'blur-sm': isBlur }">{{ product.income }}</td>
-          <td :class="['text-red-500', { 'blur-sm': isBlur }]">R$ {{ product.revenue_cost }}</td>
-          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.price_per_unit }}</td>
-          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.profit }}</td>
+          <td :class="['text-red-500', { 'blur-sm': isBlur }]">R$ {{ product.revenue_cost.toFixed(2) }}</td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.price_per_unit.toFixed(2) }}</td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.profit.toFixed(2) }}</td>
         </tr>
       </table>
     </div>
