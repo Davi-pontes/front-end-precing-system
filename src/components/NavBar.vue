@@ -31,6 +31,9 @@ export default {
     goStock() {
       this.$router.push({ name: 'stock', query: { id: this.idUser } })
     },
+    goStockProduct() {
+      this.$router.push({ name: 'stockProduct', query: { id: this.idUser } })
+    },
     goOrder() {
       this.$router.push({ name: 'order', query: { id: this.idUser } })
     },
@@ -49,7 +52,8 @@ export default {
         <li><button @click="backHome">Início</button></li>
         <li><button @click="goAllIngredients">Todos ingredientes</button></li>
         <li><button @click="goOrder">Pedidos</button></li>
-        <li><button @click="goStock">Estoque</button></li>
+        <li><button @click="goStock">Estoque de ingredientes</button></li>
+        <li><button @click="goStockProduct">Estoque de produtos</button></li>
         <li><button @click="exit">Sair</button></li>
       </ul>
     </div>

@@ -1,15 +1,9 @@
-import type { IColumnsTableIngredient } from '@/interface/Ingredient'
-import type { CellContext, ColumnDef } from '@tanstack/vue-table'
+import type { ColumnDef } from '@tanstack/vue-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowUpDown } from 'lucide-vue-next'
 import { h } from 'vue'
 import Button from './ui/button/Button.vue'
 import type { IColumnsTableOrder } from '@/interface/Order'
-//import Dropdown from './Dropdown.vue'
-
-// interface CustomCellContext<TData> extends CellContext<TData, unknown> {
-//   onUpdate?: (data: any) => void;
-// }
 
 export const columnsOrder: ColumnDef<IColumnsTableOrder>[] = [
   {
@@ -103,41 +97,4 @@ export const columnsOrder: ColumnDef<IColumnsTableOrder>[] = [
       return formatted
     }
   }
-
-  // {
-  //   accessorKey: 'price',
-  //   header: () => {
-  //     return 'Preço'
-  //   },
-  //   cell: ({ row }) => {
-  //     const amount = parseFloat(row.getValue('price'))
-  //     const formatted = new Intl.NumberFormat('pt-BR', {
-  //       style: 'currency',
-  //       currency: 'BRL'
-  //     }).format(amount)
-
-  //     return formatted
-  //   }
-  // },
-  // {
-  //   id: 'actions',
-  //   enableHiding: false,
-  //   cell: (context: CustomCellContext<IColumnsTableIngredient>) => {
-  //     const { row, onUpdate } = context;
-  //     const datas = row.original;
-
-  //     return h(
-  //       'div',
-  //       { class: 'relative' },
-  //       h(Dropdown, {
-  //         datas,
-  //         onUpdate: (data: any) => {
-  //           if (onUpdate) {
-  //             onUpdate(data);
-  //           }
-  //         },
-  //       })
-  //     );
-  //   },
-  // }
 ]

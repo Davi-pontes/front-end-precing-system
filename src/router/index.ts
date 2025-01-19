@@ -12,6 +12,7 @@ import HomePageView from '@/views/Menu/HomePageView.vue'
 import CartView from '@/views/Menu/CartView.vue'
 import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
+import StockProduct from '@/views/StockProduct.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -100,6 +101,14 @@ const router = createRouter({
       path: '/stock',
       name: 'stock',
       component: StockView,
+      meta: {
+        auth: true
+      }
+    },
+    {
+      path: '/stock/product',
+      name: 'stockProduct',
+      component: StockProduct,
       meta: {
         auth: true
       }
