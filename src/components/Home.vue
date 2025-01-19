@@ -31,7 +31,7 @@ export default {
 }
 </script>
 <template>
-  <main class="w-full h-full bg-colorBgPattern text-white">
+  <main class="w-full h-full bg-[#8095c7] text-white">
     <div className="w-full md:w-full">
       <div
         class="flex flex-col items-center w-[100vw] h-[63vh] md:items-center md:h-[40vh] md:w-[100vw]"

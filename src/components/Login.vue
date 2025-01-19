@@ -54,7 +54,7 @@ export default {
 <template>
   <main>
     <div class="image">
-      <img src="../assets/logo-relqui.png" alt="logo-up" />
+      <img src="../assets/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
     </div>
     <div class="form">
       <div class="content">
