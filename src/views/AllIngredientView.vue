@@ -37,10 +37,12 @@ onMounted(async () => {
 
 <template>
   <main class="w-full h-full">
-    <TableComponent v-if="!isLoading" 
-    :columns="columnsIngredient" 
-    :dataProps="ingredients" 
-    :informationsInputSearch="{placeHolder:'Filtre por nome.', searchProperty:'name'}">
-    </TableComponent>
+    <div class="border shadow-lg rounded-md p-4 mt-7">
+      <TableComponent v-if="!isLoading" 
+      :columns="columnsIngredient" 
+      :dataProps="ingredients" 
+      :informationsInputSearch="{placeHolder:'Filtre por nome.', searchProperty:'name'}">
+      </TableComponent>
+    </div>
   </main>
 </template>

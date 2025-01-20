@@ -14,6 +14,9 @@ import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
 import StockProduct from '@/views/StockProduct.vue'
 import SideBar from '@/views/MainLayout.vue'
+import AddProduct from '@/views/AddProduct.vue'
+import AddCategory from '@/views/AddCategory.vue'
+import Settings from '@/views/Settings.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -98,6 +101,16 @@ const router = createRouter({
           name: 'Ingredientes'
         },
         {
+          path: 'product/add',
+          component: AddProduct,
+          name: 'Adicionar produto'
+        },
+        {
+          path: 'category/add',
+          component: AddCategory,
+          name: 'Adicionar categoria'
+        },
+        {
           path: 'stock/product',
           component: StockProduct,
           name: 'Estoque produto'
@@ -106,6 +119,11 @@ const router = createRouter({
           path: 'stock/ingredient',
           component: StockView,
           name: 'Estoque ingrediente'
+        },
+        {
+          path: 'settings',
+          component: Settings,
+          name: 'Configurações'
         }
       ]
     },

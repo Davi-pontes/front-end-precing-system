@@ -55,7 +55,9 @@ getAllIngredients()
         <Button class="bg-[#8095c7]">Atualizar</Button>
       </div>
     </div>
-    <TableComponent :columns="columnsStockIngredient" :data-props="allIngredientStockByUser"
-      :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }" />
+    <div class="border shadow-lg rounded-md p-4 mt-7">
+      <TableComponent :columns="columnsStockIngredient" :data-props="allIngredientStockByUser"
+        :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }" />
+    </div>
   </div>
 </template>

@@ -42,6 +42,10 @@ export const columnsStockIngredient: ColumnDef<IColumnsTableStockIngredient>[] =
     header: 'Peso'
   },
   {
+    accessorKey: 'quantity',
+    header: 'Quantidade'
+  },
+  {
     accessorKey: 'price',
     header: () => {
       return 'Preço'

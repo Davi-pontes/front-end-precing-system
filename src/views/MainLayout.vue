@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket } from 'lucide-vue-next'
+import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket, Boxes } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -65,11 +65,19 @@ getLocalStorage()
                                 6
                             </Badge> -->
                         </router-link>
-                        <router-link to="/"
+                        <router-link to="/product/add"
                             class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
-                            :class="{ 'bg-muted': $route.path === '/' }">
+                            :class="{ 'bg-muted': $route.path === '/product/add' }">
                             <Package class="h-4 w-4" />
                             Produtos
+                        </router-link>
+                        <router-link :to="{
+                            path: '/category/add',
+                            query: { id: idUser }
+                        }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
+                            :class="{ 'bg-muted': $route.path === '/category/add' }">
+                            <Boxes class="h-4 w-4" />
+                            Categoria
                         </router-link>
                         <router-link :to="{
                             path: '/ingredients',
@@ -120,7 +128,10 @@ getLocalStorage()
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Configurações</DropdownMenuItem>
+                        <DropdownMenuItem><router-link :to="{
+                            path: '/settings',
+                            query: { id: idUser }
+                        }" class="dropdown-link">Configurações</router-link></DropdownMenuItem>
                         <DropdownMenuItem>Suporte</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>Sair</DropdownMenuItem>
@@ -134,8 +145,7 @@ getLocalStorage()
                         {{ namePage }}
                     </h1>
                 </div>
-                <div
-                    class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm overflow-y-auto">
+                <div class="flex flex-1 overflow">
                     <router-view />
                 </div>
             </main>
