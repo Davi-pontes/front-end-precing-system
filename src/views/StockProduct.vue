@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import NavBar from '@/components/NavBar.vue';
 import axios, { AxiosError } from 'axios';
 import TableComponent from "@/components/Table.vue"
 import { ref } from 'vue';
@@ -128,30 +127,31 @@ getAllProductByIdUser()
 </script>
 
 <template>
-    <NavBar />
     <MessageAlert v-if="showMessageAlert" :message="'Quantidade é a mesma que já existe no estoque!'"
         @removeAlert="showMessageAlert = false" />
     <MessageError v-if="showError" :message="messageErro" @removeAlert="handleRemoveAlertError" />
-    <div class="w-[70%] h-full border shadow-lg rounded-md p-4">
-        <span class="font-medium text-xl">Atualize o estoque.</span>
-        <div class="flex w-full h-[3em] gap-4 mt-4">
-            <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"
-                :items="dataFormatedToComboBox" v-model="selectedProduct" @itemSelected="handleItemSelected" />
-            <div>
-                <NumberField v-model="inputUpdateStock" :min="0" class="border-none">
-                    <NumberFieldContent class="border rounded-md">
-                        <NumberFieldDecrement class="border-none" />
-                        <NumberFieldInput class="border-none" />
-                        <NumberFieldIncrement class="border-none" />
-                    </NumberFieldContent>
-                </NumberField>
+    <div class="flex flex-col w-full h-full">
+        <div class="w-[70%] h-full border shadow-lg rounded-md p-4">
+            <span class="font-medium text-xl">Atualize o estoque.</span>
+            <div class="flex w-full h-[3em] gap-4 mt-4">
+                <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"
+                    :items="dataFormatedToComboBox" v-model="selectedProduct" @itemSelected="handleItemSelected" />
+                <div>
+                    <NumberField v-model="inputUpdateStock" :min="0" class="border-none">
+                        <NumberFieldContent class="border rounded-md">
+                            <NumberFieldDecrement class="border-none" />
+                            <NumberFieldInput class="border-none" />
+                            <NumberFieldIncrement class="border-none" />
+                        </NumberFieldContent>
+                    </NumberField>
+                </div>
+                <Button class="bg-[#8095c7]" @click="handleClickUpdate">Atualizar</Button>
             </div>
-            <Button class="bg-[#8095c7]" @click="handleClickUpdate">Atualizar</Button>
         </div>
-    </div>
-    <div class="w-[96%] border shadow-lg rounded-md p-4 mt-7">
-        <TableComponent :columns="columnsStockProduct" :data-props="allProductStockByUser"
-            :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }">
-        </TableComponent>
+        <div class="border shadow-lg rounded-md p-4 mt-7">
+            <TableComponent :columns="columnsStockProduct" :data-props="allProductStockByUser"
+                :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }">
+            </TableComponent>
+        </div>
     </div>
 </template>

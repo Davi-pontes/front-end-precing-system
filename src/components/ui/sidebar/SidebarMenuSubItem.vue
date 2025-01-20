@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import './assets/main.css'
+
 </script>
 
 <template>
-  <router-view />
+  <li>
+    <slot />
+  </li>
 </template>

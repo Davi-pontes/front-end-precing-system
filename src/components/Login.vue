@@ -37,7 +37,7 @@ export default {
         if (this.routeName && this.routeName === 'loginAdmin') {
           this.$router.push({ name: 'listUsersAdmin' })
         } else {
-          this.$router.push({ name: 'homePrecification' })
+          this.$router.push({ name: 'Inicio' })
         }
       } catch (error: any) {
         if (error.response && error.response.status) {

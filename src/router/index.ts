@@ -13,6 +13,7 @@ import CartView from '@/views/Menu/CartView.vue'
 import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
 import StockProduct from '@/views/StockProduct.vue'
+import SideBar from '@/views/MainLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,13 +75,48 @@ const router = createRouter({
       }
     },
     {
-      path: '/precification',
-      name: 'homePrecification',
-      component: HomePrecificationView,
+      path: '/',
+      name: 'home',
+      component: SideBar,
       meta: {
         auth: true
-      }
+      },
+      children: [
+        {
+          path: 'precification',
+          component: HomePrecificationView,
+          name: 'Inicio'
+        },
+        {
+          path: 'order',
+          component: Order,
+          name: 'Pedido'
+        },
+        {
+          path: 'ingredients',
+          component: AllIngredientView,
+          name: 'Ingredientes'
+        },
+        {
+          path: 'stock/product',
+          component: StockProduct,
+          name: 'Estoque produto'
+        },
+        {
+          path: 'stock/ingredient',
+          component: StockView,
+          name: 'Estoque ingrediente'
+        }
+      ]
     },
+    // {
+    //   path: '/precification',
+    //   name: 'homePrecification',
+    //   component: HomePrecificationView,
+    //   meta: {
+    //     auth: true
+    //   }
+    // },
     {
       path: '/register',
       name: 'precification',
@@ -89,38 +125,38 @@ const router = createRouter({
         auth: true
       }
     },
-    {
-      path: '/ingredients/all',
-      name: 'allIngredients',
-      component: AllIngredientView,
-      meta: {
-        auth: true
-      }
-    },
-    {
-      path: '/stock',
-      name: 'stock',
-      component: StockView,
-      meta: {
-        auth: true
-      }
-    },
-    {
-      path: '/stock/product',
-      name: 'stockProduct',
-      component: StockProduct,
-      meta: {
-        auth: true
-      }
-    },
-    {
-      path: '/order',
-      name: 'order',
-      component: Order,
-      meta: {
-        auth: true
-      }
-    }
+    // {
+    //   path: '/ingredients/all',
+    //   name: 'allIngredients',
+    //   component: AllIngredientView,
+    //   meta: {
+    //     auth: true
+    //   }
+    // },
+    // {
+    //   path: '/stock',
+    //   name: 'stock',
+    //   component: StockView,
+    //   meta: {
+    //     auth: true
+    //   }
+    // },
+    // {
+    //   path: '/stock/product',
+    //   name: 'stockProduct',
+    //   component: StockProduct,
+    //   meta: {
+    //     auth: true
+    //   }
+    // },
+    // {
+    //   path: '/order',
+    //   name: 'order',
+    //   component: Order,
+    //   meta: {
+    //     auth: true
+    //   }
+    // }
   ]
 })
 

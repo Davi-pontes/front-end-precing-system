@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
 import TableComponent from "@/components/Table.vue"
-import NavBar from '@/components/NavBar.vue'
-import Loading from '@/components/animations/Loading.vue'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import type { IIngredient } from '@/interface/Ingredient'
@@ -38,9 +36,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main>
-    <Loading v-if="showLoading" />
-    <NavBar :showButtonAddCategory="false"></NavBar>
+  <main class="w-full h-full">
     <TableComponent v-if="!isLoading" 
     :columns="columnsIngredient" 
     :dataProps="ingredients" 
