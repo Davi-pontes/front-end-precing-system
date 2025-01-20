@@ -71,6 +71,7 @@ export default {
         params: { idUser: this.idUser },
         withCredentials: true
       })
+      
       this.allIngredients = data
     },
     async getProducts() {

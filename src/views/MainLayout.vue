@@ -1,11 +1,7 @@
 <script setup lang="ts">
-//import { Badge } from '@/components/ui/badge'
-
 import { Button } from '@/components/ui/button'
-//import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-//import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -78,8 +74,7 @@ getLocalStorage()
                         <router-link :to="{
                             path: '/ingredients',
                             query: { id: idUser }
-                        }"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                             :class="{ 'bg-muted': $route.path === '/ingredients' }">
                             <ShoppingBasket class="h-4 w-4" />
                             Ingredientes
@@ -87,8 +82,7 @@ getLocalStorage()
                         <router-link :to="{
                             path: '/stock/product',
                             query: { id: idUser }
-                        }"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                             :class="{ 'bg-muted': $route.path === '/stock/product' }">
                             <PackageOpen class="h-4 w-4" />
                             Estoque de produtos
@@ -96,8 +90,7 @@ getLocalStorage()
                         <router-link :to="{
                             path: '/stock/ingredient',
                             query: { id: idUser }
-                        }"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                             :class="{ 'bg-muted': $route.path === '/stock/ingredient' }">
                             <PackageOpen class="h-4 w-4" />
                             Estoque de ingredientes

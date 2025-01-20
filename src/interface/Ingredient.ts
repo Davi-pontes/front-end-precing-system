@@ -11,6 +11,13 @@ export interface IIngredient {
   quantity_in_stock: number
   total_cash_in_stock: number
 }
+export interface IColumnsTableStockIngredient{
+  id: number
+  name: string
+  weight: number
+  price: number
+  quantity: number
+}
 
 export interface IUpdateIngredient {
   id?: number
