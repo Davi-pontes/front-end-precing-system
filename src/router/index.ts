@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Precification from '../views/PrecificationView.vue'
-import HomeView from '../views/HomeView.vue'
+import LadingPageView from '../views/LadingPage.vue'
 import HomePrecificationView from '@/views/HomePrecificationView.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
@@ -24,7 +24,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: LadingPageView,
       meta: {
         public: true
       }
