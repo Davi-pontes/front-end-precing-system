@@ -2,7 +2,7 @@
 import axios from 'axios'
 import TableComponent from "@/components/Table.vue"
 import type { ICategoryWithProducts } from '@/interface/Category'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { columnsProduct } from '@/components/ColumnsProduct'
 import TagInput from '@/components/TagInput.vue'
 
@@ -34,6 +34,15 @@ async function getAllCategoryAndProduct(): Promise<void> {
     console.log(error);
   }
 }
+watch(
+  () => allCategoryAndProducts.value.category,
+  (newCategories: any) => {
+    allCategoryAndProducts.value.products = allCategoryAndProducts.value.products.filter((product) =>
+      newCategories.some((category: any) => category.id === product.id_category)
+    )
+    
+  }
+)
 getLocalStorage()
 getAllCategoryAndProduct()
 </script>

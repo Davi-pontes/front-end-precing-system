@@ -1,62 +1,54 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
 import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from '@/components/ui/form'
-import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/components/ui/tags-input'
-import { toast } from '@/components/ui/toast'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import { h } from 'vue'
-import { z } from 'zod'
+import { TagsInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/components/ui/tags-input'
+import { useForm } from 'vee-validate';
 
-const formSchema = toTypedSchema(z.object({
-  fruits: z.array(z.string()).min(1).max(3),
-}))
+const props = defineProps<{
+    label: string
+    description: string
+    modelValue: any
+}>()
 
-const { handleSubmit } = useForm({
-  validationSchema: formSchema,
+const emit = defineEmits(['update:modelValue'])
+
+useForm({
   initialValues: {
-    fruits: ['Apple', 'Banana'],
+    data: ['Nada encontrado',],
   },
 })
 
-const onSubmit = handleSubmit((values) => {
-  toast({
-    title: 'You submitted the following values:',
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
-})
+function removeTag(tag: string) {
+    const updatedTags = props.modelValue.filter((t: any) => t !== tag)
+    emit('update:modelValue', updatedTags)
+}
 </script>
 
 <template>
-  <form class="w-2/3 space-y-6" @submit="onSubmit">
-    <FormField v-slot="{ value }" name="fruits">
-      <FormItem>
-        <FormLabel>Fruits</FormLabel>
-        <FormControl>
-          <TagsInput :model-value="value">
-            <TagsInputItem v-for="item in value" :key="item" :value="item">
-              <TagsInputItemText />
-              <TagsInputItemDelete />
-            </TagsInputItem>
+    <form class="w-2/3 space-y-6">
+        <FormField v-slot="{ value }" name="data">
+            <FormItem>
+                <FormLabel>{{ label }}</FormLabel>
+                <FormControl>
+                    <TagsInput :model-value="value">
+                        <TagsInputItem v-for="item in modelValue" :key="item" :value="item.name">
+                            <TagsInputItemText />
+                            <TagsInputItemDelete @click="removeTag(item)" />
+                        </TagsInputItem>
 
-            <TagsInputInput placeholder="Fruits..." />
-          </TagsInput>
-        </FormControl>
-        <FormDescription>
-          Select your favorite fruits.
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-    <Button type="submit">
-      Submit
-    </Button>
-  </form>
+                    </TagsInput>
+                </FormControl>
+                <FormDescription>
+                    {{ description }}
+                </FormDescription>
+                <FormMessage />
+            </FormItem>
+        </FormField>
+    </form>
 </template>

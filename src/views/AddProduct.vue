@@ -229,8 +229,8 @@ export default {
                     </div>
                 </div>
                 <!-- Botão de salvar -->
-                <div class="flex justify-end w-[95%] mx-auto mt-4">
-                    <button class=" bg-[rgb(128,149,199)] text-white px-4 py-2 rounded text-sm"
+                <div class="flex justify-end w-[95%] mx-auto mb-4">
+                    <button class=" bg-muted text-white px-4 py-2 rounded text-sm"
                         @click="sendDatasForDataBase()">SALVAR PRODUTO</button>
                 </div>
             </div>

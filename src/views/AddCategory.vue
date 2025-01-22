@@ -60,7 +60,7 @@ const { isFieldDirty } = useForm({
                 <FormMessage />
             </FormItem>
         </FormField>
-        <Button type="submit">
+        <Button type="submit" class="bg-muted">
             Enviar
         </Button>
     </form>

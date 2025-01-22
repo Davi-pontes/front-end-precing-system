@@ -145,7 +145,7 @@ getLocalStorage()
                         {{ namePage }}
                     </h1>
                 </div>
-                <div class="flex items-center border shadow-lg rounded-md p-4 gap-4">
+                <div v-if="$route.path === '/precification'" class="flex items-center border shadow-lg rounded-md p-4 gap-4">
                     <router-link :to="{
                         path: '/category/add',
                         query: { id: idUser }

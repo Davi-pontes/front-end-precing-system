@@ -7,7 +7,7 @@ import Dropdown from './Dropdown.vue'
 import type { IColumnsTableProduct } from '@/interface/Product'
 
 interface CustomCellContext<TData> extends CellContext<TData, unknown> {
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: any) => void
 }
 
 export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
@@ -48,7 +48,17 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   },
   {
     accessorKey: 'name_category',
-    header: 'Categoria'
+    header: ({ column }) => {
+      return h(
+        Button,
+        {
+          variant: 'ghost',
+          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+        },
+        () => ['Categoria', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]
+      )
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name_category'))
   },
   {
     accessorKey: 'revenue_cost',
@@ -99,8 +109,8 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
     id: 'actions',
     enableHiding: false,
     cell: (context: CustomCellContext<IColumnsTableProduct>) => {
-      const { row, onUpdate } = context;
-      const datas = row.original;
+      const { row, onUpdate } = context
+      const datas = row.original
 
       return h(
         'div',
@@ -109,11 +119,11 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
           datas,
           onUpdate: (data: any) => {
             if (onUpdate) {
-              onUpdate(data);
+              onUpdate(data)
             }
-          },
+          }
         })
-      );
-    },
+      )
+    }
   }
 ]
