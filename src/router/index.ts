@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Precification from '../views/PrecificationView.vue'
 import LadingPageView from '../views/LadingPage.vue'
-import HomePrecificationView from '@/views/HomePrecificationView.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
 import LoginView from '../views/LoginView.vue'
