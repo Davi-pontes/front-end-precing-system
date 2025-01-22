@@ -60,16 +60,10 @@ getLocalStorage()
                         }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                             :class="{ 'bg-muted': $route.path === '/order' }">
                             <ShoppingCart class="h-4 w-4" />
-                            Pedido
+                            Venda
                             <!-- <Badge class="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                                 6
                             </Badge> -->
-                        </router-link>
-                        <router-link to="/product/add"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
-                            :class="{ 'bg-muted': $route.path === '/product/add' }">
-                            <Package class="h-4 w-4" />
-                            Produtos
                         </router-link>
                         <router-link :to="{
                             path: '/category/add',
@@ -78,6 +72,14 @@ getLocalStorage()
                             :class="{ 'bg-muted': $route.path === '/category/add' }">
                             <Boxes class="h-4 w-4" />
                             Categoria
+                        </router-link>
+                        <router-link :to="{
+                            path: '/product/add',
+                            query: { id: idUser }
+                        }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
+                            :class="{ 'bg-muted': $route.path === '/product/add' }">
+                            <Package class="h-4 w-4" />
+                            Produtos
                         </router-link>
                         <router-link :to="{
                             path: '/ingredients',
@@ -145,7 +147,8 @@ getLocalStorage()
                         {{ namePage }}
                     </h1>
                 </div>
-                <div v-if="$route.path === '/precification'" class="flex items-center border shadow-lg rounded-md p-4 gap-4">
+                <div v-if="$route.path === '/precification'"
+                    class="flex items-center border shadow-lg rounded-md p-4 gap-4">
                     <router-link :to="{
                         path: '/category/add',
                         query: { id: idUser }

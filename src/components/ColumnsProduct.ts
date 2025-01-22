@@ -8,6 +8,8 @@ import type { IColumnsTableProduct } from '@/interface/Product'
 
 interface CustomCellContext<TData> extends CellContext<TData, unknown> {
   onUpdate?: (data: any) => void
+  onDelete?: (data: any) => void
+  onDetail?: (data: any) => void
 }
 
 export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
@@ -109,17 +111,28 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
     id: 'actions',
     enableHiding: false,
     cell: (context: CustomCellContext<IColumnsTableProduct>) => {
-      const { row, onUpdate } = context
+      const { row, onUpdate, onDelete, onDetail } = context
       const datas = row.original
 
       return h(
         'div',
         { class: 'relative' },
         h(Dropdown, {
+          label: 'Produto',
           datas,
           onUpdate: (data: any) => {
             if (onUpdate) {
               onUpdate(data)
+            }
+          },
+          onDelete: (data: any) => {
+            if (onDelete) {
+              onDelete(data)
+            }
+          },
+          onDetail: (data: any) => {
+            if (onDetail) {
+              onDetail(data)
             }
           }
         })

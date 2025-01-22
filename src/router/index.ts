@@ -93,7 +93,7 @@ const router = createRouter({
         {
           path: 'order',
           component: Order,
-          name: 'Pedido'
+          name: 'Venda'
         },
         {
           path: 'ingredients',

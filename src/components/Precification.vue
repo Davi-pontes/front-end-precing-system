@@ -228,7 +228,7 @@ export default {
         } else if(!this.id_product){
           this.sendNewData(dataFormated)
         } else {
-          this.$router.push({name: 'homePrecification'})
+          this.$router.push({path: 'precification'})
         }
       }
     },
@@ -320,7 +320,7 @@ export default {
       this.productsJoker = data
     },
     async returnToHomePage() {
-      this.$router.push({ name: 'homePrecification' })
+      this.$router.push({ path: 'precification' })
     },
     deletedMaterialOfArray(index: number) {
       this.all.splice(index, 1)

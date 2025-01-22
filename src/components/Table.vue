@@ -35,6 +35,7 @@ const props = defineProps<{
     informationsInputSearch: { placeHolder: string, searchProperty: string }
     dataProps: TValue[]
 }>()
+const emit = defineEmits(['delete','update','detail'])
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
@@ -68,9 +69,13 @@ const table = useVueTable({
 })
 
 function handleUpdate(updatedData: any) {
-    selectedIngredient.value = updatedData
-    showFormIngredient.value = true
-
+    emit('update', updatedData)
+}
+function handleDelete(deleteData: any) {
+    emit('delete', deleteData)
+}
+function handleDetail(detailData: any) {
+    emit('detail', detailData)
 }
 function closeFormIngredient() {
     showFormIngredient.value = false
@@ -133,7 +138,7 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
                             :data-state="row.getIsSelected() ? 'selected' : undefined">
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                                 <FlexRender :render="cell.column.columnDef.cell"
-                                    :props="{ ...cell.getContext(), onUpdate: handleUpdate }" />
+                                    :props="{ ...cell.getContext(), onUpdate: handleUpdate, onDelete: handleDelete, onDetail: handleDetail }" />
                             </TableCell>
                         </TableRow>
                     </template>
