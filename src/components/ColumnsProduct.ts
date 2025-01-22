@@ -44,11 +44,17 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   },
   {
     accessorKey: 'income',
-    header: 'RENDIMENTO'
+    header: 'Rendimento'
+  },
+  {
+    accessorKey: 'name_category',
+    header: 'Categoria'
   },
   {
     accessorKey: 'revenue_cost',
-    header: 'CUSTO TOTAL',
+    header: () => {
+      return 'Custo total'
+    },
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('revenue_cost'))
       const formatted = new Intl.NumberFormat('pt-BR', {
@@ -62,10 +68,10 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   {
     accessorKey: 'price_per_unit',
     header: () => {
-      return 'PREÇO DE VENDA'
+      return 'Preço de venda'
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('price'))
+      const amount = parseFloat(row.getValue('price_per_unit'))
       const formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -77,10 +83,10 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   {
     accessorKey: 'profit',
     header: () => {
-      return 'LUCRO'
+      return 'Lucro'
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('price'))
+      const amount = parseFloat(row.getValue('profit'))
       const formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'

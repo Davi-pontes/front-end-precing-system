@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket, Boxes } from 'lucide-vue-next'
+import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket, Boxes, Plus } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -144,6 +144,26 @@ getLocalStorage()
                     <h1 class="text-lg font-semibold md:text-2xl">
                         {{ namePage }}
                     </h1>
+                </div>
+                <div class="flex items-center border shadow-lg rounded-md p-4 gap-4">
+                    <router-link :to="{
+                        path: '/category/add',
+                        query: { id: idUser }
+                    }"><Button class="bg-muted">
+                            <Plus /> Categoria
+                        </Button></router-link>
+                    <router-link :to="{
+                        path: '/product/add',
+                        query: { id: idUser }
+                    }"><Button class="bg-muted">
+                            <Plus /> Adicionar produto
+                        </Button></router-link>
+                    <router-link :to="{
+                        path: '/register',
+                        query: { idU: idUser }
+                    }"><Button class="bg-muted">
+                            <Plus /> Adicionar produto com ingrediente
+                        </Button></router-link>
                 </div>
                 <div class="flex flex-1 overflow">
                     <router-view />

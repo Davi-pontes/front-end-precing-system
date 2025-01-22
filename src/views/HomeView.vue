@@ -4,33 +4,35 @@ import TableComponent from "@/components/Table.vue"
 import type { ICategoryWithProducts } from '@/interface/Category'
 import { ref } from 'vue'
 import { columnsProduct } from '@/components/ColumnsProduct'
+import TagInput from '@/components/TagInput.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const allCategoryAndProducts = ref<ICategoryWithProducts>(
   {
-    category:[],
-    products:[]
+    category: [],
+    products: []
   })
 const nameUser = ref('')
 const idUser = ref('')
 
 function getLocalStorage(): void {
-      const localStorageObject = localStorage.getItem('User')
-      if (localStorageObject) {
-        const parsedObject = JSON.parse(localStorageObject)
-        nameUser.value = parsedObject.name || ''
-        idUser.value = parsedObject.id || ''
-      }}
-async function getAllCategoryAndProduct(): Promise<void>{
-    try {
-      const { data } = await axios.get(urlApiBackEnd + '/category', {
-        params: { idUser: idUser.value },
-        withCredentials: true
-      })
-      if(data) allCategoryAndProducts.value = data
-    } catch (error) {
-      console.log(error);
-    }
+  const localStorageObject = localStorage.getItem('User')
+  if (localStorageObject) {
+    const parsedObject = JSON.parse(localStorageObject)
+    nameUser.value = parsedObject.name || ''
+    idUser.value = parsedObject.id || ''
+  }
+}
+async function getAllCategoryAndProduct(): Promise<void> {
+  try {
+    const { data } = await axios.get(urlApiBackEnd + '/category', {
+      params: { idUser: idUser.value },
+      withCredentials: true
+    })
+    if (data) allCategoryAndProducts.value = data
+  } catch (error) {
+    console.log(error);
+  }
 }
 getLocalStorage()
 getAllCategoryAndProduct()
@@ -38,9 +40,10 @@ getAllCategoryAndProduct()
 
 <template>
   <div class="w-full h-full border shadow-lg rounded-md p-4 mt-7">
-    <TableComponent :columns="columnsProduct"
-    :data-props="allCategoryAndProducts?.products"
-    :informationsInputSearch="{placeHolder:'Filtre por nome.', searchProperty:'name'}">
+    <TagInput :label="'Categorias'" :description="'Filtre os produtos de acordo com as categorias.'"
+      v-model="allCategoryAndProducts.category" />
+    <TableComponent :columns="columnsProduct" :data-props="allCategoryAndProducts?.products"
+      :informationsInputSearch="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }">
     </TableComponent>
   </div>
 </template>

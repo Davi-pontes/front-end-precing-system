@@ -17,6 +17,7 @@ import SideBar from '@/views/MainLayout.vue'
 import AddProduct from '@/views/AddProduct.vue'
 import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
+import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -87,7 +88,7 @@ const router = createRouter({
       children: [
         {
           path: 'precification',
-          component: HomePrecificationView,
+          component: HomeView,
           name: 'Inicio'
         },
         {
