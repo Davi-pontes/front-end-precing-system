@@ -6,6 +6,9 @@ import MessageError from '@/components/MessageError.vue';
 import { useRoute } from 'vue-router';
 import Combobox from '@/components/Combobox.vue';
 import type { ICommandItem } from '@/interface/Combobox';
+import { Button } from '@/components/ui/button'
+import { FileUp } from 'lucide-vue-next';
+import { Input } from '@/components/ui/input'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
 const route = useRoute()
 
@@ -207,9 +210,17 @@ if (idProduct) {
                 <div class="flex flex-col w-[95%] h-[85%] mx-auto mt-2">
                     <div class="flex flex-col gap-2">
                         <span class="font-medium text-xl">Selecione a categoria do seu produto.</span>
-                        <Combobox :titleInput="'Selecione uma categoria...'"
-                            :titleSearch="'Pesquise por uma categoria...'" :items="dataFormatedToComboBox"
-                            v-model="selectedCategory" @itemSelected="handleItemSelected" />
+                        <div class="flex justify-between">
+                            <Combobox :titleInput="'Selecione uma categoria...'"
+                                :titleSearch="'Pesquise por uma categoria...'" :items="dataFormatedToComboBox"
+                                v-model="selectedCategory" @itemSelected="handleItemSelected" />
+                            <label for="file-upload"
+                                class="cursor-pointer flex items-center space-x-2 w-[30%] bg-muted text-white rounded px-4 py-2">
+                                <FileUp />
+                                <span>Exporta planilha</span>
+                            </label>
+                            <Input id="file-upload" class="hidden" type="file" />
+                        </div>
                     </div>
                     <div class="flex w-full h-full gap-4">
                         <!-- Primeira coluna -->
@@ -260,8 +271,7 @@ if (idProduct) {
                 </div>
                 <!-- Botão de salvar -->
                 <div class="flex justify-end w-[95%] mx-auto mb-4">
-                    <button class=" bg-muted text-white px-4 py-2 rounded text-sm"
-                        @click="sendDatasForDataBase()">SALVAR PRODUTO</button>
+                    <Button class=" bg-muted" @click="sendDatasForDataBase()">SALVAR PRODUTO</Button>
                 </div>
             </div>
             <!-- Resumo do produto -->
