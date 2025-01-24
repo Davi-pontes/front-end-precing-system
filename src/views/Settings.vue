@@ -10,26 +10,24 @@ import {
     NumberFieldIncrement,
     NumberFieldInput,
 } from '@/components/ui/number-field'
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import MessageAlert from '@/components/MessageAlert.vue';
 import MessageError from '@/components/MessageError.vue';
+import type { IPaymentMethod, IPaymentMethodParams } from '@/interface/PaymentMethod';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
 const route = useRoute()
-const showMessageAlert = ref(false);
-const showMessageErro = ref(false);
-const messageForAlert = ref('');
-const messageForError = ref('');
 const idUser = route.query.id
+let isInitialLoad = true;
 
-const paymentMethods = ref([
-    { label: "Pix", tax: 0 },
-    { label: "Cartão de crédito", tax: 0 },
-    { label: "Cartão de débito", tax: 0 },
-    { label: "Dinheiro", tax: 0 },
-    { label: "Boleto", tax: 0 },
-])
+const showMessageAlert = ref<boolean>(false);
+const showMessageErro = ref<boolean>(false);
+const messageForAlert = ref<string>('');
+const messageForError = ref<string>('');
+const paymentMethodAltered = ref<IPaymentMethodParams[]>([])
+const paymentMethods = ref<IPaymentMethodParams[]>([])
+
 const typeTranslations: Record<string, string> = {
     money: 'Dinheiro',
     credit_card: 'Cartão de Crédito',
@@ -41,6 +39,11 @@ const typeTranslations: Record<string, string> = {
 function handleError(message: string) {
     messageForError.value = message;
     showMessageErro.value = true;
+}
+// Função para mostrar alertas
+function handleAlert(message: string) {
+    messageForAlert.value = message;
+    showMessageAlert.value = true;
 }
 
 // Função para remover alertas
@@ -66,8 +69,29 @@ async function getPaymentMethodByIdUser() {
         }
     }
 }
-function formatedTypePayment(methods: any) {
-    const formattedMethods = methods.map((method: any) => ({
+async function sendPaymentMethodsToUpdate() {
+    try {
+        const paymentMethodsAlteredAndFormated = formatedTypePaymentToSendBackEnd()
+
+        const { data } = await axios.put(urlApiBackEnd + "/payment/method",
+            { paymentMethods: paymentMethodsAlteredAndFormated }, {
+            params: { idUser: idUser },
+            withCredentials: true
+        });
+        if(data.length > 0){
+            handleAlert('Taxas de pagamento alteradas com sucesso!')
+            paymentMethodAltered.value = []
+        }
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            handleError(error.response?.data);
+        } else {
+            handleError("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+        }
+    }
+}
+function formatedTypePayment(methods: IPaymentMethod[]) {
+    const formattedMethods = methods.map((method: IPaymentMethod) => ({
         id: method.id,
         value: method.type,
         label: typeTranslations[method.type] || 'Desconhecido',
@@ -76,13 +100,42 @@ function formatedTypePayment(methods: any) {
 
     paymentMethods.value = formattedMethods
 }
+function formatedTypePaymentToSendBackEnd(): IPaymentMethod[] {
+    const formattedMethods = paymentMethods.value.map((method: IPaymentMethodParams) => ({
+        id: method.id,
+        type: method.value,
+        tax: method.tax,
+        status: 1
+    }));
+
+    return formattedMethods
+}
+function validateIfPaymentMethodsHasChanged() {
+    if (paymentMethodAltered.value.length === 0) {
+        handleError('Nenhum método de pagamento foi alterado!')
+    } else {
+        sendPaymentMethodsToUpdate()
+    }
+}
+watch(
+    () => paymentMethods.value,
+    (newValue: IPaymentMethodParams[]) => {
+
+        if (isInitialLoad) {
+            isInitialLoad = false;
+            return;
+        }
+        paymentMethodAltered.value = newValue
+    },
+    { deep: true }
+);
 getPaymentMethodByIdUser()
 </script>
 
 <template>
     <div class="w-full">
-        <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
         <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
+        <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
         <Card>
             <CardHeader>
                 <CardTitle>Formas de pagamento</CardTitle>
@@ -91,9 +144,9 @@ getPaymentMethodByIdUser()
                 </CardDescription>
             </CardHeader>
             <CardContent v-for="(payment, index) in paymentMethods" :key="index">
-                <form class="flex justify-between gap-4 items-center">
+                <form class="flex justify-between items-center">
                     <Input :placeholder="payment.label" disabled class="w-2/3" />
-                    <div class="flex items-center w-1/3">
+                    <div class="w-1/4">
                         <NumberField id="balance" :min="0" :default-value="0" v-model="payment.tax" :format-options="{
                             style: 'currency',
                             currency: 'BRL',
@@ -109,8 +162,8 @@ getPaymentMethodByIdUser()
                     </div>
                 </form>
             </CardContent>
-            <CardFooter class="border-t px-6 py-4">
-                <Button>Salvar</Button>
+            <CardFooter class="border-t px-6 py-4 flex justify-end">
+                <Button class="bg-muted" @click="validateIfPaymentMethodsHasChanged()">Salvar</Button>
             </CardFooter>
         </Card>
     </div>

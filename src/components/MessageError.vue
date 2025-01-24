@@ -46,7 +46,7 @@ export default {
   border: 2px solid rgba(247, 98, 98, 0.411);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
   transform: translateY(2rem);
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   animation: fade-in 4s;
   word-wrap: break-word;
