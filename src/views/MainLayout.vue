@@ -134,9 +134,13 @@ getLocalStorage()
                             path: '/settings',
                             query: { id: idUser }
                         }" class="dropdown-link">Configurações</router-link></DropdownMenuItem>
-                        <DropdownMenuItem>Suporte</DropdownMenuItem>
+                        <!-- <DropdownMenuItem>Suporte</DropdownMenuItem> -->
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Sair</DropdownMenuItem>
+                        <DropdownMenuItem> <router-link :to="{
+                            path: '/login',
+                        }" class="dropdown-link"> Sair 
+                        </router-link>
+                    </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </header>

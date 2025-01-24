@@ -34,7 +34,7 @@ export default {
   padding: 1.25rem 1rem;
   border-radius: 0.25rem;
   background-color: white;
-  margin-left: 40vw;
+  margin-left: 10%;
   color: black;
   border: 2px solid  rgba(164, 167, 172, 0.411);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);

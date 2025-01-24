@@ -2,10 +2,10 @@
 import axios, { AxiosError } from 'axios'
 import TableComponent from "@/components/Table.vue"
 import type { ICategoryWithProducts } from '@/interface/Category'
-import MessageAlert from '@/components/MessageAlert.vue';
 import { useRouter } from 'vue-router'
 import { ref, watch } from 'vue'
 import { columnsProduct } from '@/components/ColumnsProduct'
+import MessageAlert from '@/components/MessageAlert.vue';
 import MessageError from '@/components/MessageError.vue';
 import TagInput from '@/components/TagInput.vue'
 

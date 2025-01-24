@@ -55,7 +55,7 @@ const { isFieldDirty } = useForm({
                     <Input type="text" placeholder="Adicione o nome da categoria" v-model="nameCategory" />
                 </FormControl>
                 <FormDescription>
-                    Categoria que pode conter varios produtos.
+                    Categoria que agrupa diversos produtos.
                 </FormDescription>
                 <FormMessage />
             </FormItem>

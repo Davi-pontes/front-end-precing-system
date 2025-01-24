@@ -49,7 +49,11 @@ async function getStockAllProductByIdUser() {
 
         formatedDataToCombobox(allUserProducts.value)
     } catch (error) {
-        console.error('Error ao buscar produtos')
+        if (error instanceof AxiosError) {
+            handleError(error.response?.data);
+        } else {
+            handleError("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+        }
     }
 }
 async function getAllProductByIdUser() {
@@ -60,7 +64,11 @@ async function getAllProductByIdUser() {
         allUserProducts.value = data
         formatedDataToCombobox(allUserProducts.value)
     } catch (error) {
-        console.error('Error ao buscar produtos')
+        if (error instanceof AxiosError) {
+            handleError(error.response?.data);
+        } else {
+            handleError("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+        }
     }
 }
 function formatedDataToCombobox(data: IProduct[]) {
@@ -83,7 +91,7 @@ function handleClickUpdate() {
         const numberToIncrement = inputUpdateStock.value - stockProduct.quantity
         handleIncrement(numberToIncrement, stockProduct.id_stock)
     } else if (stockProduct && stockProduct.quantity > inputUpdateStock.value) {
-        const numberToDecrement =  stockProduct.quantity - inputUpdateStock.value
+        const numberToDecrement = stockProduct.quantity - inputUpdateStock.value
         handleDecrement(numberToDecrement, stockProduct.id_stock)
     } else {
         showMessageAlert.value = true
@@ -98,10 +106,10 @@ async function handleIncrement(quantity: number, id_stock: number) {
 
         updatedValue(data)
     } catch (error: unknown) {
-        console.log(error);
-        
         if (error instanceof AxiosError) {
             handleError(error.response?.data);
+        } else {
+            handleError("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
         }
     }
 }
@@ -116,6 +124,8 @@ async function handleDecrement(quantity: number, id_stock: number) {
     } catch (error: unknown) {
         if (error instanceof AxiosError) {
             handleError(error.response?.data);
+        } else {
+            handleError("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
         }
     }
 }
@@ -131,7 +141,7 @@ getAllProductByIdUser()
         @removeAlert="showMessageAlert = false" />
     <MessageError v-if="showError" :message="messageErro" @removeAlert="handleRemoveAlertError" />
     <div class="flex flex-col w-full h-full">
-        <div class="w-[70%] h-full border shadow-lg rounded-md p-4">
+        <div class="w-[70%] h-[8em] border shadow-lg rounded-md p-4">
             <span class="font-medium text-xl">Atualize o estoque.</span>
             <div class="flex w-full h-[3em] gap-4 mt-4">
                 <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"
