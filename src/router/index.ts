@@ -12,7 +12,7 @@ import CreateAccountView from '@/views/CreateAccountView.vue'
 import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
 import StockProduct from '@/views/StockProduct.vue'
-import SideBar from '@/views/MainLayout.vue'
+import MainLayout from '@/views/MainLayout.vue'
 import AddProduct from '@/views/AddProduct.vue'
 import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
@@ -79,14 +79,14 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'home',
-      component: SideBar,
+      name: 'mainLayout',
+      component: MainLayout,
       meta: {
         auth: true
       },
       children: [
         {
-          path: 'precification',
+          path: 'home',
           component: HomeView,
           name: 'Inicio'
         },
