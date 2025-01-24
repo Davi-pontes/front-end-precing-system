@@ -7,8 +7,8 @@ import LoginView from '../views/LoginView.vue'
 import LoginViewAdmin from '../views/admin/LoginViewAdmin.vue'
 import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
 import CreateAccountView from '@/views/CreateAccountView.vue'
-import HomePageView from '@/views/Menu/HomePageView.vue'
-import CartView from '@/views/Menu/CartView.vue'
+//import HomePageView from '@/views/Menu/HomePageView.vue'
+//import CartView from '@/views/Menu/CartView.vue'
 import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
 import StockProduct from '@/views/StockProduct.vue'
@@ -29,22 +29,22 @@ const router = createRouter({
         public: true
       }
     },
-    {
-      path: '/menu',
-      name: 'homePageMenu',
-      component: HomePageView,
-      meta: {
-        public: true
-      }
-    },
-    {
-      path: '/menu/carrinho',
-      name: 'cartMenu',
-      component: CartView,
-      meta: {
-        public: true
-      }
-    },
+    // {
+    //   path: '/menu',
+    //   name: 'homePageMenu',
+    //   component: HomePageView,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
+    // {
+    //   path: '/menu/carrinho',
+    //   name: 'cartMenu',
+    //   component: CartView,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
     {
       path: '/login',
       name: 'login',

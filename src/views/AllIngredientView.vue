@@ -18,8 +18,8 @@ const isLoading = ref(true)
 const dataToUpdate = ref()
 const messageForError = ref('')
 const showMessageErro = ref(false)
-const messageForAlert = ref('Ingrediente atualizado com sucesso! ${productsChanged} produto(s) também foram ajustado(s).');
-const showMessageAlert = ref(true);
+const messageForAlert = ref('');
+const showMessageAlert = ref(false);
 let showLoading = ref(false)
 let showPopUpUpdateIngredient = ref(false)
 
