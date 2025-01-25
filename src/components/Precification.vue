@@ -228,7 +228,7 @@ export default {
         } else if(!this.id_product){
           this.sendNewData(dataFormated)
         } else {
-          this.$router.push({path: 'precification'})
+          this.$router.push({path: 'home'})
         }
       }
     },
