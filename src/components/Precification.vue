@@ -320,7 +320,7 @@ export default {
       this.productsJoker = data
     },
     async returnToHomePage() {
-      this.$router.push({ path: 'precification' })
+      this.$router.push({ path: 'home' })
     },
     deletedMaterialOfArray(index: number) {
       this.all.splice(index, 1)

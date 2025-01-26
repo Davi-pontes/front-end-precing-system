@@ -38,8 +38,12 @@ async function getAllCategoryAndProduct(): Promise<void> {
       params: { idUser: idUser.value },
       withCredentials: true
     })
-    if (data) allCategoryAndProducts.value = data
+    const calculatePricePerUnit = data.products.map((it: any) =>{ return {...it, price_per_unit: it.final_recipe_price / it.income}})
+    
+    if (data) allCategoryAndProducts.value = {category:data.category, products: calculatePricePerUnit}
   } catch (error) {
+    console.log(error);
+    
     if (error instanceof AxiosError) {
       handleError(error.response?.data);
     } else {
