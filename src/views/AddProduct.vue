@@ -209,6 +209,9 @@ export default {
                                     <label for="price">Frete</label>
                                     <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
                                         v-model="datasProduct.freigth" @change="updateAllNumbers">
+                                    <label for="price">Quantidade em estoque</label>
+                                    <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
+                                        v-model="datasProduct.freigth" @change="updateAllNumbers">
                                 </div>
                                 <!-- Segundo bloco interno -->
                                 <div class="flex flex-col w-1/2 mt-6">
@@ -223,6 +226,10 @@ export default {
                                     <input type="number" placeholder="0" id="stock"
                                         class="border-2 outline-none rounded-md mb-4 pl-2"
                                         v-model="datasProduct.profitPecentage" @change="calculateProfit">
+                                    <label for="stock">Preço de venda</label>
+                                    <input type="number" placeholder="0" id="stock"
+                                        class="border-2 outline-none rounded-md mb-4 pl-2"
+                                        v-model="datasProduct.pricePerUnit" @change="calculateProfit">
                                 </div>
                             </div>
                         </div>
