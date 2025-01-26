@@ -8,11 +8,10 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/toast/use-toast'
 import axios from 'axios'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { h, ref } from 'vue'
+import { ref } from 'vue'
 import * as z from 'zod'
 import { useRoute } from 'vue-router'
 
@@ -56,12 +55,12 @@ const { isFieldDirty } = useForm({
                     <Input type="text" placeholder="Adicione o nome da categoria" v-model="nameCategory" />
                 </FormControl>
                 <FormDescription>
-                    Categoria que pode conter varios produtos.
+                    Categoria que agrupa diversos produtos.
                 </FormDescription>
                 <FormMessage />
             </FormItem>
         </FormField>
-        <Button type="submit">
+        <Button type="submit" class="bg-muted">
             Enviar
         </Button>
     </form>

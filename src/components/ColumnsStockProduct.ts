@@ -38,19 +38,34 @@ export const columnsStockProduct: ColumnDef<IColumnsTableStockProduct>[] = [
     cell: ({ row }) => h('div', row.getValue('id_product'))
   },
   {
-      accessorKey: 'name',
-      header: ({ column }) => {
-        return h(
-          Button,
-          {
-            variant: 'ghost',
-            onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-          },
-          () => ['Nome', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]
-        )
-      },
-      cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name'))
+    accessorKey: 'name',
+    header: ({ column }) => {
+      return h(
+        Button,
+        {
+          variant: 'ghost',
+          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+        },
+        () => ['Nome', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]
+      )
     },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name'))
+  },
+  {
+    accessorKey: 'price_per_unit',
+    header: () => {
+      return 'Preço'
+    },
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue('price_per_unit'))
+      const formatted = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(amount)
+
+      return formatted
+    }
+  },
   {
     accessorKey: 'quantity',
     header: 'Quantidade'
@@ -58,5 +73,5 @@ export const columnsStockProduct: ColumnDef<IColumnsTableStockProduct>[] = [
   {
     accessorKey: 'updated_at',
     header: 'Ultima atualização'
-  },
+  }
 ]

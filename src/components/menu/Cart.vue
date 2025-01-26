@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 import type { IProduct } from '@/interface/Product';
 
 export default {
@@ -118,4 +118,4 @@ export default {
             <button class="border rounded-md p-1 w-[50%]">Finalizar compra</button>
         </div>
     </main>
-</template>
+</template> -->

@@ -38,7 +38,7 @@ getAllIngredients()
 
 <template>
   <div class="flex flex-col w-full h-full">
-    <div class="w-[70%] h-full border shadow-lg rounded-md p-4">
+    <div class="w-[70%] h-[8em] border shadow-lg rounded-md p-4">
       <span class="font-medium text-xl">Atualize o estoque.</span>
       <div class="flex w-full h-[3em] gap-4 mt-4">
         <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"

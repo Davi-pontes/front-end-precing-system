@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 import type { IBusiness } from '@/interface/Business';
 import type { IProduct } from '@/interface/Product'; 
 export default {
@@ -80,18 +80,18 @@ export default {
             </div>
             <div class="absolute top-60 right-5 inline-block" v-if="cartCount > 0">
                 <!-- Ícone do carrinho -->
-                <i class="fas fa-shopping-cart text-3xl "></i>
+                <!-- <i class="fas fa-shopping-cart text-3xl "></i> -->
                 <!-- Contador de produtos no carrinho -->
-                <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
+                <!-- <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
                      bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
                     {{ cartCount }}
                 </span>
             </div>
         </div>
-    </main>
-</template>
+    </main> -->
+<!-- </template> -->
 
-<style>
+<!-- <style>
 .line-clamp {
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -99,4 +99,4 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-</style>
+</style>  -->

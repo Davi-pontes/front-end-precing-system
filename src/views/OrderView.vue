@@ -299,7 +299,7 @@ getAllOrderByIdUser()
             </div>
         </div>
         <div class="w-full border shadow-lg rounded-md p-4 mt-7">
-            <span class="text-lg font-semibold">Pedidos.</span>
+            <span class="text-lg font-semibold">Vendas.</span>
             <TableComponent :columns="columnsOrder" :dataProps="allUserORder"
                 :informationsInputSearch="{ placeHolder: 'Filtre pelo número do pedido.', searchProperty: 'id' }">
             </TableComponent>

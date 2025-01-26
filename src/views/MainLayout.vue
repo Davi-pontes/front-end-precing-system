@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket, Boxes } from 'lucide-vue-next'
+import { Bell, CircleUser, PackageOpen, Home, Package, Package2, Search, ShoppingCart, ShoppingBasket, Boxes, Plus } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -48,9 +48,9 @@ getLocalStorage()
                 <!-- Todos butões -->
                 <div class="flex-1">
                     <nav class="grid items-start px-2 text-sm font-medium lg:px-4">
-                        <router-link to="/precification"
+                        <router-link to="/home"
                             class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                            :class="{ 'bg-muted': $route.path === '/precification' }">
+                            :class="{ 'bg-muted': $route.path === '/home' }">
                             <Home class="h-4 w-4" />
                             Inicio
                         </router-link>
@@ -60,16 +60,10 @@ getLocalStorage()
                         }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                             :class="{ 'bg-muted': $route.path === '/order' }">
                             <ShoppingCart class="h-4 w-4" />
-                            Pedido
+                            Venda
                             <!-- <Badge class="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                                 6
                             </Badge> -->
-                        </router-link>
-                        <router-link to="/product/add"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
-                            :class="{ 'bg-muted': $route.path === '/product/add' }">
-                            <Package class="h-4 w-4" />
-                            Produtos
                         </router-link>
                         <router-link :to="{
                             path: '/category/add',
@@ -78,6 +72,14 @@ getLocalStorage()
                             :class="{ 'bg-muted': $route.path === '/category/add' }">
                             <Boxes class="h-4 w-4" />
                             Categoria
+                        </router-link>
+                        <router-link :to="{
+                            path: '/product/add',
+                            query: { id: idUser }
+                        }" class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
+                            :class="{ 'bg-muted': $route.path === '/product/add' }">
+                            <Package class="h-4 w-4" />
+                            Produtos
                         </router-link>
                         <router-link :to="{
                             path: '/ingredients',
@@ -113,7 +115,7 @@ getLocalStorage()
                     <form>
                         <div class="relative">
                             <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input type="search" placeholder="Search products..."
+                            <Input type="search" placeholder="Pesquisar produtos..."
                                 class="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3" />
                         </div>
                     </form>
@@ -132,9 +134,13 @@ getLocalStorage()
                             path: '/settings',
                             query: { id: idUser }
                         }" class="dropdown-link">Configurações</router-link></DropdownMenuItem>
-                        <DropdownMenuItem>Suporte</DropdownMenuItem>
+                        <!-- <DropdownMenuItem>Suporte</DropdownMenuItem> -->
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Sair</DropdownMenuItem>
+                        <DropdownMenuItem> <router-link :to="{
+                            path: '/login',
+                        }" class="dropdown-link"> Sair 
+                        </router-link>
+                    </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </header>
@@ -144,6 +150,27 @@ getLocalStorage()
                     <h1 class="text-lg font-semibold md:text-2xl">
                         {{ namePage }}
                     </h1>
+                </div>
+                <div v-if="$route.path === '/home'"
+                    class="flex items-center border shadow-lg rounded-md p-4 gap-4">
+                    <router-link :to="{
+                        path: '/category/add',
+                        query: { id: idUser }
+                    }"><Button class="bg-muted">
+                            <Plus /> Categoria
+                        </Button></router-link>
+                    <router-link :to="{
+                        path: '/product/add',
+                        query: { id: idUser }
+                    }"><Button class="bg-muted">
+                            <Plus /> Adicionar produto
+                        </Button></router-link>
+                    <router-link :to="{
+                        path: '/register',
+                        query: { idU: idUser }
+                    }"><Button class="bg-muted">
+                            <Plus /> Adicionar produto com ingrediente
+                        </Button></router-link>
                 </div>
                 <div class="flex flex-1 overflow">
                     <router-view />

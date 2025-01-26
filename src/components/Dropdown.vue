@@ -11,16 +11,28 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const props = defineProps<{
+    label: string
     datas: any
     onUpdate?: (data: any) => void
+    onDelete?: (data: any) => void
+    onDetail?: (data: any) => void
 }>()
 
-function update() {
+function handleUpdate() {
     if (props.onUpdate) {
         props.onUpdate(props.datas);
     }
 }
-
+function handleDelete() {
+    if (props.onDelete) {
+        props.onDelete(props.datas);
+    }
+}
+function handleDetail() {
+    if (props.onDetail) {
+        props.onDetail(props.datas);
+    }
+}
 </script>
 
 <template>
@@ -32,13 +44,13 @@ function update() {
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ingrediente</DropdownMenuLabel>
-            <DropdownMenuItem @click="update()">
+            <DropdownMenuLabel>{{ label }}</DropdownMenuLabel>
+            <DropdownMenuItem @click="handleUpdate()">
                 Alterar
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Deletar</DropdownMenuItem>
-            <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
+            <DropdownMenuItem @click="handleDelete()">Deletar</DropdownMenuItem>
+            <DropdownMenuItem @click="handleDetail()">Ver detalhes</DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>

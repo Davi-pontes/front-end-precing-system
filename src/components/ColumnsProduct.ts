@@ -7,7 +7,9 @@ import Dropdown from './Dropdown.vue'
 import type { IColumnsTableProduct } from '@/interface/Product'
 
 interface CustomCellContext<TData> extends CellContext<TData, unknown> {
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: any) => void
+  onDelete?: (data: any) => void
+  onDetail?: (data: any) => void
 }
 
 export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
@@ -44,11 +46,27 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   },
   {
     accessorKey: 'income',
-    header: 'RENDIMENTO'
+    header: 'Rendimento'
+  },
+  {
+    accessorKey: 'name_category',
+    header: ({ column }) => {
+      return h(
+        Button,
+        {
+          variant: 'ghost',
+          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+        },
+        () => ['Categoria', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]
+      )
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name_category'))
   },
   {
     accessorKey: 'revenue_cost',
-    header: 'CUSTO TOTAL',
+    header: () => {
+      return 'Custo total'
+    },
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('revenue_cost'))
       const formatted = new Intl.NumberFormat('pt-BR', {
@@ -62,10 +80,10 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   {
     accessorKey: 'price_per_unit',
     header: () => {
-      return 'PREÇO DE VENDA'
+      return 'Preço de venda'
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('price'))
+      const amount = parseFloat(row.getValue('price_per_unit'))
       const formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -77,10 +95,10 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   {
     accessorKey: 'profit',
     header: () => {
-      return 'LUCRO'
+      return 'Lucro'
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('price'))
+      const amount = parseFloat(row.getValue('profit'))
       const formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -93,21 +111,32 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
     id: 'actions',
     enableHiding: false,
     cell: (context: CustomCellContext<IColumnsTableProduct>) => {
-      const { row, onUpdate } = context;
-      const datas = row.original;
+      const { row, onUpdate, onDelete, onDetail } = context
+      const datas = row.original
 
       return h(
         'div',
         { class: 'relative' },
         h(Dropdown, {
+          label: 'Produto',
           datas,
           onUpdate: (data: any) => {
             if (onUpdate) {
-              onUpdate(data);
+              onUpdate(data)
             }
           },
+          onDelete: (data: any) => {
+            if (onDelete) {
+              onDelete(data)
+            }
+          },
+          onDetail: (data: any) => {
+            if (onDetail) {
+              onDetail(data)
+            }
+          }
         })
-      );
-    },
+      )
+    }
   }
 ]

@@ -76,6 +76,7 @@ export const columnsIngredient: ColumnDef<IColumnsTableIngredient>[] = [
         'div',
         { class: 'relative' },
         h(Dropdown, {
+          label: 'Ingrediente',
           datas,
           onUpdate: (data: any) => {
             if (onUpdate) {

@@ -13,6 +13,7 @@ export interface IProduct {
     profit: number
     price_per_unit: number
     only: boolean
+    id_category: string
 }
 
 export interface IColumnsTableProduct extends IProduct{}

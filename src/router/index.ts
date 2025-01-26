@@ -1,22 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Precification from '../views/PrecificationView.vue'
 import LadingPageView from '../views/LadingPage.vue'
-import HomePrecificationView from '@/views/HomePrecificationView.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
 import LoginView from '../views/LoginView.vue'
 import LoginViewAdmin from '../views/admin/LoginViewAdmin.vue'
 import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
 import CreateAccountView from '@/views/CreateAccountView.vue'
-import HomePageView from '@/views/Menu/HomePageView.vue'
-import CartView from '@/views/Menu/CartView.vue'
+//import HomePageView from '@/views/Menu/HomePageView.vue'
+//import CartView from '@/views/Menu/CartView.vue'
 import Order from '@/views/OrderView.vue'
 import { Auth } from '@/auth/auth'
 import StockProduct from '@/views/StockProduct.vue'
-import SideBar from '@/views/MainLayout.vue'
+import MainLayout from '@/views/MainLayout.vue'
 import AddProduct from '@/views/AddProduct.vue'
 import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
+import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,22 +29,22 @@ const router = createRouter({
         public: true
       }
     },
-    {
-      path: '/menu',
-      name: 'homePageMenu',
-      component: HomePageView,
-      meta: {
-        public: true
-      }
-    },
-    {
-      path: '/menu/carrinho',
-      name: 'cartMenu',
-      component: CartView,
-      meta: {
-        public: true
-      }
-    },
+    // {
+    //   path: '/menu',
+    //   name: 'homePageMenu',
+    //   component: HomePageView,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
+    // {
+    //   path: '/menu/carrinho',
+    //   name: 'cartMenu',
+    //   component: CartView,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
     {
       path: '/login',
       name: 'login',
@@ -79,21 +79,21 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'home',
-      component: SideBar,
+      name: 'mainLayout',
+      component: MainLayout,
       meta: {
         auth: true
       },
       children: [
         {
-          path: 'precification',
-          component: HomePrecificationView,
+          path: 'home',
+          component: HomeView,
           name: 'Inicio'
         },
         {
           path: 'order',
           component: Order,
-          name: 'Pedido'
+          name: 'Lançar pedido'
         },
         {
           path: 'ingredients',

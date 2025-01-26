@@ -15,11 +15,7 @@ import * as z from 'zod'
 import Input from './ui/input/Input.vue'
 import Button from './ui/button/Button.vue'
 import SelectUnit from './SelectUnit.vue'
-// import Alert from './Alert.vue';
-// import MessageAlert from './MessageAlert.vue';
-import axios from 'axios';
 
-const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const showIconRotateCw = ref(false)
 const formSchema = toTypedSchema(z.object({
     id: z.number().optional(),
@@ -33,7 +29,7 @@ const props = defineProps<{
     selectdIngredient: IUpdateIngredient
 }>()
 
-const emit = defineEmits(['close', 'completed'])
+const emit = defineEmits(['close', 'dataToupdate'])
 
 const form = useForm({
     validationSchema: formSchema,
@@ -50,23 +46,16 @@ const onSubmit = form.handleSubmit(async (values) => {
             unit1: values.unit1,
             weight: values.weight,
         },
-        idUser: '8oZ_9G8At'
     }
-    await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
-        .then((response) => {
-            showIconRotateCw.value = false
-            emit('completed', response.data)
-        })
-        .catch(() => {
-            showIconRotateCw.value = false
-        })
-
+    showIconRotateCw.value = true
+    emit('dataToupdate', formatedData)
 })
 
 function close() {
     emit('close')
 }
 function propagateInitialValues() {
+
     if (props.selectdIngredient) {
         form.setValues({
             id: props.selectdIngredient.id,
@@ -77,16 +66,16 @@ function propagateInitialValues() {
         });
     }
 }
+
 onMounted(() => {
     propagateInitialValues()
 })
+
 </script>
 
 <template>
-    <div class="absolute flex justify-center w-full h-full mt-16" style="z-index: 10;">
-        <!-- <MessageAlert :message="'Tetsttsadkjh'"/>
-        <Alert :title="'Teste'" :description="'jkhasdhkdsakhjsadhjksadhjlkjf'" style="z-index: 10;"></Alert> -->
-        <div class="flex w-[80%] h-[25dvh] bg-white border border-[#d1cece] rounded-lg overflow-auto">
+    <div class="absolute" style="z-index: 10;">
+        <div class="flex w-[95%] h-[25dvh] bg-white border border-[#d1cece] rounded-lg overflow-auto">
             <form @submit.prevent="onSubmit" class="flex flex-col gap-4 p-4 w-full">
                 <!-- Botão de Fechar e Linha -->
                 <div class="flex flex-col w-full">
@@ -96,10 +85,7 @@ onMounted(() => {
                             <X class="text-[#8095c7]" />
                         </Button>
                     </div>
-                    <!-- Linha de Divisão -->
-                    <!-- <div class="w-full h-[1px] bg-slate-400 mt-2"></div> -->
                 </div>
-
                 <!-- Campos do Formulário -->
                 <div class="grid grid-cols-2 gap-4 w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     <!-- Nome -->
@@ -112,7 +98,6 @@ onMounted(() => {
                             <FormMessage />
                         </FormItem>
                     </FormField>
-
                     <!-- Unidade -->
                     <FormField name="unit1" v-slot="{ field }">
                         <FormItem>
@@ -123,7 +108,6 @@ onMounted(() => {
                             <FormMessage />
                         </FormItem>
                     </FormField>
-
                     <!-- Peso -->
                     <FormField name="weight" v-slot="{ field }">
                         <FormItem>
@@ -134,7 +118,6 @@ onMounted(() => {
                             <FormMessage />
                         </FormItem>
                     </FormField>
-
                     <!-- Preço -->
                     <FormField name="price" v-slot="{ field }">
                         <FormItem>
@@ -146,7 +129,6 @@ onMounted(() => {
                         </FormItem>
                     </FormField>
                 </div>
-
                 <!-- Botão de Salvar -->
                 <div class="w-full mt-auto mb-auto text-right">
                     <Button type="submit" class="bg-[#8095c7]">
@@ -157,5 +139,4 @@ onMounted(() => {
             </form>
         </div>
     </div>
-
 </template>
