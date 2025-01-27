@@ -63,7 +63,8 @@ export default {
       }
       const { data } = await axios.patch(
         urlApiBackEnd + '/product/ingredient/specific',
-        formatedData
+        formatedData,
+        {withCredentials: true}
       )
 
       if (data.updatedNumbersIngredient.quantityOfProductsChanged > 1) {

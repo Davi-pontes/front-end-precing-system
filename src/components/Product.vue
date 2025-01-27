@@ -45,7 +45,8 @@ export default {
     if (this.idProduct) {
       await axios
         .get(urlApiBackEnd + '/product/specific', {
-          params: { id: this.idProduct }
+          params: { id: this.idProduct },
+          withCredentials: true
         })
         .then((response) => {
           const { data } = response
@@ -100,7 +101,7 @@ export default {
     },
     async sendDatasForDataBase() {
       await axios
-        .post(urlApiBackEnd + '/product/only', this.datasProduct)
+        .post(urlApiBackEnd + '/product/only', this.datasProduct,{withCredentials: true})
         .then((response) => {
           this.$emit('addNewProduct', response.data)
         })

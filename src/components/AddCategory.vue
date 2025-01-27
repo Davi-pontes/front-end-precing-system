@@ -1,5 +1,5 @@
 <script lang="ts">
-import axios from 'axios'
+import axios from 'axios';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 export default {
@@ -24,7 +24,7 @@ export default {
       const dataFormated = this.prepareData()
 
       await axios
-        .post(urlApiBackEnd + '/category', dataFormated)
+        .post(urlApiBackEnd + '/category', dataFormated,{withCredentials: true})
         .then((response) => {
           this.$emit('updateCategory', response.data)
         })

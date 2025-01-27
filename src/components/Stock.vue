@@ -91,7 +91,7 @@ export default {
       const calculateTotalCash =
         this.allIngredients[index].price * this.allIngredients[index].quantity_in_stock
       this.allIngredients[index].total_cash_in_stock = parseFloat(calculateTotalCash.toFixed(2))
-      await axios.patch(urlApiBackEnd + '/product/ingredient/stock', this.allIngredients[index])
+      await axios.patch(urlApiBackEnd + '/product/ingredient/stock', this.allIngredients[index],{withCredentials: true})
       this.calculateMoneyInStock()
     },
     updateQuantityDays(value: number) {
@@ -113,7 +113,7 @@ export default {
         quantityDays: this.quantityDays
       }
 
-      const calculateDatas = await axios.post(urlApiBackEnd + '/stock', formateDatas)
+      const calculateDatas = await axios.post(urlApiBackEnd + '/stock', formateDatas,{withCredentials: true})
 
       await calculateDatas.data.map((it: IStockToPeriod) => {
         if (it.state === 'inStock') {

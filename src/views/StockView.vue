@@ -30,7 +30,7 @@ function formatedDataToCombobox(data: any) {
   })
 }
 function handleItemSelected(item: ICommandItem) {
-  console.log(item)
+  //console.log(item)
 }
 getAllIngredients()
 </script>

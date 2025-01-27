@@ -43,7 +43,8 @@ function handleRemoveAlertError() {
 async function getStockAllProductByIdUser() {
   try {
     const { data } = await axios.get(urlComunicationBackEnd + '/stock', {
-      params: { idUser }
+      params: { idUser },
+      withCredentials: true
     })
     allProductStockByUser.value = data
 
@@ -59,7 +60,8 @@ async function getStockAllProductByIdUser() {
 async function getAllProductByIdUser() {
   try {
     const { data } = await axios.get(urlComunicationBackEnd + '/product', {
-      params: { idUser }
+      params: { idUser },
+      withCredentials: true
     })
     allUserProducts.value = data
     formatedDataToCombobox(allUserProducts.value)

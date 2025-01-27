@@ -63,7 +63,8 @@ function removeAlertError() {
 async function getCategoryData() {
   try {
     const { data } = await axios.get(urlApiBackEnd + '/category/only', {
-      params: { idUser: idUser }
+      params: { idUser: idUser },
+      withCredentials: true
     })
     formatedDataToCombobox(data)
   } catch (error) {
@@ -89,7 +90,8 @@ function handleItemSelected(item: ICommandItem) {
 async function getProductData() {
   try {
     const { data } = await axios.get(urlApiBackEnd + '/product/specific', {
-      params: { id: idProduct }
+      params: { id: idProduct },
+      withCredentials: true
     })
     datasProduct.value = {
       nameProduct: data.name,
@@ -125,7 +127,7 @@ async function sendDatasForDataBase() {
       handleError('Selecione uma categoria.')
       return
     }
-    const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value)
+    const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value,{withCredentials: true})
 
     if (data) handleAlert('Produto adicionado com sucesso!')
     clearDatas()

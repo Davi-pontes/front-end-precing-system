@@ -1,5 +1,5 @@
 <script lang="ts">
-import axios from 'axios'
+import axios from 'axios';
 import type { RouteRecordName } from 'vue-router'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
@@ -28,9 +28,7 @@ export default {
             email: this.email,
             password: this.password
           },
-          {
-            withCredentials: true
-          }
+          {withCredentials: true}
         )
         localStorage.setItem('User', JSON.stringify(data))
 

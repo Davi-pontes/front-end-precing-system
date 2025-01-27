@@ -65,7 +65,8 @@ function removeAlertError() {
 async function getPaymentMethodByIdUser() {
   try {
     const { data } = await axios.get(urlApiBackEnd + '/payment/method', {
-      params: { idUser: idUser }
+      params: { idUser: idUser },
+      withCredentials: true
     })
     formatedTypePayment(data)
   } catch (error) {

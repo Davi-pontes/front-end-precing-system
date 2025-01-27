@@ -36,7 +36,7 @@ async function handleSendCategory() {
   try {
     const dataFormated = prepareData()
 
-    const { data } = await axios.post(urlApiBackEnd + '/category', dataFormated)
+    const { data } = await axios.post(urlApiBackEnd + '/category', dataFormated,{withCredentials: true})
     console.log(data)
   } catch (error) {
     console.log(error)

@@ -131,7 +131,7 @@ export default {
         await axios.patch(urlApiBackEnd + '/category', {
           idCategory: specificCategory.id,
           params: { name: specificCategory.name, user_id: specificCategory.user_id }
-        })
+        },{withCredentials: true})
       } catch (error) {
         alert('Não foi possível atualizar o nome da categoria.')
       }

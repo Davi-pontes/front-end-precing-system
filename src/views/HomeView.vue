@@ -77,7 +77,8 @@ async function handleDelete(dataToDeleted: any) {
     const { data } = await axios.delete(urlApiBackEnd + '/product', {
       params: {
         id: dataToDeleted.id_product
-      }
+      },
+      withCredentials: true
     })
     if (data) {
       handleAlert('Produto deletado com sucesso!')

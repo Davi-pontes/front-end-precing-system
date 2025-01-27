@@ -253,7 +253,7 @@ export default {
         .then(() => {
           this.returnToHomePage()
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     sendUpdateData(data: object, id_product: string): void {
       axios
@@ -266,7 +266,7 @@ export default {
         .then(() => {
           this.returnToHomePage()
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     getQueryIdProduct(): void {
       this.id_product = this.$route.query.idP as string
@@ -295,20 +295,20 @@ export default {
           this.pricePerUnit = response.data.price_per_unit
           this.isJoker = response.data.is_joker
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     async getProductIngredient() {
-      await axios
-        .get(urlApiBackEnd + '/product/ingredient', {
-          params: {
-            id: this.id_product
-          }
-        })
+      await axios.get(urlApiBackEnd + '/product/ingredient', {
+        params: {
+          id: this.id_product
+        },
+        withCredentials: true,
+      })
         .then((response) => {
           this.all = response.data
           this.updateAllNumbers(true)
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     async getProducsJoker() {
       const { data } = await axios.get(urlApiBackEnd + '/product/joker', {
@@ -337,13 +337,8 @@ export default {
     <div class="header">
       <div class="header-label">
         <div class="name-product">
-          <input
-            class="custom-input"
-            type="text"
-            v-model="nameProduct"
-            @change="updateNameProduct"
-            placeholder="Nome do produto"
-          />
+          <input class="custom-input" type="text" v-model="nameProduct" @change="updateNameProduct"
+            placeholder="Nome do produto" />
         </div>
         <div class="joker">
           <p>Produto coringa?</p>
@@ -376,12 +371,8 @@ export default {
 
               <td><input type="text" placeholder="MATERIAL" v-model="data.name" /></td>
               <td>
-                <input
-                  type="number"
-                  placeholder="PESO"
-                  v-model="data.weight"
-                  @change="calculateCostOfAnIngredient(index)"
-                />
+                <input type="number" placeholder="PESO" v-model="data.weight"
+                  @change="calculateCostOfAnIngredient(index)" />
               </td>
               <td>
                 <select name="SelectedUnit1" v-model="data.unit1">
@@ -393,20 +384,12 @@ export default {
               </td>
               <td>
                 <span>R$ </span>
-                <input
-                  type="NUMBER"
-                  placeholder="CUSTO"
-                  v-model="data.price"
-                  @change="calculateCostOfAnIngredient(index)"
-                />
+                <input type="NUMBER" placeholder="CUSTO" v-model="data.price"
+                  @change="calculateCostOfAnIngredient(index)" />
               </td>
               <td>
-                <input
-                  type="NUMBER"
-                  placeholder="QUANTIDADE"
-                  v-model="data.quantity"
-                  @change="calculateCostOfAnIngredient(index)"
-                />
+                <input type="NUMBER" placeholder="QUANTIDADE" v-model="data.quantity"
+                  @change="calculateCostOfAnIngredient(index)" />
               </td>
               <td>
                 <select name="SelectedUnit2" v-model="data.unit2">
@@ -426,18 +409,9 @@ export default {
       <div class="buttons">
         <div class="product-joker">
           <p>Produtos coringa:</p>
-          <select
-            name="productsJoker"
-            id="productsJoker"
-            v-model="productJokerSelected"
-            @change="addProductJoker"
-          >
+          <select name="productsJoker" id="productsJoker" v-model="productJokerSelected" @change="addProductJoker">
             <option disabled selected>Produtos Coringa</option>
-            <option
-              :value="productJoker"
-              v-for="(productJoker, index) in productsJoker"
-              :key="index"
-            >
+            <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
               {{ productJoker.name }}
             </option>
           </select>
@@ -563,6 +537,7 @@ export default {
   font-size: 14px;
   border-bottom: 2px solid #c8cacc;
 }
+
 .header-table span {
   display: block;
   font-weight: normal;
@@ -721,6 +696,7 @@ td {
   background-color: rgb(128, 149, 199);
   color: white;
 }
+
 .area-labor-cost {
   width: 100vw;
   height: 100vh;

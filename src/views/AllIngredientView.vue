@@ -62,9 +62,8 @@ function handleUpdate(dataSendPopUpIngredient: any) {
 async function sendDataToupdateIngredient(dataToUpdate: any) {
   try {
     dataToUpdate.idUser = idUser
-    const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', dataToUpdate)
-    console.log(data.updatedNumbersIngredient.quantityOfProductsChanged)
-
+    const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', dataToUpdate,{withCredentials: true})
+    
     const productsChanged = data.updatedNumbersIngredient.quantityOfProductsChanged
 
     handleAlert(

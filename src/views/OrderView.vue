@@ -76,7 +76,8 @@ function clearVariable() {
 async function getAllProductByIdUser() {
   try {
     const { data } = await axios.get(urlComunicationBackEnd + '/product', {
-      params: { idUser }
+      params: { idUser },
+      withCredentials: true
     })
     allUserProducts.value = data
 
@@ -87,7 +88,8 @@ async function getAllProductByIdUser() {
 }
 async function getPaymentMethodByIdUser() {
   const { data } = await axios.get(urlComunicationBackEnd + '/payment/method', {
-    params: { idUser }
+    params: { idUser },
+    withCredentials: true
   })
   paymentMethod.value = data
   formatedTypePayment(data)
@@ -95,7 +97,8 @@ async function getPaymentMethodByIdUser() {
 async function getAllOrderByIdUser() {
   try {
     const { data } = await axios.get(urlComunicationBackEnd + '/order', {
-      params: { idUser }
+      params: { idUser },
+      withCredentials: true
     })
     allUserORder.value = data
   } catch (error) {
@@ -120,7 +123,7 @@ async function sendOrder() {
       orderSummary: formatedSummaryOrderForSend
     }
 
-    const { data } = await axios.post(urlComunicationBackEnd + '/order', datasFormated)
+    const { data } = await axios.post(urlComunicationBackEnd + '/order', datasFormated,{withCredentials: true})
     allUserORder.value = [...allUserORder.value, data] as IOrder[]
     if (data) showMessageAlert.value = true
     clearVariable()
