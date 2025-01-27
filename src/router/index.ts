@@ -142,7 +142,7 @@ const router = createRouter({
       meta: {
         auth: true
       }
-    },
+    }
     // {
     //   path: '/ingredients/all',
     //   name: 'allIngredients',

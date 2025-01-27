@@ -24,19 +24,19 @@ export const columnsStockIngredient: ColumnDef<IColumnsTableStockIngredient>[] =
     enableHiding: false
   },
   {
-      accessorKey: 'name',
-      header: ({ column }) => {
-        return h(
-          Button,
-          {
-            variant: 'ghost',
-            onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-          },
-          () => ['Nome', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]
-        )
-      },
-      cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name'))
+    accessorKey: 'name',
+    header: ({ column }) => {
+      return h(
+        Button,
+        {
+          variant: 'ghost',
+          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+        },
+        () => ['Nome', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]
+      )
     },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name'))
+  },
   {
     accessorKey: 'weight',
     header: 'Peso'
@@ -59,5 +59,5 @@ export const columnsStockIngredient: ColumnDef<IColumnsTableStockIngredient>[] =
 
       return formatted
     }
-  },
+  }
 ]

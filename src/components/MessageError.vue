@@ -1,5 +1,5 @@
 <script lang="ts">
-import { TriangleAlert } from 'lucide-vue-next';
+import { TriangleAlert } from 'lucide-vue-next'
 export default {
   name: 'MessageAlert',
   components: {
@@ -12,12 +12,12 @@ export default {
     this.removeAlert()
   },
   methods: {
-    removeAlert(){
+    removeAlert() {
       setTimeout(() => {
         this.$emit('removeAlert')
-      },4000)
+      }, 4000)
     }
-  },
+  }
 }
 </script>
 
@@ -44,7 +44,9 @@ export default {
   margin-left: 40vw;
   color: red;
   border: 2px solid rgba(247, 98, 98, 0.411);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transform: translateY(2rem);
   opacity: 1;
   pointer-events: none;
@@ -56,7 +58,7 @@ export default {
   text-align: center;
   z-index: 999;
 }
-.message{
+.message {
   display: flex;
   gap: 1em;
 }

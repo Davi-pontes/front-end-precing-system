@@ -61,18 +61,20 @@ export default {
         },
         idUser: this.idUser
       }
-      const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', formatedData)
-      
-      if(data.updatedNumbersIngredient.quantityOfProductsChanged > 1){
+      const { data } = await axios.patch(
+        urlApiBackEnd + '/product/ingredient/specific',
+        formatedData
+      )
+
+      if (data.updatedNumbersIngredient.quantityOfProductsChanged > 1) {
         this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produtos foram alterados.`
-      }else {
+      } else {
         this.messageAlert = `${data.updatedNumbersIngredient.quantityOfProductsChanged} produto foi alterado.`
       }
       this.showAlert = true
     },
     timeoutAlert() {
       this.showAlert = false
-
     }
   }
 }
@@ -80,7 +82,7 @@ export default {
 
 <template>
   <main>
-    <Loading v-if="showLoading"/>
+    <Loading v-if="showLoading" />
     <NavBar :showButtonAddCategory="false" />
     <MessageAlert v-if="showAlert" :message="messageAlert" @removeAlert="timeoutAlert()" />
     <div class="showAllIngredients">
@@ -100,7 +102,11 @@ export default {
             <td>{{ ingredient.weight }}</td>
             <td>
               R$
-              <input type="number" v-model="ingredient.price" @change="updateProductIngredient(ingredient)" />
+              <input
+                type="number"
+                v-model="ingredient.price"
+                @change="updateProductIngredient(ingredient)"
+              />
             </td>
           </tr>
         </tbody>

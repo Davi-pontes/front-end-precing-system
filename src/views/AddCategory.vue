@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormMessage,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import axios from 'axios'
@@ -20,48 +20,45 @@ const route = useRoute()
 const idUser = route.query.id
 const nameCategory = ref('')
 
-const formSchema = toTypedSchema(z.object({
-    nameCategory: z.string().min(2).max(50),
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    nameCategory: z.string().min(2).max(50)
+  })
+)
 
 function prepareData(): object {
-    const dataForSend = { name: nameCategory.value, user_id: idUser }
+  const dataForSend = { name: nameCategory.value, user_id: idUser }
 
-    return dataForSend
+  return dataForSend
 }
 
 async function handleSendCategory() {
-    try {
-        const dataFormated = prepareData()
+  try {
+    const dataFormated = prepareData()
 
-        const { data } = await axios.post(urlApiBackEnd + '/category', dataFormated)
-        console.log(data);
-
-    } catch (error) {
-        console.log(error);
-    }
+    const { data } = await axios.post(urlApiBackEnd + '/category', dataFormated)
+    console.log(data)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const { isFieldDirty } = useForm({
-    validationSchema: formSchema,
+  validationSchema: formSchema
 })
 </script>
 
 <template>
-    <form class="w-2/3 space-y-6" @submit="handleSendCategory">
-        <FormField name="nameCategory" :validate-on-blur="!isFieldDirty">
-            <FormItem>
-                <FormControl>
-                    <Input type="text" placeholder="Adicione o nome da categoria" v-model="nameCategory" />
-                </FormControl>
-                <FormDescription>
-                    Categoria que agrupa diversos produtos.
-                </FormDescription>
-                <FormMessage />
-            </FormItem>
-        </FormField>
-        <Button type="submit" class="bg-muted">
-            Enviar
-        </Button>
-    </form>
+  <form class="w-2/3 space-y-6" @submit="handleSendCategory">
+    <FormField name="nameCategory" :validate-on-blur="!isFieldDirty">
+      <FormItem>
+        <FormControl>
+          <Input type="text" placeholder="Adicione o nome da categoria" v-model="nameCategory" />
+        </FormControl>
+        <FormDescription> Categoria que agrupa diversos produtos. </FormDescription>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+    <Button type="submit" class="bg-muted"> Enviar </Button>
+  </form>
 </template>

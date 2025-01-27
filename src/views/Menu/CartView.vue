@@ -1,15 +1,15 @@
 <script lang="ts">
-import Cart from '@/components/menu/Cart.vue';
+import Cart from '@/components/menu/Cart.vue'
 
 export default {
-    components: {
-        Cart
-    }
+  components: {
+    Cart
+  }
 }
 </script>
 
 <template>
-    <main>
-        <Cart/>
-    </main>
+  <main>
+    <Cart />
+  </main>
 </template>

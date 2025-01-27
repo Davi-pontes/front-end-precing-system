@@ -4,9 +4,9 @@ import {
   NumberFieldContent,
   NumberFieldDecrement,
   NumberFieldIncrement,
-  NumberFieldInput,
+  NumberFieldInput
 } from '@/components/ui/number-field'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const inputValue = ref(1)
 // defineProps<{
@@ -15,7 +15,7 @@ const inputValue = ref(1)
 </script>
 
 <template>
-   <NumberField v-model="inputValue" :min="1" class="border-none">
+  <NumberField v-model="inputValue" :min="1" class="border-none">
     <NumberFieldContent class="border-none">
       <NumberFieldDecrement class="border-none" />
       <NumberFieldInput class="border-none" />

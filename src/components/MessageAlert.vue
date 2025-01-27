@@ -8,12 +8,12 @@ export default {
     this.removeAlert()
   },
   methods: {
-    removeAlert(){
+    removeAlert() {
       setTimeout(() => {
         this.$emit('removeAlert')
-      },4000)
+      }, 4000)
     }
-  },
+  }
 }
 </script>
 
@@ -36,8 +36,10 @@ export default {
   background-color: white;
   margin-left: 10%;
   color: black;
-  border: 2px solid  rgba(164, 167, 172, 0.411);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 2px solid rgba(164, 167, 172, 0.411);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transform: translateY(2rem);
   opacity: 1;
   pointer-events: none;

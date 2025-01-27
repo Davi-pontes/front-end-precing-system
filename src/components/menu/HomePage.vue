@@ -80,9 +80,9 @@ export default {
             </div>
             <div class="absolute top-60 right-5 inline-block" v-if="cartCount > 0">
                 <!-- Ícone do carrinho -->
-                <!-- <i class="fas fa-shopping-cart text-3xl "></i> -->
-                <!-- Contador de produtos no carrinho -->
-                <!-- <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
+<!-- <i class="fas fa-shopping-cart text-3xl "></i> -->
+<!-- Contador de produtos no carrinho -->
+<!-- <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 
                      bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
                     {{ cartCount }}
                 </span>

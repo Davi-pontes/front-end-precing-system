@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { ref } from 'vue';
-import axios from 'axios';
-import TableComponent from "@/components/Table.vue"
-import { columnsStockIngredient } from '@/components/ColumnsStockIngredient';
-import type { ICommandItem } from '@/interface/Combobox';
-import Combobox from '@/components/Combobox.vue';
-import NumberField from '@/components/NumberField.vue';
+import { useRoute } from 'vue-router'
+import { ref } from 'vue'
+import axios from 'axios'
+import TableComponent from '@/components/Table.vue'
+import { columnsStockIngredient } from '@/components/ColumnsStockIngredient'
+import type { ICommandItem } from '@/interface/Combobox'
+import Combobox from '@/components/Combobox.vue'
+import NumberField from '@/components/NumberField.vue'
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 import { Button } from '@/components/ui/button'
 
@@ -14,7 +14,7 @@ const route = useRoute()
 const idUser = route.query.id
 const allIngredientStockByUser = ref([])
 const dataFormatedToComboBox = ref<ICommandItem[]>([])
-const selectedIngredient = ref('');
+const selectedIngredient = ref('')
 async function getAllIngredients() {
   const { data } = await axios.get(urlComunicationBackEnd + '/product/ingredient/all', {
     params: { idUser: idUser },
@@ -30,8 +30,7 @@ function formatedDataToCombobox(data: any) {
   })
 }
 function handleItemSelected(item: ICommandItem) {
-  console.log(item);
-
+  console.log(item)
 }
 getAllIngredients()
 </script>
@@ -41,8 +40,13 @@ getAllIngredients()
     <div class="w-[70%] h-[8em] border shadow-lg rounded-md p-4">
       <span class="font-medium text-xl">Atualize o estoque.</span>
       <div class="flex w-full h-[3em] gap-4 mt-4">
-        <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"
-          :items="dataFormatedToComboBox" v-model="selectedIngredient" @itemSelected="handleItemSelected" />
+        <Combobox
+          :titleInput="'Selecione um produto...'"
+          :titleSearch="'Pesquise um produto...'"
+          :items="dataFormatedToComboBox"
+          v-model="selectedIngredient"
+          @itemSelected="handleItemSelected"
+        />
         <div>
           <NumberField :min="0" class="border-none">
             <NumberFieldContent class="border rounded-md">
@@ -56,8 +60,11 @@ getAllIngredients()
       </div>
     </div>
     <div class="border shadow-lg rounded-md p-4 mt-7">
-      <TableComponent :columns="columnsStockIngredient" :data-props="allIngredientStockByUser"
-        :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }" />
+      <TableComponent
+        :columns="columnsStockIngredient"
+        :data-props="allIngredientStockByUser"
+        :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }"
+      />
     </div>
   </div>
 </template>

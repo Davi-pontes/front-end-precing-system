@@ -7,7 +7,7 @@ import Button from './ui/button/Button.vue'
 import Dropdown from './Dropdown.vue'
 
 interface CustomCellContext<TData> extends CellContext<TData, unknown> {
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: any) => void
 }
 
 export const columnsIngredient: ColumnDef<IColumnsTableIngredient>[] = [
@@ -69,8 +69,8 @@ export const columnsIngredient: ColumnDef<IColumnsTableIngredient>[] = [
     id: 'actions',
     enableHiding: false,
     cell: (context: CustomCellContext<IColumnsTableIngredient>) => {
-      const { row, onUpdate } = context;
-      const datas = row.original;
+      const { row, onUpdate } = context
+      const datas = row.original
 
       return h(
         'div',
@@ -80,11 +80,11 @@ export const columnsIngredient: ColumnDef<IColumnsTableIngredient>[] = [
           datas,
           onUpdate: (data: any) => {
             if (onUpdate) {
-              onUpdate(data);
+              onUpdate(data)
             }
-          },
+          }
         })
-      );
-    },
+      )
+    }
   }
 ]

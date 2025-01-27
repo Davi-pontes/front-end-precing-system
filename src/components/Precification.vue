@@ -69,7 +69,7 @@ export default {
       showMessage: false,
       message: '',
       changedSomething: false,
-      showLoading: false,
+      showLoading: false
     }
   },
   async created() {
@@ -95,7 +95,7 @@ export default {
       }
     },
     updateAllNumbers(functionThatCalled: boolean) {
-      if(this.id_product && !functionThatCalled) this.changedSomething = true
+      if (this.id_product && !functionThatCalled) this.changedSomething = true
       this.calculatecostOfAllIngredients()
       this.calculateCostFixed()
       this.calculateProfit()
@@ -166,8 +166,7 @@ export default {
       this.updateAllNumbers(true)
     },
     calculateCostOfAnIngredient(index: number): void {
-
-      if(this.id_product) this.changedSomething = true
+      if (this.id_product) this.changedSomething = true
 
       const resultvalidate = this.validateIfThereIsANumber0(index)
 
@@ -225,10 +224,10 @@ export default {
         const dataFormated = this.prepareData()
         if (this.changedSomething && this.id_product) {
           this.sendUpdateData(dataFormated, this.id_product)
-        } else if(!this.id_product){
+        } else if (!this.id_product) {
           this.sendNewData(dataFormated)
         } else {
-          this.$router.push({path: 'home'})
+          this.$router.push({ path: 'home' })
         }
       }
     },
@@ -254,7 +253,7 @@ export default {
         .then(() => {
           this.returnToHomePage()
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     sendUpdateData(data: object, id_product: string): void {
       axios
@@ -267,7 +266,7 @@ export default {
         .then(() => {
           this.returnToHomePage()
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     getQueryIdProduct(): void {
       this.id_product = this.$route.query.idP as string
@@ -296,7 +295,7 @@ export default {
           this.pricePerUnit = response.data.price_per_unit
           this.isJoker = response.data.is_joker
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     async getProductIngredient() {
       await axios
@@ -309,7 +308,7 @@ export default {
           this.all = response.data
           this.updateAllNumbers(true)
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     async getProducsJoker() {
       const { data } = await axios.get(urlApiBackEnd + '/product/joker', {
@@ -326,8 +325,8 @@ export default {
       this.all.splice(index, 1)
       this.updateAllNumbers(true)
     },
-    updateNameProduct(){
-      if(this.id_product) this.changedSomething = true
+    updateNameProduct() {
+      if (this.id_product) this.changedSomething = true
     }
   }
 }
@@ -338,7 +337,13 @@ export default {
     <div class="header">
       <div class="header-label">
         <div class="name-product">
-          <input class="custom-input" type="text" v-model="nameProduct" @change="updateNameProduct" placeholder="Nome do produto">
+          <input
+            class="custom-input"
+            type="text"
+            v-model="nameProduct"
+            @change="updateNameProduct"
+            placeholder="Nome do produto"
+          />
         </div>
         <div class="joker">
           <p>Produto coringa?</p>
@@ -371,8 +376,12 @@ export default {
 
               <td><input type="text" placeholder="MATERIAL" v-model="data.name" /></td>
               <td>
-                <input type="number" placeholder="PESO" v-model="data.weight"
-                  @change="calculateCostOfAnIngredient(index)" />
+                <input
+                  type="number"
+                  placeholder="PESO"
+                  v-model="data.weight"
+                  @change="calculateCostOfAnIngredient(index)"
+                />
               </td>
               <td>
                 <select name="SelectedUnit1" v-model="data.unit1">
@@ -384,12 +393,20 @@ export default {
               </td>
               <td>
                 <span>R$ </span>
-                <input type="NUMBER" placeholder="CUSTO" v-model="data.price"
-                  @change="calculateCostOfAnIngredient(index)" />
+                <input
+                  type="NUMBER"
+                  placeholder="CUSTO"
+                  v-model="data.price"
+                  @change="calculateCostOfAnIngredient(index)"
+                />
               </td>
               <td>
-                <input type="NUMBER" placeholder="QUANTIDADE" v-model="data.quantity"
-                  @change="calculateCostOfAnIngredient(index)" />
+                <input
+                  type="NUMBER"
+                  placeholder="QUANTIDADE"
+                  v-model="data.quantity"
+                  @change="calculateCostOfAnIngredient(index)"
+                />
               </td>
               <td>
                 <select name="SelectedUnit2" v-model="data.unit2">
@@ -409,9 +426,18 @@ export default {
       <div class="buttons">
         <div class="product-joker">
           <p>Produtos coringa:</p>
-          <select name="productsJoker" id="productsJoker" v-model="productJokerSelected" @change="addProductJoker">
+          <select
+            name="productsJoker"
+            id="productsJoker"
+            v-model="productJokerSelected"
+            @change="addProductJoker"
+          >
             <option disabled selected>Produtos Coringa</option>
-            <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
+            <option
+              :value="productJoker"
+              v-for="(productJoker, index) in productsJoker"
+              :key="index"
+            >
               {{ productJoker.name }}
             </option>
           </select>
@@ -518,7 +544,6 @@ export default {
   color: rgba(255, 255, 255, 0.5);
 }
 
-
 .joker {
   display: flex;
   align-items: center;
@@ -540,7 +565,7 @@ export default {
 }
 .header-table span {
   display: block;
-  font-weight: normal; 
+  font-weight: normal;
   font-size: 12px;
 }
 
@@ -696,7 +721,7 @@ td {
   background-color: rgb(128, 149, 199);
   color: white;
 }
-.area-labor-cost{
+.area-labor-cost {
   width: 100vw;
   height: 100vh;
   background-color: rgb(128, 149, 199);

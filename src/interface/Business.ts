@@ -1,7 +1,7 @@
 export interface IBusiness {
-    name: string
-    opening: string
-    closing: string
-    state: string
-    information: string
+  name: string
+  opening: string
+  closing: string
+  state: string
+  information: string
 }

@@ -1,5 +1,5 @@
 export interface IOrderItems {
-    id: number;
-    quantity: number;
-    id_product: string;
-  }
+  id: number
+  quantity: number
+  id_product: string
+}

@@ -4,7 +4,6 @@ import AddCategory from './AddCategory.vue'
 import ConfirmationModal from './ConfirmationModal.vue'
 import Product from './Product.vue'
 
-
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface IProduct {
   category: {
@@ -38,7 +37,7 @@ export default {
   components: {
     AddCategory,
     ConfirmationModal,
-    Product,
+    Product
   },
   data() {
     return {
@@ -80,7 +79,7 @@ export default {
     },
     goToEdit(idProduct: string, idCategory: string | null, isOnly: boolean): void {
       if (isOnly) {
-        console.log();
+        console.log()
         this.idProductToPopUp = idProduct
         this.showAddOnlyProduct = true
       } else {
@@ -161,65 +160,66 @@ export default {
       )
     },
     toggleBlur() {
-      this.isBlur = !this.isBlur;
+      this.isBlur = !this.isBlur
     },
     showModalFunction() {
       this.showModal = true
     },
     handleSelectChange(idCategory: string | null, event: Event) {
-      const target = event.target as HTMLSelectElement;
+      const target = event.target as HTMLSelectElement
 
       if (target && target.value === 'addOnlyProduct') {
-        this.showComponentAddOnlyProduct(idCategory);
+        this.showComponentAddOnlyProduct(idCategory)
       } else {
         this.goToAddProductCategory(idCategory)
       }
-      target.value = "Adicionar produto";
+      target.value = 'Adicionar produto'
     },
     showComponentAddOnlyProduct(idCategory: string | null) {
-      idCategory ? this.idCategoryToAddOnlyProduct = idCategory : this.idCategoryToAddOnlyProduct = ''
+      idCategory
+        ? (this.idCategoryToAddOnlyProduct = idCategory)
+        : (this.idCategoryToAddOnlyProduct = '')
 
       this.showAddOnlyProduct = true
     },
     addNewProductInArray(dataProduct: any) {
-      const categoryToAddProduct = this.allProduct.findIndex(category => category.category.id === dataProduct.id_category)
+      const categoryToAddProduct = this.allProduct.findIndex(
+        (category) => category.category.id === dataProduct.id_category
+      )
 
       this.allProduct[categoryToAddProduct].products.push(dataProduct)
 
       this.showAddOnlyProduct = false
     },
     onDragStart(product: any, indexProduct: number) {
-      this.draggedIndex = indexProduct;
+      this.draggedIndex = indexProduct
     },
     onDragOver(indexProduct: number, indexCategory: number) {
       // Mover o item apenas se o índice atual for diferente do índice arrastado
       if (this.draggedIndex !== indexProduct) {
         // Remover o item da posição inicial
-        const movedItem = this.allProduct[indexCategory].products.splice(this.draggedIndex, 1)[0];
+        const movedItem = this.allProduct[indexCategory].products.splice(this.draggedIndex, 1)[0]
 
         // Inserir o item na nova posição
-        this.allProduct[indexCategory].products.splice(indexProduct, 0, movedItem);
+        this.allProduct[indexCategory].products.splice(indexProduct, 0, movedItem)
 
         // Atualizar o índice arrastado para o índice atual
-        this.draggedIndex = indexProduct;
+        this.draggedIndex = indexProduct
       }
     },
     onDrop(indexProduct: number, indexCategory: number) {
       // console.log("Dropped at index", indexProduct);
-
       // // Valida se o índice inicial e o índice de destino são diferentes
       // if (this.draggedIndex !== null && this.draggedIndex !== indexProduct) {
       //   // Move o item no array de produtos
       //   const movedItem = this.allProduct[indexCategory].products.splice(this.draggedIndex, 1)[0];
       //   this.allProduct[indexCategory].products.splice(indexProduct, 0, movedItem);
       // }
-
       // // Limpa o índice inicial após o drop
       // this.draggedIndex = null;
     },
     onDragEnd() {
-      console.log('OndragEnd');
-
+      console.log('OndragEnd')
     },
     clearDataSentToPopUpAndClose() {
       this.showAddOnlyProduct = false
@@ -232,83 +232,124 @@ export default {
 
 <template>
   <main>
-      <Product v-if="showAddOnlyProduct" :idCategory="idCategoryToAddOnlyProduct" :idProduct="idProductToPopUp"
-        @addNewProduct="addNewProductInArray" @closeScreenAddOnlyProduct="clearDataSentToPopUpAndClose"></Product>
-      <ConfirmationModal v-if="showModal" :text="textModel" />
-      <div class="flex h-11 gap-3">
-        <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
-          {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
-        </button>
-        <button @click="addNewCategory" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
-          Adicionar categoria
-        </button>
+    <Product
+      v-if="showAddOnlyProduct"
+      :idCategory="idCategoryToAddOnlyProduct"
+      :idProduct="idProductToPopUp"
+      @addNewProduct="addNewProductInArray"
+      @closeScreenAddOnlyProduct="clearDataSentToPopUpAndClose"
+    ></Product>
+    <ConfirmationModal v-if="showModal" :text="textModel" />
+    <div class="flex h-11 gap-3">
+      <button @click="toggleBlur" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
+        {{ isBlur ? 'Remover desfoque' : 'Desfocar números' }}
+      </button>
+      <button @click="addNewCategory" class="bg-[rgb(128,149,199)] text-white px-4 py-2 rounded">
+        Adicionar categoria
+      </button>
+    </div>
+    <AddCategory
+      v-if="showAddCategory"
+      :nameUser="nameUser"
+      :idUser="idUser"
+      @updateCategory="updateCategory"
+      @cancelAddNewCategory="closeAddCategory"
+    />
+    <div class="flex justify-center w-full h-full" v-if="allProduct.length === 0">
+      <button
+        class="border border-[#8095c7] bg-transparent rounded-md p-1.5 text-xl text-[#d1cece] cursor-pointer transition duration-800 hover:bg-transparent hover:text-black"
+        @click="addNewCategory"
+      >
+        Adicione uma categoria
+      </button>
+    </div>
+    <div
+      class="flex flex-col mt-1"
+      v-for="(categoryAndProducts, indexCategory) of allProduct"
+      :key="indexCategory"
+    >
+      <div class="name-category">
+        <input
+          class="h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"
+          type="text"
+          v-model="categoryAndProducts.category.name"
+          @change="sendUpdateCategory(categoryAndProducts.category)"
+        />
+        <div class="flex items-center justify-between">
+          <select
+            class="btn-add-product hidden md:flex md:items-center md:justify-center outline-none"
+            @change.prevent="handleSelectChange(categoryAndProducts.category.id, $event)"
+            ref="selectElement"
+          >
+            <option disabled selected>Adicionar produto</option>
+            <option value="addWithPricing" class="text-black">Adicionar com precificação</option>
+            <option value="addOnlyProduct" class="text-black">Adicionar sem precificação</option>
+          </select>
+          <button
+            class="btn-delete hidden md:flex md:items-center md:justify-center h-7"
+            @click="deleteCategory(categoryAndProducts.category.id)"
+          >
+            X
+          </button>
+        </div>
       </div>
-      <AddCategory v-if="showAddCategory" :nameUser="nameUser" :idUser="idUser" @updateCategory="updateCategory"
-        @cancelAddNewCategory="closeAddCategory" />
-      <div class="flex justify-center w-full h-full" v-if="allProduct.length === 0">
-        <button
-          class="border border-[#8095c7] bg-transparent rounded-md p-1.5 text-xl text-[#d1cece] cursor-pointer transition duration-800 hover:bg-transparent hover:text-black"
-          @click="addNewCategory">
-          Adicione uma categoria
-        </button>
-      </div>
-      <div class="flex flex-col mt-1" v-for="(categoryAndProducts, indexCategory) of allProduct" :key="indexCategory">
-        <div class="name-category">
-          <input
-            class="h-[3vh] ml-4 pl-3 pb-[0.3em] border-none bg-transparent border-b border-white text-white text-base overflow-hidden outline-none"
-            type="text" v-model="categoryAndProducts.category.name"
-            @change="sendUpdateCategory(categoryAndProducts.category)" />
-          <div class="flex items-center justify-between">
-            <select class="btn-add-product hidden md:flex md:items-center md:justify-center outline-none"
-              @change.prevent="handleSelectChange(categoryAndProducts.category.id, $event)" ref="selectElement">
-              <option disabled selected>Adicionar produto</option>
-              <option value="addWithPricing" class="text-black">Adicionar com precificação</option>
-              <option value="addOnlyProduct" class="text-black">Adicionar sem precificação</option>
-            </select>
-            <button class="btn-delete hidden md:flex md:items-center md:justify-center h-7"
-              @click="deleteCategory(categoryAndProducts.category.id)">
+      <table class="w-full text-xs md:text-base">
+        <tr class="h-10">
+          <th colspan="3"></th>
+          <th>PRODUTO</th>
+          <th>RENDIMENTO</th>
+          <th>CUSTO TOTAL</th>
+          <th>PREÇO DE VENDA</th>
+          <th>LUCRO</th>
+        </tr>
+        <tr
+          class="line-table"
+          draggable="true"
+          v-for="(product, indexProduct) of categoryAndProducts.products"
+          :key="indexProduct"
+          @dragstart="onDragStart(product, indexProduct)"
+          @dragover.prevent="onDragOver(indexProduct, indexCategory)"
+          @drop="onDrop(indexProduct, indexCategory)"
+          @dragend="onDragEnd"
+        >
+          <td>
+            <button
+              class="hidden md:block text-red-500"
+              @click="deleteProduct(product.id_product, indexCategory)"
+            >
               X
             </button>
-          </div>
-        </div>
-        <table class="w-full text-xs md:text-base">
-          <tr class="h-10">
-            <th colspan="3"></th>
-            <th>PRODUTO</th>
-            <th>RENDIMENTO</th>
-            <th>CUSTO TOTAL</th>
-            <th>PREÇO DE VENDA</th>
-            <th>LUCRO</th>
-          </tr>
-          <tr class="line-table" draggable="true" v-for="(product, indexProduct) of categoryAndProducts.products"
-            :key="indexProduct" @dragstart="onDragStart(product, indexProduct)"
-            @dragover.prevent="onDragOver(indexProduct, indexCategory)" @drop="onDrop(indexProduct, indexCategory)"
-            @dragend="onDragEnd">
-            <td>
-              <button class="hidden md:block text-red-500" @click="deleteProduct(product.id_product, indexCategory)">
-                X
-              </button>
-            </td>
-            <td>
-              <button class="hidden md:block"
-                @click="goToEdit(product.id_product, categoryAndProducts.category.id, product.only)">
-                <i class="fa-regular fa-eye"></i>
-              </button>
-            </td>
-            <td>
-              <button class="hidden md:block"
-                @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)">
-                <i class="fa-regular fa-copy"></i>
-              </button>
-            </td>
-            <td>{{ product.name }}</td>
-            <td :class="{ 'blur-sm': isBlur }">{{ product.income }}</td>
-            <td :class="['text-red-500', { 'blur-sm': isBlur }]">R$ {{ product.revenue_cost.toFixed(2) }}</td>
-            <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.price_per_unit.toFixed(2) }}</td>
-            <td :class="['text-green-600', { 'blur-sm': isBlur }]">R$ {{ product.profit.toFixed(2) }}</td>
-          </tr>
-        </table>
-      </div>
+          </td>
+          <td>
+            <button
+              class="hidden md:block"
+              @click="goToEdit(product.id_product, categoryAndProducts.category.id, product.only)"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </td>
+          <td>
+            <button
+              class="hidden md:block"
+              @click="duplicateProdut(product.id_product, categoryAndProducts.category.id)"
+            >
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </td>
+          <td>{{ product.name }}</td>
+          <td :class="{ 'blur-sm': isBlur }">{{ product.income }}</td>
+          <td :class="['text-red-500', { 'blur-sm': isBlur }]">
+            R$ {{ product.revenue_cost.toFixed(2) }}
+          </td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">
+            R$ {{ product.price_per_unit.toFixed(2) }}
+          </td>
+          <td :class="['text-green-600', { 'blur-sm': isBlur }]">
+            R$ {{ product.profit.toFixed(2) }}
+          </td>
+        </tr>
+      </table>
+    </div>
   </main>
 </template>
 
