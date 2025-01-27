@@ -28,9 +28,19 @@ const selectedProduct = ref('')
 const itemSelected = ref<ICommandItem>()
 const dataFormatedToComboBox = ref<ICommandItem[]>([])
 const inputUpdateStock = ref(0)
+const messageForAlert = ref('')
 const showMessageAlert = ref(false)
 const messageErro = ref('')
 const showError = ref(false)
+
+function handleAlert(message: string) {
+  messageForAlert.value = message
+  showMessageAlert.value = true
+}
+// Função para remover alertas
+function removeAlert() {
+  showMessageAlert.value = false
+}
 
 function handleError(message: string) {
   messageErro.value = message
@@ -98,7 +108,7 @@ function handleClickUpdate() {
     const numberToDecrement = stockProduct.quantity - inputUpdateStock.value
     handleDecrement(numberToDecrement, stockProduct.id_stock)
   } else {
-    showMessageAlert.value = true
+    handleError('Altere a quantidade.')
   }
 }
 async function handleIncrement(quantity: number, id_stock: number) {
@@ -106,8 +116,10 @@ async function handleIncrement(quantity: number, id_stock: number) {
     const { data } = await axios.post(urlComunicationBackEnd + '/stock/entry', {
       quantity: quantity,
       id_stock: id_stock
-    })
-
+    },
+      { withCredentials: true }
+    )
+    handleAlert('Estoque atualizado com sucesso!')
     updatedValue(data)
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -123,7 +135,7 @@ async function handleDecrement(quantity: number, id_stock: number) {
       quantity: quantity,
       id_stock: id_stock
     })
-
+    handleAlert('Estoque atualizado com sucesso!')
     updatedValue(data)
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -145,23 +157,15 @@ getAllProductByIdUser()
 </script>
 
 <template>
-  <MessageAlert
-    v-if="showMessageAlert"
-    :message="'Quantidade é a mesma que já existe no estoque!'"
-    @removeAlert="showMessageAlert = false"
-  />
+  <MessageAlert v-if="showMessageAlert" :message="messageForAlert"
+    @removeAlert="removeAlert" />
   <MessageError v-if="showError" :message="messageErro" @removeAlert="handleRemoveAlertError" />
   <div class="flex flex-col w-full h-full">
     <div class="w-[70%] h-[8em] border shadow-lg rounded-md p-4">
       <span class="font-medium text-xl">Atualize o estoque.</span>
       <div class="flex w-full h-[3em] gap-4 mt-4">
-        <Combobox
-          :titleInput="'Selecione um produto...'"
-          :titleSearch="'Pesquise um produto...'"
-          :items="dataFormatedToComboBox"
-          v-model="selectedProduct"
-          @itemSelected="handleItemSelected"
-        />
+        <Combobox :titleInput="'Selecione um produto...'" :titleSearch="'Pesquise um produto...'"
+          :items="dataFormatedToComboBox" v-model="selectedProduct" @itemSelected="handleItemSelected" />
         <div>
           <NumberField v-model="inputUpdateStock" :min="0" class="border-none">
             <NumberFieldContent class="border rounded-md">
@@ -175,11 +179,8 @@ getAllProductByIdUser()
       </div>
     </div>
     <div class="border shadow-lg rounded-md p-4 mt-7">
-      <TableComponent
-        :columns="columnsStockProduct"
-        :data-props="allProductStockByUser"
-        :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }"
-      >
+      <TableComponent :columns="columnsStockProduct" :data-props="allProductStockByUser"
+        :informations-input-search="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }">
       </TableComponent>
     </div>
   </div>

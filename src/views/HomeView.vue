@@ -44,8 +44,6 @@ async function getAllCategoryAndProduct(): Promise<void> {
     if (data)
       allCategoryAndProducts.value = { category: data.category, products: calculatePricePerUnit }
   } catch (error) {
-    console.log(error)
-
     if (error instanceof AxiosError) {
       handleError(error.response?.data)
     } else {

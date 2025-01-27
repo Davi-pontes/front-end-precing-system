@@ -249,19 +249,20 @@ export default {
     },
     sendNewData(data: object): void {
       axios
-        .post(urlApiBackEnd + '/product', data)
+        .post(urlApiBackEnd + '/product', data,{withCredentials:true})
         .then(() => {
           this.returnToHomePage()
         })
         .catch(() => { })
     },
-    sendUpdateData(data: object, id_product: string): void {
-      axios
+    async sendUpdateData(data: object, id_product: string): Promise<void> {
+      await axios
         .put(urlApiBackEnd + '/product', {
           data,
           params: {
             id: id_product
-          }
+          },
+          withCredentials:true
         })
         .then(() => {
           this.returnToHomePage()
@@ -279,7 +280,8 @@ export default {
         .get(urlApiBackEnd + '/product/specific', {
           params: {
             id: this.id_product
-          }
+          },
+          withCredentials:true
         })
         .then((response) => {
           this.nameProduct = response.data.name
