@@ -36,6 +36,7 @@ const datasProduct = ref({
   costProduct: 0,
   profit: 0,
   idCategory: idCategory.value,
+  qtdStock: 0,
   only: true
 })
 
@@ -58,7 +59,13 @@ function removeAlert() {
 function removeAlertError() {
   showMessageErro.value = false
 }
-
+async function handleSendDatasToBackend() {
+  if (idProduct) {
+    sendDataToUpdate()
+  } else {
+    sendDatasForDataBase()
+  }
+}
 // Função para buscar todas categoria do usuario
 async function getCategoryData() {
   try {
@@ -106,6 +113,7 @@ async function getProductData() {
       costProduct: data.revenue_cost,
       profit: data.profit,
       idCategory: data.id_category,
+      qtdStock: data.qtdStock,
       only: true
     }
     const productCategory = dataFormatedToComboBox.value.find((it) => it.value === data.id_category)
@@ -127,7 +135,7 @@ async function sendDatasForDataBase() {
       handleError('Selecione uma categoria.')
       return
     }
-    const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value,{withCredentials: true})
+    const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value, { withCredentials: true })
 
     if (data) handleAlert('Produto adicionado com sucesso!')
     clearDatas()
@@ -139,18 +147,43 @@ async function sendDatasForDataBase() {
     }
   }
 }
+async function sendDataToUpdate() {
+  try {
+    if (!idCategory.value || idCategory.value === '') {
+      handleError('Selecione uma categoria.')
+      return
+    }
+    console.log('Update');
+    
+    const { data } = await axios.put(urlApiBackEnd + '/product/only',datasProduct.value, {
+      params: {
+        id: idProduct
+      },
+      withCredentials: true
+    })
 
+    if (data) handleAlert('Produto alterado com sucesso!')
+    clearDatas()
+  } catch (error: any) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
+    }
+  }
+}
 // Função para calcular o custo total
 function calculateCostTotal() {
-  datasProduct.value.pricePerUnit =
+  const calculatePricePerUnit =
     (datasProduct.value.profit +
       datasProduct.value.priceProduct +
       datasProduct.value.tax +
       datasProduct.value.fixedCost +
       datasProduct.value.freigth) /
     datasProduct.value.qtdInBox
-}
 
+  datasProduct.value.pricePerUnit = parseFloat(calculatePricePerUnit.toFixed(2))
+}
 // Função para calcular o custo
 function calculateCost() {
   datasProduct.value.costProduct =
@@ -159,21 +192,18 @@ function calculateCost() {
     datasProduct.value.freigth +
     datasProduct.value.priceProduct
 }
-
 // Função para calcular o lucro
 function calculateProfit() {
   datasProduct.value.profit =
     (datasProduct.value.costProduct * datasProduct.value.profitPecentage) / 100
   calculateCostTotal()
 }
-
 // Função para atualizar números
 function updateAllNumbers() {
   calculateCost()
   calculateCostTotal()
   if (datasProduct.value.profit > 0) calculateProfit()
 }
-
 // Função para limpar os dados
 function clearDatas() {
   datasProduct.value = {
@@ -189,11 +219,21 @@ function clearDatas() {
     costProduct: 0,
     profit: 0,
     idCategory: idCategory.value,
+    qtdStock: 0,
     only: true
   }
-  selectedCategory.value = ''
 }
+function calculateprofitPercentage() {
+  const absoluteProfit = Math.abs(datasProduct.value.costProduct - datasProduct.value.pricePerUnit);
+  const profitPecentage = (absoluteProfit / datasProduct.value.costProduct) * 100
 
+  datasProduct.value.profitPecentage = parseFloat(profitPecentage.toFixed(2))
+
+  calculateProfit()
+}
+function handleChangedSellingPrice() {
+  calculateprofitPercentage()
+}
 getCategoryData()
 if (idProduct) {
   getProductData()
@@ -204,32 +244,17 @@ if (idProduct) {
   <main>
     <div class="flex w-full gap-2">
       <div class="bg-white w-[60vw] border rounded-md shadow-sm">
-        <MessageAlert
-          :message="messageForAlert"
-          @removeAlert="removeAlert"
-          v-if="showMessageAlert"
-        />
-        <MessageError
-          v-if="showMessageErro"
-          :message="messageForError"
-          @removeAlert="removeAlertError"
-        />
+        <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
+        <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
         <!-- Conteúdo principal -->
         <div class="flex flex-col w-[95%] h-[85%] mx-auto mt-2">
           <div class="flex flex-col gap-2">
             <span class="font-medium text-xl">Selecione a categoria do seu produto.</span>
             <div class="flex justify-between">
-              <Combobox
-                :titleInput="'Selecione uma categoria...'"
-                :titleSearch="'Pesquise por uma categoria...'"
-                :items="dataFormatedToComboBox"
-                v-model="selectedCategory"
-                @itemSelected="handleItemSelected"
-              />
-              <label
-                for="file-upload"
-                class="cursor-pointer flex items-center space-x-2 w-[30%] bg-muted text-white rounded px-4 py-2"
-              >
+              <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
+                :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
+              <label for="file-upload"
+                class="cursor-pointer flex items-center space-x-2 w-[30%] bg-muted text-white rounded px-4 py-2">
                 <FileUp />
                 <span>Exporta planilha</span>
               </label>
@@ -240,20 +265,11 @@ if (idProduct) {
             <!-- Primeira coluna -->
             <div class="flex flex-col w-1/2">
               <label for="name" class="mt-6">Nome do produto*</label>
-              <input
-                type="text"
-                placeholder="Nome do produto"
-                id="name"
-                class="border-2 outline-none rounded-md mb-4"
-                v-model="datasProduct.nameProduct"
-              />
+              <input type="text" placeholder="Nome do produto" id="name" class="border-2 outline-none rounded-md mb-4"
+                v-model="datasProduct.nameProduct" />
               <label for="description">Descrição</label>
-              <textarea
-                name="description"
-                id="description"
-                class="w-full h-20 rounded-md border-2"
-                v-model="datasProduct.descriptionProduct"
-              ></textarea>
+              <textarea name="description" id="description" class="w-full h-20 rounded-md border-2"
+                v-model="datasProduct.descriptionProduct"></textarea>
             </div>
             <!-- Segunda coluna -->
             <div class="flex h-full flex-col w-1/2">
@@ -261,76 +277,32 @@ if (idProduct) {
                 <!-- Primeiro bloco interno -->
                 <div class="flex flex-col w-1/2 mt-6">
                   <label for="price">Quantidade em caixa*</label>
-                  <input
-                    type="number"
-                    placeholder="1"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.qtdInBox"
-                    @change="updateAllNumbers"
-                  />
+                  <input type="number" placeholder="1" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.qtdInBox" @change="updateAllNumbers" />
                   <label for="stock">Imposto</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    id="stock"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.tax"
-                    @change="updateAllNumbers"
-                  />
+                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.tax" @change="updateAllNumbers" />
                   <label for="price">Frete</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.freigth"
-                    @change="updateAllNumbers"
-                  />
+                  <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.freigth" @change="updateAllNumbers" />
                   <label for="price">Quantidade em estoque</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.freigth"
-                    @change="updateAllNumbers"
-                  />
+                  <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.qtdStock" @change="updateAllNumbers" />
                 </div>
                 <!-- Segundo bloco interno -->
                 <div class="flex flex-col w-1/2 mt-6">
                   <label for="price">Preço de compra*</label>
-                  <input
-                    type="number"
-                    placeholder="1"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.priceProduct"
-                    @change="updateAllNumbers"
-                  />
+                  <input type="number" placeholder="1" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.priceProduct" @change="updateAllNumbers" />
                   <label for="stock">Custo operacional</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    id="stock"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.fixedCost"
-                    @change="updateAllNumbers"
-                  />
+                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.fixedCost" @change="updateAllNumbers" />
                   <label for="stock">Porcentagem de lucro*</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    id="stock"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.profitPecentage"
-                    @change="calculateProfit"
-                  />
+                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.profitPecentage" @change="calculateProfit" />
                   <label for="stock">Preço de venda</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    id="stock"
-                    class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.pricePerUnit"
-                    @change="calculateProfit"
-                  />
+                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
+                    v-model="datasProduct.pricePerUnit" @change="handleChangedSellingPrice" />
                 </div>
               </div>
             </div>
@@ -338,7 +310,7 @@ if (idProduct) {
         </div>
         <!-- Botão de salvar -->
         <div class="flex justify-end w-[95%] mx-auto mb-4">
-          <Button class="bg-muted" @click="sendDatasForDataBase()">SALVAR PRODUTO</Button>
+          <Button class="bg-muted" @click="handleSendDatasToBackend()">SALVAR PRODUTO</Button>
         </div>
       </div>
       <!-- Resumo do produto -->
