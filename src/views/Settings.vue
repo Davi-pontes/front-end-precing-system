@@ -1,38 +1,23 @@
 <script setup lang="ts">
 import axios, { AxiosError } from 'axios'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput
-} from '@/components/ui/number-field'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import type { IPaymentMethod, IPaymentMethodParams } from '@/interface/PaymentMethod'
+import CardPaymentMethod from '@/components/CardPaymentMethod.vue'
+import CardProfile from '@/components/CardProfile.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
 const idUser = route.query.id
-let isInitialLoad = true
 
 const showMessageAlert = ref<boolean>(false)
 const showMessageErro = ref<boolean>(false)
 const messageForAlert = ref<string>('')
 const messageForError = ref<string>('')
-const paymentMethodAltered = ref<IPaymentMethodParams[]>([])
+const userProfileData = ref()
+
 const paymentMethods = ref<IPaymentMethodParams[]>([])
 
 const typeTranslations: Record<string, string> = {
@@ -61,7 +46,22 @@ function removeAlert() {
 function removeAlertError() {
   showMessageErro.value = false
 }
-// Função para buscar todas categoria do usuario
+// Função para buscar todas as formas de pagamento do usuario
+async function getUserProfileData() {
+  try {
+    const { data } = await axios.get(urlApiBackEnd + '/user/' + idUser, {
+      withCredentials: true
+    })
+    userProfileData.value = data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
+    }
+  }
+}
+// Função para buscar todas as formas de pagamento do usuario
 async function getPaymentMethodByIdUser() {
   try {
     const { data } = await axios.get(urlApiBackEnd + '/payment/method', {
@@ -77,9 +77,10 @@ async function getPaymentMethodByIdUser() {
     }
   }
 }
-async function sendPaymentMethodsToUpdate() {
+// Função para enviar todas as formas de pagamento atualizadas
+async function sendPaymentMethodsToUpdate(paymentMethodToUpdate: any) {
   try {
-    const paymentMethodsAlteredAndFormated = formatedTypePaymentToSendBackEnd()
+    const paymentMethodsAlteredAndFormated = formatedTypePaymentToSendBackEnd(paymentMethodToUpdate)
 
     const { data } = await axios.put(
       urlApiBackEnd + '/payment/method',
@@ -91,7 +92,6 @@ async function sendPaymentMethodsToUpdate() {
     )
     if (data.length > 0) {
       handleAlert('Taxas de pagamento alteradas com sucesso!')
-      paymentMethodAltered.value = []
     }
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -111,8 +111,8 @@ function formatedTypePayment(methods: IPaymentMethod[]) {
 
   paymentMethods.value = formattedMethods
 }
-function formatedTypePaymentToSendBackEnd(): IPaymentMethod[] {
-  const formattedMethods = paymentMethods.value.map((method: IPaymentMethodParams) => ({
+function formatedTypePaymentToSendBackEnd(dataToFormated:any): IPaymentMethod[] {
+  const formattedMethods = dataToFormated.value.map((method: IPaymentMethodParams) => ({
     id: method.id,
     type: method.value,
     tax: method.tax,
@@ -121,25 +121,8 @@ function formatedTypePaymentToSendBackEnd(): IPaymentMethod[] {
 
   return formattedMethods
 }
-function validateIfPaymentMethodsHasChanged() {
-  if (paymentMethodAltered.value.length === 0) {
-    handleError('Nenhum método de pagamento foi alterado!')
-  } else {
-    sendPaymentMethodsToUpdate()
-  }
-}
-watch(
-  () => paymentMethods.value,
-  (newValue: IPaymentMethodParams[]) => {
-    if (isInitialLoad) {
-      isInitialLoad = false
-      return
-    }
-    paymentMethodAltered.value = newValue
-  },
-  { deep: true }
-)
 getPaymentMethodByIdUser()
+getUserProfileData()
 </script>
 
 <template>
@@ -150,39 +133,7 @@ getPaymentMethodByIdUser()
       @removeAlert="removeAlertError"
     />
     <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
-    <Card>
-      <CardHeader>
-        <CardTitle>Formas de pagamento</CardTitle>
-        <CardDescription> Insira a taxa cobrada para cada forma de pagamento. </CardDescription>
-      </CardHeader>
-      <CardContent v-for="(payment, index) in paymentMethods" :key="index">
-        <form class="flex justify-between items-center">
-          <Input :placeholder="payment.label" disabled class="w-2/3" />
-          <div class="w-1/4">
-            <NumberField
-              id="balance"
-              :min="0"
-              :default-value="0"
-              v-model="payment.tax"
-              :format-options="{
-                style: 'currency',
-                currency: 'BRL',
-                currencyDisplay: 'symbol',
-                currencySign: 'accounting'
-              }"
-            >
-              <NumberFieldContent>
-                <NumberFieldDecrement />
-                <NumberFieldInput />
-                <NumberFieldIncrement />
-              </NumberFieldContent>
-            </NumberField>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter class="border-t px-6 py-4 flex justify-end">
-        <Button class="bg-muted" @click="validateIfPaymentMethodsHasChanged()">Salvar</Button>
-      </CardFooter>
-    </Card>
+    <CardPaymentMethod :paymentMethods="paymentMethods" @update="sendPaymentMethodsToUpdate"/>
+    <CardProfile :dataProfileUser="userProfileData"/>
   </div>
 </template>
