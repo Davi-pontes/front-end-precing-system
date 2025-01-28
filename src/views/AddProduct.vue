@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import axios, { AxiosError } from 'axios'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
@@ -23,6 +23,9 @@ const showMessageAlert = ref(false)
 const showMessageErro = ref(false)
 const messageForAlert = ref('')
 const messageForError = ref('')
+const costProductDisplay = ref('0.00')
+const profitDisplay = ref('0.00')
+const pricePerUnitDisplay = ref('0.00')
 const datasProduct = ref({
   nameProduct: '',
   priceProduct: 0,
@@ -153,7 +156,7 @@ async function sendDataToUpdate() {
       handleError('Selecione uma categoria.')
       return
     }
-    const { data } = await axios.put(urlApiBackEnd + '/product/only',datasProduct.value, {
+    const { data } = await axios.put(urlApiBackEnd + '/product/only', datasProduct.value, {
       params: {
         id: idProduct
       },
@@ -161,7 +164,7 @@ async function sendDataToUpdate() {
     })
 
     if (data) handleAlert('Produto alterado com sucesso!')
-    
+
     clearDatas()
   } catch (error: any) {
     if (error instanceof AxiosError) {
@@ -233,6 +236,11 @@ function calculateprofitPercentage() {
 function handleChangedSellingPrice() {
   calculateprofitPercentage()
 }
+watch(() => datasProduct.value, () => {
+  costProductDisplay.value = datasProduct.value.costProduct.toFixed(2)
+  profitDisplay.value = datasProduct.value.profit.toFixed(2)
+  pricePerUnitDisplay.value = datasProduct.value.pricePerUnit.toFixed(2)
+}, { deep: true })
 getCategoryData()
 if (idProduct) {
   getProductData()
@@ -321,16 +329,16 @@ if (idProduct) {
         <div class="flex flex-col w-full gap-y-2">
           <div class="flex justify-between">
             <span class="opacity-40">Custo</span>
-            <span>R$ {{ datasProduct.costProduct.toFixed(2) }}</span>
+            <span>R$ {{ costProductDisplay }}</span>
           </div>
           <div class="flex justify-between">
             <span class="opacity-40">Lucro</span>
-            <span>R$ {{ datasProduct.profit.toFixed(2) }}</span>
+            <span>R$ {{ profitDisplay }}</span>
           </div>
           <div class="w-full h-[1px] bg-slate-400"></div>
           <div class="flex justify-between">
             <span class="opacity-40">Preço da unidade</span>
-            <span>R$ {{ datasProduct.pricePerUnit.toFixed(2) }}</span>
+            <span>R$ {{ pricePerUnitDisplay }}</span>
           </div>
         </div>
       </div>
