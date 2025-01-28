@@ -8,6 +8,7 @@ import { columnsProduct } from '@/components/ColumnsProduct'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import TagInput from '@/components/TagInput.vue'
+import { HttpGetCategory } from '@/http/category/get-category'
 
 const router = useRouter()
 
@@ -22,6 +23,7 @@ const allCategoryAndProducts = ref<ICategoryWithProducts>({
 })
 const nameUser = ref('')
 const idUser = ref('')
+const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 
 function getLocalStorage(): void {
   const localStorageObject = localStorage.getItem('User')
@@ -33,10 +35,8 @@ function getLocalStorage(): void {
 }
 async function getAllCategoryAndProduct(): Promise<void> {
   try {
-    const { data } = await axios.get(urlApiBackEnd + '/category', {
-      params: { idUser: idUser.value },
-      withCredentials: true
-    })
+    const data = await httpGetCategory.getAllCategoryAndProduct(idUser.value)
+    
     const calculatePricePerUnit = data.products.map((it: any) => {
       return { ...it, price_per_unit: it.final_recipe_price / it.income }
     })
