@@ -153,8 +153,6 @@ async function sendDataToUpdate() {
       handleError('Selecione uma categoria.')
       return
     }
-    console.log('Update');
-    
     const { data } = await axios.put(urlApiBackEnd + '/product/only',datasProduct.value, {
       params: {
         id: idProduct
@@ -163,6 +161,7 @@ async function sendDataToUpdate() {
     })
 
     if (data) handleAlert('Produto alterado com sucesso!')
+    
     clearDatas()
   } catch (error: any) {
     if (error instanceof AxiosError) {
