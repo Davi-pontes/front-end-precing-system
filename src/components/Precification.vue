@@ -5,7 +5,6 @@ import MessageAlert from './MessageAlert.vue'
 import Loading from './animations/Loading.vue'
 import Combobox from './Combobox.vue'
 import { HttpGetCategory } from '@/http/category/get-category'
-import test from 'node:test'
 import MessageError from './MessageError.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
@@ -348,7 +347,7 @@ handleError(message: string) {
     },
     async getCategory(){
       if(this.idUser) if (this.idUser) {
-    const data = await httpGetCategory.getAllCategory(this.idUser);
+    const data = await httpGetCategory.getAllCategory(this.idUser as string);
     this.formatedDataToCombobox(data);
   }
     },
