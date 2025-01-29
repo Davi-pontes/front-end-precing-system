@@ -16,6 +16,7 @@ import {
   NumberFieldInput
 } from '@/components/ui/number-field'
 import type { IPaymentMethodParams } from '@/interface/PaymentMethod'
+import { Button } from './ui/button';
 import { ref, watch } from 'vue';
 
 let isInitialLoad = true

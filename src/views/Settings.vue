@@ -61,6 +61,24 @@ async function getUserProfileData() {
     }
   }
 }
+async function updateDataUser(dataToUpdate: any) {
+  try {
+    const { data } = await axios.put(urlApiBackEnd + '/user', dataToUpdate, {
+      params: {idUser},
+      withCredentials: true
+    })
+    if(data) handleAlert('Usuario atualizado com sucesso!')
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
+    }
+  }
+}
+function handleUpdateProfileUser(dataToUpdate: any) {
+  updateDataUser(dataToUpdate)
+}
 // Função para buscar todas as formas de pagamento do usuario
 async function getPaymentMethodByIdUser() {
   try {
@@ -111,7 +129,7 @@ function formatedTypePayment(methods: IPaymentMethod[]) {
 
   paymentMethods.value = formattedMethods
 }
-function formatedTypePaymentToSendBackEnd(dataToFormated:any): IPaymentMethod[] {
+function formatedTypePaymentToSendBackEnd(dataToFormated: any): IPaymentMethod[] {
   const formattedMethods = dataToFormated.value.map((method: IPaymentMethodParams) => ({
     id: method.id,
     type: method.value,
@@ -127,13 +145,9 @@ getUserProfileData()
 
 <template>
   <div class="w-full">
-    <MessageError
-      v-if="showMessageErro"
-      :message="messageForError"
-      @removeAlert="removeAlertError"
-    />
+    <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
     <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
-    <CardPaymentMethod :paymentMethods="paymentMethods" @update="sendPaymentMethodsToUpdate"/>
-    <CardProfile :dataProfileUser="userProfileData"/>
+    <CardProfile class="mb-5" :dataProfileUser="userProfileData" @update="handleUpdateProfileUser" />
+    <CardPaymentMethod :paymentMethods="paymentMethods" @update="sendPaymentMethodsToUpdate" />
   </div>
 </template>
