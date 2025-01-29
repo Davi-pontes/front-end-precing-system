@@ -22,4 +22,16 @@ export class HttpGetCategory {
             throw new Error("Não foi possível buscar as categorias e produtos.");
         }
     }
+    async getAllCategory(idUser: string): Promise<ICategoryWithProducts> {
+        try {
+            const { data } = await this.axios.get(`${this.baseUrl}/category/only`, {
+                params: { idUser },
+                withCredentials: true,
+            });
+            return data;
+        } catch (error) {
+            console.error("Erro ao buscar categorias e produtos:", error);
+            throw new Error("Não foi possível buscar as categorias e produtos.");
+        }
+    }
 }

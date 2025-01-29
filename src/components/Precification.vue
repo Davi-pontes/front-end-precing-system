@@ -3,6 +3,10 @@ import axios from 'axios'
 import type { LocationQueryValue } from 'vue-router'
 import MessageAlert from './MessageAlert.vue'
 import Loading from './animations/Loading.vue'
+import Combobox from './Combobox.vue'
+import { HttpGetCategory } from '@/http/category/get-category'
+import test from 'node:test'
+import MessageError from './MessageError.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 interface Ingredient {
@@ -30,11 +34,13 @@ interface IProduct {
   price_per_unit: number
   costOfAllIngredients: number
 }
-
+const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 export default {
   components: {
     MessageAlert,
-    Loading
+    Loading,
+    Combobox,
+    MessageError
   },
   data() {
     return {
@@ -69,7 +75,11 @@ export default {
       showMessage: false,
       message: '',
       changedSomething: false,
-      showLoading: false
+      showLoading: false,
+      dataFormatedToComboBox: [],
+      selectedCategory:'',
+      messageForError: '',
+      showMessageErro: false
     }
   },
   async created() {
@@ -89,9 +99,11 @@ export default {
         this.getProduct()
         this.getProductIngredient()
         await this.getProducsJoker()
+        await this.getCategory()
       } else {
         this.getQueryIdCategory()
         await this.getProducsJoker()
+        await this.getCategory()
       }
     },
     updateAllNumbers(functionThatCalled: boolean) {
@@ -247,8 +259,22 @@ export default {
       })
       return isValid
     },
-    sendNewData(data: object): void {
-      axios
+    // Função para remover alertas
+    removeAlertError() {
+  this.showMessageErro = false
+},
+handleError(message: string) {
+  this.messageForError = message
+  this.showMessageErro = true
+},
+    async sendNewData(data: any) {
+      console.log(data);
+      
+      if(!data.productInformation.id_category){
+        this.handleError('Selecione uma categoria.')
+        return
+      }
+      await axios
         .post(urlApiBackEnd + '/product', data,{withCredentials:true})
         .then(() => {
           this.returnToHomePage()
@@ -320,6 +346,21 @@ export default {
 
       this.productsJoker = data
     },
+    async getCategory(){
+      if(this.idUser) if (this.idUser) {
+    const data = await httpGetCategory.getAllCategory(this.idUser);
+    this.formatedDataToCombobox(data);
+  }
+    },
+    formatedDataToCombobox(data: any) {
+    this.dataFormatedToComboBox = data.map((item: any) => {
+    return { value: item.id, label: item.name }
+  })
+},
+//Função de tratamento para dado selecionado no combobox
+ handleItemSelected(item: any) {
+  this.id_category = item.value as string
+},
     async returnToHomePage() {
       this.$router.push({ path: 'home' })
     },
@@ -336,12 +377,15 @@ export default {
 <template>
   <main>
     <Loading v-if="showLoading" />
+    <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
     <div class="header">
       <div class="header-label">
         <div class="name-product">
           <input class="custom-input" type="text" v-model="nameProduct" @change="updateNameProduct"
             placeholder="Nome do produto" />
-        </div>
+          </div>
+          <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
+              :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
         <div class="joker">
           <p>Produto coringa?</p>
           <div class="select-joker">
@@ -504,7 +548,7 @@ export default {
 }
 
 .name-product input {
-  width: 30em;
+  width: 20em;
   height: 2em;
   border: 1px solid white;
   border-radius: 5px;
