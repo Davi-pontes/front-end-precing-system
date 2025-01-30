@@ -15,5 +15,20 @@ export interface IProduct {
   only: boolean
   id_category: string
 }
+export interface IProductRender {
+  nameProduct: string
+  recipeTime: number
+  operationalCost: number
+  profitPecentage: number
+  costOfRevenue: number
+  fixedCost: number
+  labor: number
+  income: number
+  profit: number
+  pricePerUnit: number
+  costOfAllIngredients: number
+  priceFinalRevenue: number
+  isJoker: number
+}
 
 export interface IColumnsTableProduct extends IProduct {}

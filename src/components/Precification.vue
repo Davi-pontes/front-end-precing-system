@@ -1,781 +1,538 @@
-<script lang="ts">
-import axios from 'axios'
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios, { AxiosError } from 'axios'
 import type { LocationQueryValue } from 'vue-router'
 import MessageAlert from './MessageAlert.vue'
 import Loading from './animations/Loading.vue'
 import Combobox from './Combobox.vue'
 import { HttpGetCategory } from '@/http/category/get-category'
 import MessageError from './MessageError.vue'
+import { Input } from './ui/input'
+import SelectBoolean from './SelectBoolean.vue'
+import { Button } from './ui/button'
+import InputCurrency from './InputCurrency.vue'
+import InputNumber from './InputNumber.vue'
+import InputPercentage from './InputPercentage.vue'
+import { CircleX } from 'lucide-vue-next';
+import type { IProductIngredient } from '@/interface/Ingredient'
+import type { IProduct, IProductRender } from '@/interface/Product'
+import { HttpGetProduct } from '@/http/product/get-product'
+import { UtilsFormateProduct } from '@/utils/formate-product'
+import { HttpCreateProduct } from '@/http/product/create-product'
+import { HttpUpdateProduct } from '@/http/product/update-product'
+import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIngredient'
+import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
-interface Ingredient {
-  name: string | null
-  weight: number | 0
-  unit1: string
-  price: number | 0
-  unit2: string | null
-  quantity: number | 0
-  ingredient_cost: number | 0
-}
+const route = useRoute()
+const router = useRouter()
 
-interface IProduct {
-  id_product: string
-  name: string
-  weight: number
-  unit1: string
-  price: number
-  unit2: number
-  quantity: number
-  ingredientCost: number
-  income: number
-  revenue_cost: number
-  profit: number
-  price_per_unit: number
-  costOfAllIngredients: number
-}
+const httpGetProduct = new HttpGetProduct(axios, urlApiBackEnd)
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
-export default {
-  components: {
-    MessageAlert,
-    Loading,
-    Combobox,
-    MessageError
-  },
-  data() {
-    return {
-      costOfAllIngredients: 0,
-      operationalCost: 0,
-      fixedCost: 0,
-      profit: 0,
-      profitPecentage: 0,
-      priceFinalRevenue: 0,
-      income: 0,
-      recipeTime: 0,
-      pricePerUnit: 0,
-      costOfRevenue: 0,
-      labor: 0,
-      isJoker: 0,
-      nameProduct: '',
-      id_product: null as string | null,
-      id_category: null as string | null,
-      structureIngredient: {
-        name: null,
-        weight: 0,
-        unit1: null,
-        price: 0,
-        unit2: null,
-        quantity: 0,
-        ingredient_cost: 0
-      },
-      all: [] as Ingredient[],
-      productsJoker: [] as IProduct[],
-      productJokerSelected: {} as IProduct,
-      idUser: null as LocationQueryValue | LocationQueryValue[],
-      showMessage: false,
-      message: '',
-      changedSomething: false,
-      showLoading: false,
-      dataFormatedToComboBox: [],
-      selectedCategory:'',
-      messageForError: '',
-      showMessageErro: false
-    }
-  },
-  async created() {
-    this.showLoading = true
-    await this.getQuery()
-    await this.controllerCreated()
-    this.showLoading = false
-  },
-  methods: {
-    async getQuery() {
-      this.idUser = this.$route.query.idU
-    },
-    async controllerCreated() {
-      if (this.$route.query.idP) {
-        this.getQueryIdProduct()
-        this.getQueryIdCategory()
-        this.getProduct()
-        this.getProductIngredient()
-        await this.getProducsJoker()
-        await this.getCategory()
-      } else {
-        this.getQueryIdCategory()
-        await this.getProducsJoker()
-        await this.getCategory()
-      }
-    },
-    updateAllNumbers(functionThatCalled: boolean) {
-      if (this.id_product && !functionThatCalled) this.changedSomething = true
-      this.calculatecostOfAllIngredients()
-      this.calculateCostFixed()
-      this.calculateProfit()
-      this.calculateFinalRevenuePrice()
-      this.calculatePricePerUnit()
-      this.calculateCostOfRevenue()
-    },
-    calculatecostOfAllIngredients(): void {
-      if (this.all) {
-        const totalCost = this.all.reduce((acc, data) => acc + data.ingredient_cost, 0)
+const httpGetProductJoker = new HttpGetProductJoker(axios, urlApiBackEnd)
+const httpGetProductIngredient = new HttpGetProductIngredient(axios, urlApiBackEnd)
+const httpCreateProduct = new HttpCreateProduct(axios, urlApiBackEnd)
+const httpUpdateProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
 
-        this.costOfAllIngredients = parseFloat(totalCost.toFixed(2))
-      }
-    },
-    calculateCostFixed(): void {
-      const result = (this.costOfAllIngredients * this.operationalCost) / 100
-      this.fixedCost = parseFloat(result.toFixed(2))
-    },
-    calculateProfit(): void {
-      const resultCalculateProfit =
-        ((this.costOfAllIngredients + this.fixedCost) * this.profitPecentage) / 100
+const dataProduct = ref<IProductRender>({
+  nameProduct: '',
+  income: 0,
+  recipeTime: 0,
+  operationalCost: 0,
+  profitPecentage: 0,
+  isJoker: 0,
+  costOfAllIngredients: 0,
+  fixedCost: 0,
+  profit: 0,
+  priceFinalRevenue: 0,
+  pricePerUnit: 0,
+  costOfRevenue: 0,
+  labor: 0
+});
 
-      this.profit = parseFloat(resultCalculateProfit.toFixed(2))
-    },
-    calculateFinalRevenuePrice(): void {
-      const resultCalculatepriceFinalRevenue =
-        this.costOfAllIngredients + this.fixedCost + this.profit
+const id_product = ref<string | null>(null)
+const id_category = ref<string | null>(null)
+const all = ref<IProductIngredient[]>([])
+const productsJoker = ref<IProduct[]>([])
+const productJokerSelected = ref<IProduct>({} as IProduct)
+const idUser = ref<LocationQueryValue | LocationQueryValue[]>(null)
+const showMessage = ref(false)
+const message = ref('')
+const changedSomething = ref(false)
+const showLoading = ref(false)
+const dataFormatedToComboBox = ref([])
+const selectedCategory = ref('')
+const messageForError = ref('')
+const showMessageErro = ref(false)
 
-      this.priceFinalRevenue = parseFloat(resultCalculatepriceFinalRevenue.toFixed(2))
-    },
-    calculatePricePerUnit(): void {
-      const resultCalculatePricePerUnit = this.priceFinalRevenue / this.income
+onMounted(async () => {
+  showLoading.value = true
+  await getQuery()
+  await controllerCreated()
+  showLoading.value = false
+})
 
-      this.pricePerUnit = parseFloat(resultCalculatePricePerUnit.toFixed(2))
-    },
-    calculateCostOfRevenue(): void {
-      const resultCalculateCostOfRevenue = this.costOfAllIngredients + this.fixedCost
+async function getQuery() {
+  idUser.value = route.query.idU
+}
 
-      this.costOfRevenue = parseFloat(resultCalculateCostOfRevenue.toFixed(2))
-    },
-    addNewIngredient(): void {
-      const newIngredient = {
-        name: null,
-        weight: 0,
-        unit1: 'Selecione',
-        price: 0,
-        unit2: 'Selecione',
-        quantity: 0,
-        ingredient_cost: 0
-      }
-      this.all.push(newIngredient)
-    },
-    addProductJoker(): void {
-      const ingredient_cost =
-        this.productJokerSelected.revenue_cost / this.productJokerSelected.income
-      const ingredientCostFormated = parseFloat(ingredient_cost.toFixed(2))
-      const addProductJoker = {
-        name: this.productJokerSelected.name,
-        weight: this.productJokerSelected.income,
-        unit1: 'UNIDADE',
-        price: this.productJokerSelected.revenue_cost,
-        unit2: 'UNIDADE',
-        quantity: 1,
-        ingredient_cost: ingredientCostFormated
-      }
-      this.all.push(addProductJoker)
-
-      this.updateAllNumbers(true)
-    },
-    calculateCostOfAnIngredient(index: number): void {
-      if (this.id_product) this.changedSomething = true
-
-      const resultvalidate = this.validateIfThereIsANumber0(index)
-
-      if (resultvalidate) {
-        this.all[index].ingredient_cost = 0
-        this.updateAllNumbers(true)
-      } else {
-        const updateingredientCost =
-          (this.all[index].quantity * this.all[index].price) / this.all[index].weight
-
-        this.all[index].ingredient_cost = parseFloat(updateingredientCost.toFixed(2))
-
-        this.updateAllNumbers(true)
-      }
-    },
-    validateIfThereIsANumber0(index: number) {
-      const validate = Object.entries(this.all[index]).some(
-        ([key, value]) => typeof value === 'number' && value === 0 && key != 'ingredient_cost'
-      )
-
-      return validate
-    },
-    prepareData() {
-      const dataAssembly = {
-        productInformation: {
-          name: this.nameProduct,
-          income: this.income,
-          recipe_time: this.recipeTime,
-          profit_percentage: this.profitPecentage,
-          revenue_cost: this.costOfRevenue,
-          fixed_cost: this.fixedCost,
-          labor: this.labor,
-          profit: this.profit,
-          final_recipe_price: this.priceFinalRevenue,
-          price_per_unit: this.pricePerUnit,
-          operacional_cost: this.operationalCost,
-          id_category: this.id_category,
-          is_joker: this.isJoker,
-          cost_of_all_ingredients: this.costOfAllIngredients
-        },
-        productIngredients: this.all
-      }
-      return dataAssembly
-    },
-    sendDataToTheBackend(): void {
-      const validateIngredients = this.validateIngredients()
-
-      if (!validateIngredients) {
-        this.message = 'Não é possível salvar sem passar todas informações.'
-        this.showMessage = true
-        setTimeout(() => {
-          this.showMessage = false
-        }, 5000)
-      } else {
-        const dataFormated = this.prepareData()
-        if (this.changedSomething && this.id_product) {
-          this.sendUpdateData(dataFormated, this.id_product)
-        } else if (!this.id_product) {
-          this.sendNewData(dataFormated)
-        } else {
-          this.$router.push({ path: 'home' })
-        }
-      }
-    },
-    validateIngredients(): boolean {
-      const isValid = this.all.every((item) => {
-        return (
-          item.name !== null &&
-          item.name !== '' &&
-          item.weight !== 0 &&
-          item.unit1 !== '' &&
-          item.price !== 0 &&
-          item.unit2 !== null &&
-          item.unit2 !== '' &&
-          item.quantity !== 0 &&
-          item.ingredient_cost !== 0
-        )
-      })
-      return isValid
-    },
-    // Função para remover alertas
-    removeAlertError() {
-  this.showMessageErro = false
-},
-handleError(message: string) {
-  this.messageForError = message
-  this.showMessageErro = true
-},
-    async sendNewData(data: any) {
-      console.log(data);
-      
-      if(!data.productInformation.id_category){
-        this.handleError('Selecione uma categoria.')
-        return
-      }
-      await axios
-        .post(urlApiBackEnd + '/product', data,{withCredentials:true})
-        .then(() => {
-          this.returnToHomePage()
-        })
-        .catch(() => { })
-    },
-    async sendUpdateData(data: object, id_product: string): Promise<void> {
-      await axios
-        .put(urlApiBackEnd + '/product', {
-          data,
-          params: {
-            id: id_product
-          },
-          withCredentials:true
-        })
-        .then(() => {
-          this.returnToHomePage()
-        })
-        .catch(() => { })
-    },
-    getQueryIdProduct(): void {
-      this.id_product = this.$route.query.idP as string
-    },
-    getQueryIdCategory(): void {
-      this.id_category = this.$route.query.idC as string
-    },
-    async getProduct() {
-      await axios
-        .get(urlApiBackEnd + '/product/specific', {
-          params: {
-            id: this.id_product
-          },
-          withCredentials:true
-        })
-        .then((response) => {
-          this.nameProduct = response.data.name
-          this.income = response.data.income
-          this.recipeTime = response.data.recipe_time
-          this.operationalCost = response.data.operacional_cost
-          this.profitPecentage = response.data.profit_percentage
-          this.costOfRevenue = response.data.revenue_cost
-          this.fixedCost = response.data.fixed_cost
-          this.labor = response.data.labor
-          this.profit = response.data.profit
-          this.priceFinalRevenue = response.data.final_recipe_price
-          this.pricePerUnit = response.data.price_per_unit
-          this.isJoker = response.data.is_joker
-        })
-        .catch(() => { })
-    },
-    async getProductIngredient() {
-      await axios.get(urlApiBackEnd + '/product/ingredient', {
-        params: {
-          id: this.id_product
-        },
-        withCredentials: true,
-      })
-        .then((response) => {
-          this.all = response.data
-          this.updateAllNumbers(true)
-        })
-        .catch(() => { })
-    },
-    async getProducsJoker() {
-      const { data } = await axios.get(urlApiBackEnd + '/product/joker', {
-        params: { idUser: this.idUser },
-        withCredentials: true
-      })
-
-      this.productsJoker = data
-    },
-    async getCategory(){
-      if(this.idUser) if (this.idUser) {
-    const data = await httpGetCategory.getAllCategory(this.idUser as string);
-    this.formatedDataToCombobox(data);
+async function controllerCreated() {
+  if (route.query.idP) {
+    getQueryIdProduct()
+    getQueryIdCategory()
+    await getProduct()
+    await getProductIngredient()
+    await getProducsJoker()
+    await getCategory()
+  } else {
+    getQueryIdCategory()
+    await getProducsJoker()
+    await getCategory()
   }
-    },
-    formatedDataToCombobox(data: any) {
-    this.dataFormatedToComboBox = data.map((item: any) => {
+}
+
+function updateAllNumbers(functionThatCalled: boolean) {
+  if (id_product.value && !functionThatCalled) changedSomething.value = true
+  calculatecostOfAllIngredients()
+  calculateCostFixed()
+  calculateProfit()
+  calculateFinalRevenuePrice()
+  calculatePricePerUnit()
+  calculateCostOfRevenue()
+}
+
+function calculatecostOfAllIngredients(): void {
+  if (all.value) {
+    const totalCost = all.value.reduce((acc, data) => acc + data.ingredient_cost, 0)
+    dataProduct.value.costOfAllIngredients = parseFloat(totalCost.toFixed(2))
+  }
+}
+
+function calculateCostFixed(): void {
+  const result = (dataProduct.value.costOfAllIngredients * dataProduct.value.operationalCost) / 100
+  dataProduct.value.fixedCost = parseFloat(result.toFixed(2))
+}
+
+function calculateProfit(): void {
+  const resultCalculateProfit =
+    ((dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost) * dataProduct.value.profitPecentage) / 100
+  dataProduct.value.profit = parseFloat(resultCalculateProfit.toFixed(2))
+}
+
+function calculateFinalRevenuePrice(): void {
+  const resultCalculatepriceFinalRevenue =
+    dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost + dataProduct.value.profit
+  dataProduct.value.priceFinalRevenue = parseFloat(resultCalculatepriceFinalRevenue.toFixed(2))
+}
+
+function calculatePricePerUnit(): void {
+  const resultCalculatePricePerUnit = dataProduct.value.priceFinalRevenue / dataProduct.value.income
+  dataProduct.value.pricePerUnit = parseFloat(resultCalculatePricePerUnit.toFixed(2))
+}
+
+function calculateCostOfRevenue(): void {
+  const resultCalculateCostOfRevenue = dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost
+  dataProduct.value.costOfRevenue = parseFloat(resultCalculateCostOfRevenue.toFixed(2))
+}
+
+function calculateCostOfAnIngredient(index: number): void {
+  if (id_product.value) changedSomething.value = true
+
+  const resultvalidate = validateIfThereIsANumber0(index)
+
+  if (resultvalidate) {
+    all.value[index].ingredient_cost = 0
+    updateAllNumbers(true)
+  } else {
+    const updateingredientCost =
+      (all.value[index].quantity * all.value[index].price) / all.value[index].weight
+    all.value[index].ingredient_cost = parseFloat(updateingredientCost.toFixed(2))
+    updateAllNumbers(true)
+  }
+}
+
+function addNewIngredient(): void {
+  const newIngredient = {
+    name: '',
+    weight: 0,
+    unit1: 'Selecione',
+    price: 0,
+    unit2: 'Selecione',
+    quantity: 0,
+    ingredient_cost: 0
+  }
+  all.value.push(newIngredient)
+}
+
+function addProductJoker(): void {
+  const ingredient_cost =
+    productJokerSelected.value.revenue_cost / productJokerSelected.value.income
+  const ingredientCostFormated = parseFloat(ingredient_cost.toFixed(2))
+  const addProductJoker = {
+    name: productJokerSelected.value.name,
+    weight: productJokerSelected.value.income,
+    unit1: 'UNIDADE',
+    price: productJokerSelected.value.revenue_cost,
+    unit2: 'UNIDADE',
+    quantity: 1,
+    ingredient_cost: ingredientCostFormated
+  }
+  all.value.push(addProductJoker)
+  updateAllNumbers(true)
+}
+
+function validateIfThereIsANumber0(index: number) {
+  const validate = Object.entries(all.value[index]).some(
+    ([key, value]) => typeof value === 'number' && value === 0 && key != 'ingredient_cost'
+  )
+  return validate
+}
+
+function prepareData() {
+  const productDataAssembly = UtilsFormateProduct.formatedProductDataToSend(dataProduct.value)
+
+  productDataAssembly.id_category = id_category.value
+
+  const dataAssembly = {
+    productInformation: productDataAssembly,
+    productIngredients: all.value
+  }
+  return dataAssembly
+}
+
+function sendDataToTheBackend(): void {
+  console.log(dataProduct.value);
+  console.log(all.value);
+  
+  // const ingredients = validateIngredients()
+
+  // if (!ingredients) {
+  //   message.value = 'Não é possível salvar sem passar todas informações.'
+  //   showMessage.value = true
+  //   setTimeout(() => {
+  //     showMessage.value = false
+  //   }, 5000)
+  // } else {
+  //   const dataFormated = prepareData()
+  //   if (changedSomething.value && id_product.value) {
+  //     sendUpdateData(dataFormated, id_product.value)
+  //   } else if (!id_product.value) {
+  //     sendNewData(dataFormated)
+  //   } else {
+  //     router.push({ path: 'home' })
+  //   }
+  // }
+}
+
+function removeAlertError() {
+  showMessageErro.value = false
+}
+
+function handleError(message: string) {
+  messageForError.value = message
+  showMessageErro.value = true
+}
+
+async function sendNewData(data: any) {
+  try {
+    if (!data.productInformation.id_category) {
+      handleError('Selecione uma categoria.')
+      return
+    }
+    await httpCreateProduct.createProduct(data)
+    returnToHomePage()
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Estamos com problema no momento por favor tente mais tarde!')
+    }
+  }
+}
+
+async function sendUpdateData(data: object, id_product: string): Promise<void> {
+  try {
+    await httpUpdateProduct.updateProduct(data, id_product)
+    returnToHomePage()
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Estamos com problema no momento por favor tente mais tarde!')
+    }
+  }
+}
+
+function getQueryIdProduct(): void {
+  id_product.value = route.query.idP as string
+}
+
+function getQueryIdCategory(): void {
+  id_category.value = route.query.idC as string
+}
+
+async function getProduct() {
+  if (id_product.value) {
+    try {
+      const productSpecific = await httpGetProduct.getSpecificProduct(id_product.value)
+
+      dataProduct.value = UtilsFormateProduct.formateSpecificProduct(productSpecific)
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        handleError(error.response?.data)
+      } else {
+        handleError('Estamos com problema no momento por favor tente mais tarde!')
+      }
+    }
+  }
+
+}
+
+async function getProductIngredient() {
+  try {
+    if (id_product.value) {
+      const productIngredient = await httpGetProductIngredient.getProductIngredient(id_product.value)
+      all.value = productIngredient
+      updateAllNumbers(true)
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Estamos com problema no momento por favor tente mais tarde!')
+    }
+  }
+}
+
+async function getProducsJoker() {
+  try {
+    if (idUser.value) {
+      const result = await httpGetProductJoker.getProductJoker(idUser.value as string)
+
+      productsJoker.value = result
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Estamos com problema no momento por favor tente mais tarde!')
+    }
+  }
+}
+
+async function getCategory() {
+  if (idUser.value) {
+    const data = await httpGetCategory.getAllCategory(idUser.value as string)
+    formatedDataToCombobox(data)
+  }
+}
+
+function formatedDataToCombobox(data: any) {
+  dataFormatedToComboBox.value = data.map((item: any) => {
     return { value: item.id, label: item.name }
   })
-},
-//Função de tratamento para dado selecionado no combobox
- handleItemSelected(item: any) {
-  this.id_category = item.value as string
-},
-    async returnToHomePage() {
-      this.$router.push({ path: 'home' })
-    },
-    deletedMaterialOfArray(index: number) {
-      this.all.splice(index, 1)
-      this.updateAllNumbers(true)
-    },
-    updateNameProduct() {
-      if (this.id_product) this.changedSomething = true
-    }
-  }
+}
+
+function handleItemSelected(item: any) {
+  id_category.value = item.value as string
+}
+
+function returnToHomePage() {
+  router.push({ path: 'home' })
+}
+
+function deleteIngredientOfArray(index: number) {
+  all.value.splice(index, 1)
+  updateAllNumbers(true)
+}
+
+function updateNameProduct() {
+  if (id_product.value) changedSomething.value = true
 }
 </script>
 <template>
-  <main>
+  <div class="flex flex-col w-full h-full">
     <Loading v-if="showLoading" />
+    <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
-    <div class="header">
-      <div class="header-label">
-        <div class="name-product">
-          <input class="custom-input" type="text" v-model="nameProduct" @change="updateNameProduct"
-            placeholder="Nome do produto" />
-          </div>
-          <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
-              :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
-        <div class="joker">
-          <p>Produto coringa?</p>
-          <div class="select-joker">
-            <p>Sim</p>
-            <input type="radio" v-model="isJoker" :value="1" />
-          </div>
-          <div class="select-joker">
-            <p>Não</p>
-            <input type="radio" v-model="isJoker" :value="0" />
-          </div>
-        </div>
+    <div class="flex items-center h-20 bg-muted gap-4 px-4">
+      <div class="flex-1">
+        <Input class="bg-white w-full" type="text" v-model="dataProduct.nameProduct" @change="updateNameProduct"
+          placeholder="Nome do produto" />
       </div>
-      <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
-      <div class="specification">
-        <div class="list">
-          <table>
-            <tr class="header-table">
-              <th></th>
-              <th>NOME DO INGREDIENTE</th>
-              <th>PESO <span>(Peso que o ingrediente foi comprado.)</span></th>
-              <th>UNIDADE</th>
-              <th>PREÇO EM R$</th>
-              <th>QUANTIDADE <span>(Quantidade que vai ser usada no produto.)</span></th>
-              <th>UNIDADE</th>
-              <th>CUSTO DO INGREDIENTE</th>
-            </tr>
-            <tr class="line-table" v-for="(data, index) of all" :key="index">
-              <td><button @click="deletedMaterialOfArray(index)">X</button></td>
+      <div class="flex-1">
+        <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
+          :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
+      </div>
+      <div class="flex-1">
+        <SelectBoolean v-model="dataProduct.isJoker" />
+      </div>
+    </div>
+    <div class="w-full h-[30em] overflow-y-auto shadow-md">
+      <table class="w-full bg-white">
+        <!-- Cabeçalho da tabela -->
+        <thead class="bg-[#5A6FA5] text-white sticky top-0">
+          <tr>
+            <th class="p-3 text-left"></th>
+            <th class="p-3 text-left font-medium">NOME DO INGREDIENTE</th>
+            <th class="p-3 text-left font-medium">
+              PESO <span class="font-normal text-sm">(Peso que o ingrediente foi comprado.)</span>
+            </th>
+            <th class="p-3 text-left font-medium">UNIDADE</th>
+            <th class="p-3 text-left font-medium">PREÇO EM R$</th>
+            <th class="p-3 text-left font-medium">
+              QUANTIDADE <span class="font-normal text-sm">(Quantidade que vai ser usada no produto.)</span>
+            </th>
+            <th class="p-3 text-left font-medium">CUSTO DO INGREDIENTE</th>
+          </tr>
+        </thead>
 
-              <td><input type="text" placeholder="MATERIAL" v-model="data.name" /></td>
-              <td>
-                <input type="number" placeholder="PESO" v-model="data.weight"
-                  @change="calculateCostOfAnIngredient(index)" />
-              </td>
-              <td>
-                <select name="SelectedUnit1" v-model="data.unit1">
-                  <option disabled selected>Selecione uma unidade</option>
-                  <option value="GRAMAS">GRAMAS</option>
-                  <option value="UNIDADE">UNIDADE</option>
-                  <option value="ML">ML</option>
-                </select>
-              </td>
-              <td>
-                <span>R$ </span>
-                <input type="NUMBER" placeholder="CUSTO" v-model="data.price"
-                  @change="calculateCostOfAnIngredient(index)" />
-              </td>
-              <td>
-                <input type="NUMBER" placeholder="QUANTIDADE" v-model="data.quantity"
-                  @change="calculateCostOfAnIngredient(index)" />
-              </td>
-              <td>
-                <select name="SelectedUnit2" v-model="data.unit2">
-                  <option disabled selected>Selecione uma unidade</option>
-                  <option value="GRAMAS">GRAMAS</option>
-                  <option value="UNIDADE">UNIDADE</option>
-                  <option value="ML">ML</option>
-                </select>
-              </td>
-              <td>
-                <p>R$ {{ data.ingredient_cost }}</p>
-              </td>
-            </tr>
-          </table>
+        <!-- Corpo da tabela -->
+        <tbody class="divide-y divide-gray-200">
+          <tr v-for="(data, index) of all" :key="index" class="hover:bg-gray-50 transition-colors">
+            <!-- Botão de deletar -->
+            <td class="p-3">
+              <CircleX class="text-red-500 hover:text-red-700 transition-colors"
+                @click="deleteIngredientOfArray(index)" />
+            </td>
+
+            <!-- Nome do ingrediente -->
+            <td class="p-3">
+              <input type="text" placeholder="MATERIAL" v-model="data.name"
+                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+            </td>
+
+            <!-- Peso -->
+            <td class="p-3">
+              <input type="number" placeholder="PESO" v-model="data.weight" @change="calculateCostOfAnIngredient(index)"
+                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+            </td>
+
+            <!-- Unidade 1 -->
+            <td class="p-3">
+              <select name="SelectedUnit1" v-model="data.unit1"
+                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                <option disabled selected>Selecione uma unidade</option>
+                <option value="GRAMAS">GRAMAS</option>
+                <option value="UNIDADE">UNIDADE</option>
+                <option value="ML">ML</option>
+              </select>
+            </td>
+
+            <!-- Preço -->
+            <td class="p-3">
+              <div class="flex items-center gap-2">
+                <InputCurrency v-model="data.price" @change="calculateCostOfAnIngredient(index)" />
+              </div>
+            </td>
+
+            <!-- Quantidade -->
+            <td class="p-3">
+              <input type="number" placeholder="QUANTIDADE" v-model="data.quantity"
+                @change="calculateCostOfAnIngredient(index)"
+                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+            </td>
+            <!-- Custo do ingrediente -->
+            <td class="p-3">
+              <p class="text-gray-700">R$ {{ data.ingredient_cost }}</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex w-full h-[4em] justify-around items-center border-y-2 gap-10 px-4">
+      <div class="flex-1">
+        <select class="border-2 rounded-md w-full h-8" v-model="productJokerSelected"
+          @change="addProductJoker">
+          <option disabled :value="null">Selecione produtos coringa.</option>
+          <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
+            {{ productJoker.name }}
+          </option>
+        </select>
+      </div>
+      <Button class="flex-1 bg-[#5A6FA5]" @click="sendDataToTheBackend">Voltar</Button>
+      <Button class="flex-1 bg-[#5A6FA5]" @click="addNewIngredient">Adicionar novo ingrediente</Button>
+      <Button class="flex-1 bg-[#5A6FA5]" @click="sendDataToTheBackend">Salvar</Button>
+    </div>
+    <div class="flex gap-4 bg-muted text-white p-4 rounded-lg shadow-md">
+      <!-- Coluna 1: Inputs de configuração -->
+      <div class="flex flex-col justify-between w-1/2 gap-4">
+        <!-- Rendimentos -->
+        <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
+          <p class="text-base">Rendimentos:</p>
+          <InputNumber v-model="dataProduct.income" @change="updateAllNumbers(false)"
+            class="w-[10em] px-2 py-1 text-sm" />
+        </div>
+
+        <!-- Tempo da receita -->
+        <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
+          <p class="text-base">Tempo da receita (min):</p>
+          <InputNumber v-model="dataProduct.recipeTime" @change="updateAllNumbers(false)"
+            class="w-[10em] px-2 py-1 text-sm" />
+        </div>
+
+        <!-- Porcentagem de lucro -->
+        <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
+          <p class="text-base">Lucro (%):</p>
+          <InputPercentage v-model="dataProduct.profitPecentage" @change="updateAllNumbers(false)"
+            class="w-[10em] px-2 py-1 text-sm" />
+        </div>
+
+        <!-- Custo Operacional -->
+        <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
+          <p class="text-base">Custo Operacional:</p>
+          <InputCurrency v-model="dataProduct.operationalCost" @change="updateAllNumbers(false)"
+            class="w-[10em] px-2 py-1 text-sm" />
         </div>
       </div>
-      <div class="buttons">
-        <div class="product-joker">
-          <p>Produtos coringa:</p>
-          <select name="productsJoker" id="productsJoker" v-model="productJokerSelected" @change="addProductJoker">
-            <option disabled selected>Produtos Coringa</option>
-            <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
-              {{ productJoker.name }}
-            </option>
-          </select>
+
+      <!-- Coluna 2: Custos e valores calculados -->
+      <div class="flex flex-col w-1/2 gap-4">
+        <!-- Custo da receita -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Custo da receita:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.costOfAllIngredients }}</p>
         </div>
-        <button @click="sendDataToTheBackend">Voltar</button>
-        <button @click="addNewIngredient">Adicionar novo ingrediente</button>
-        <button @click="sendDataToTheBackend">Salvar</button>
+
+        <!-- Custo fixo -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Custo fixo:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.fixedCost }}</p>
+        </div>
+
+        <!-- Mão de Obra -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Mão de Obra:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.labor }}</p>
+        </div>
+
+        <!-- Lucro -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Lucro:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.profit }}</p>
+        </div>
       </div>
-      <div class="area-labor-cost">
-        <div class="labor-cost">
-          <div class="preparation">
-            <div class="preparation-information">
-              <p>Rendimentos:</p>
-              <input type="number" v-model="income" @change="updateAllNumbers(false)" />
-            </div>
-            <div class="preparation-information">
-              <p>Tempo da receita (Em minutos):</p>
-              <input type="number" v-model="recipeTime" @change="updateAllNumbers(false)" />
-            </div>
-            <div class="preparation-information">
-              <p>Custo Operacional(GAS,LUZ, AGUA E ETC..):</p>
-              <input type="number" v-model="operationalCost" @change="updateAllNumbers(false)" />
-            </div>
-            <div class="preparation-information">
-              <p>Porcentagem(%) de lucro:</p>
-              <input type="number" v-model="profitPecentage" @change="updateAllNumbers(false)" />
-            </div>
-          </div>
-          <div class="cost">
-            <div class="cost-information">
-              <p>Custo da receita:</p>
-              <p>R$ {{ costOfAllIngredients }}</p>
-            </div>
-            <div class="cost-information">
-              <p>Custo fixo:</p>
-              <p>R$ {{ fixedCost }}</p>
-            </div>
-            <div class="cost-information">
-              <p>Mão de Obra:</p>
-              <p>R$ {{ labor }}</p>
-            </div>
-            <div class="cost-information">
-              <p>Lucro:</p>
-              <p>R$ {{ profit }}</p>
-            </div>
-            <div class="cost-information">
-              <p>Valor final da receita:</p>
-              <p>R$ {{ priceFinalRevenue }}</p>
-            </div>
-            <div class="cost-information">
-              <p>Valor da unidade:</p>
-              <p>R$ {{ pricePerUnit }}</p>
-            </div>
-          </div>
-          <div class="total">
-            <div class="total-information">
-              <p>Custo total da receita:</p>
-              <p>R$ {{ costOfRevenue }}</p>
-            </div>
-          </div>
+
+      <!-- Coluna 3: Custo total da receita -->
+      <div class="flex flex-col w-1/2 gap-4">
+        <!-- Valor final da receita -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Valor final:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.priceFinalRevenue }}</p>
+        </div>
+        <!-- Custo total da receita -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Custo total:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.costOfRevenue }}</p>
+        </div>
+        <!-- Valor da unidade -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Valor/unidade:</p>
+          <p class="text-base font-semibold">R$ {{ dataProduct.pricePerUnit }}</p>
         </div>
       </div>
     </div>
-  </main>
+
+  </div>
 </template>
-
-<style scoped>
-* {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  width: 102vw;
-  height: 100dvh;
-}
-
-.header-label {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 2em;
-  padding: 1em;
-  font-size: 30px;
-  background-color: rgb(128, 149, 199);
-  justify-content: space-around;
-}
-
-.name-product input {
-  width: 20em;
-  height: 2em;
-  border: 1px solid white;
-  border-radius: 5px;
-  font-size: 20px;
-  align-items: center;
-  padding-left: 1em;
-  background-color: transparent;
-  color: white;
-  outline: none;
-}
-
-.custom-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.joker {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 18px;
-  width: 20em;
-  height: 100%;
-  color: white;
-}
-
-.select-joker {
-  display: flex;
-  width: 3em;
-}
-
-.header-table {
-  font-size: 14px;
-  border-bottom: 2px solid #c8cacc;
-}
-
-.header-table span {
-  display: block;
-  font-weight: normal;
-  font-size: 12px;
-}
-
-.line-table td {
-  border-bottom: 1px solid #c8cacc;
-  padding: 0.2em 1em;
-}
-
-.line-table input {
-  width: 10em;
-  height: 1.5em;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding-left: 0.5em;
-}
-
-.line-table button {
-  background-color: transparent;
-  color: red;
-  cursor: pointer;
-}
-
-.line-table select {
-  width: 7em;
-  border-radius: 5px;
-}
-
-.line-table input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-
-.line-table input[type='number'] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.specification {
-  display: flex;
-  width: 100%;
-  height: 30em;
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  width: 98%;
-  height: 30em;
-  overflow-x: auto;
-  overflow-y: auto;
-}
-
-.buttons {
-  display: flex;
-  justify-content: flex-end;
-  width: 98%;
-  height: 3em;
-  padding: 1em;
-  align-items: center;
-  border: 1px solid black;
-}
-
-.buttons button {
-  border: 1px solid black;
-  width: 15em;
-  height: 2em;
-  border-radius: 5px;
-  margin-left: 5em;
-  transition: 0.4s;
-  background-color: transparent;
-}
-
-.buttons select {
-  border: 1px solid black;
-  width: 15em;
-  height: 2em;
-  border-radius: 5px;
-  transition: 0.4s;
-  background-color: transparent;
-}
-
-.buttons button:hover {
-  background-color: rgb(128, 149, 199);
-  color: white;
-}
-
-.product-joker {
-  display: flex;
-  width: 20em;
-  height: 100%;
-  align-items: center;
-}
-
-.product-joker p {
-  width: 10em;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-  overflow-x: auto;
-}
-
-th,
-td {
-  text-align: center;
-  height: 3em;
-  padding: 8px;
-}
-
-.preparation {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 31vw;
-}
-
-.preparation-information {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.preparation-information p {
-  width: 70%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.preparation input {
-  width: 5em;
-  height: 1.5em;
-  border: none;
-  border-radius: 5px;
-  padding-left: 0.5em;
-  color: black;
-}
-
-.preparation-information input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-
-.preparation-information input[type='number'] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.labor-cost {
-  display: flex;
-  height: 13em;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  background-color: rgb(128, 149, 199);
-  color: white;
-}
-
-.area-labor-cost {
-  width: 100vw;
-  height: 100vh;
-  background-color: rgb(128, 149, 199);
-}
-
-.labor {
-  display: flex;
-  flex-direction: column;
-  width: 30em;
-}
-
-.labor-information {
-  display: flex;
-  width: 100%;
-  align-items: center;
-}
-
-.cost {
-  display: flex;
-  flex-direction: column;
-  width: 20em;
-}
-
-.cost-information {
-  display: flex;
-  width: 100%;
-  height: 2em;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.total {
-  display: flex;
-  width: 20em;
-}
-</style>

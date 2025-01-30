@@ -6,7 +6,13 @@ import TableComponent from '@/components/Table.vue'
 import { columnsStockIngredient } from '@/components/ColumnsStockIngredient'
 import type { ICommandItem } from '@/interface/Combobox'
 import Combobox from '@/components/Combobox.vue'
-import NumberField from '@/components/NumberField.vue'
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from '@/components/ui/number-field'
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 import { Button } from '@/components/ui/button'
 
