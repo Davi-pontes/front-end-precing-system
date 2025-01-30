@@ -48,9 +48,6 @@ const formSchema = toTypedSchema(
 )
 const form  = useForm({
   validationSchema: formSchema,
-  initialValues: {
-    nameProduct: 'Teste',
-  }
 })
 const fieldArray  = ref(useFieldArray('all'))
 
