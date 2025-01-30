@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios, { AxiosError } from 'axios'
@@ -23,6 +23,10 @@ import { HttpCreateProduct } from '@/http/product/create-product'
 import { HttpUpdateProduct } from '@/http/product/update-product'
 import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIngredient'
 import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useFieldArray, useForm } from 'vee-validate'
+import { Form, Field } from 'vee-validate';
+import * as z from 'zod'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
@@ -34,6 +38,21 @@ const httpGetProductJoker = new HttpGetProductJoker(axios, urlApiBackEnd)
 const httpGetProductIngredient = new HttpGetProductIngredient(axios, urlApiBackEnd)
 const httpCreateProduct = new HttpCreateProduct(axios, urlApiBackEnd)
 const httpUpdateProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
+
+const formSchema = toTypedSchema(
+  z.object({
+    nameProduct: z.string({ message: 'Adicione um nome!' })
+      .min(2, { message: 'Nome de conter pelo menos 2 caractere(s).' })
+      .max(100, { message: 'Texto muito longo.' }),
+  })
+)
+const form  = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    nameProduct: 'Teste',
+  }
+})
+const fieldArray  = ref(useFieldArray('all'))
 
 const dataProduct = ref<IProductRender>({
   nameProduct: '',
@@ -50,10 +69,35 @@ const dataProduct = ref<IProductRender>({
   costOfRevenue: 0,
   labor: 0
 });
+function addNewIngredient(): void {
+  const newIngredient = {
+    name: '',
+    weight: 0,
+    unit1: 'GRAMAS',
+    price: 0,
+    quantity: 0,
+    ingredient_cost: 0
+  }
+  fieldArray.value.push(newIngredient)
+  //all.value.push(newIngredient)
+}
+function deleteIngredientOfArray(index: number) {
+  fieldArray.value.remove(index)
+  //all.value.splice(index, 1)
+  updateAllNumbers(true)
+}
 
 const id_product = ref<string | null>(null)
 const id_category = ref<string | null>(null)
-const all = ref<IProductIngredient[]>([])
+const all = ref<IProductIngredient[]>([{
+    name: '',
+    weight: 0,
+    unit1: 'Selecione',
+    price: 0,
+    unit2: 'Selecione',
+    quantity: 0,
+    ingredient_cost: 0
+  }])
 const productsJoker = ref<IProduct[]>([])
 const productJokerSelected = ref<IProduct>({} as IProduct)
 const idUser = ref<LocationQueryValue | LocationQueryValue[]>(null)
@@ -150,19 +194,6 @@ function calculateCostOfAnIngredient(index: number): void {
     all.value[index].ingredient_cost = parseFloat(updateingredientCost.toFixed(2))
     updateAllNumbers(true)
   }
-}
-
-function addNewIngredient(): void {
-  const newIngredient = {
-    name: '',
-    weight: 0,
-    unit1: 'Selecione',
-    price: 0,
-    unit2: 'Selecione',
-    quantity: 0,
-    ingredient_cost: 0
-  }
-  all.value.push(newIngredient)
 }
 
 function addProductJoker(): void {
@@ -342,11 +373,6 @@ function returnToHomePage() {
   router.push({ path: 'home' })
 }
 
-function deleteIngredientOfArray(index: number) {
-  all.value.splice(index, 1)
-  updateAllNumbers(true)
-}
-
 function updateNameProduct() {
   if (id_product.value) changedSomething.value = true
 }
@@ -358,7 +384,7 @@ function updateNameProduct() {
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
     <div class="flex items-center h-20 bg-muted gap-4 px-4">
       <div class="flex-1">
-        <Input class="bg-white w-full" type="text" v-model="dataProduct.nameProduct" @change="updateNameProduct"
+        <Input class="bg-white w-full" name="nameProduct" type="text" v-model="form.values.nameProduct" @change="updateNameProduct"
           placeholder="Nome do produto" />
       </div>
       <div class="flex-1">

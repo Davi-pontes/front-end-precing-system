@@ -17,6 +17,7 @@ import AddProduct from '@/views/AddProduct.vue'
 import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
 import HomeView from '@/views/HomeView.vue'
+import TesteFormValidate from '@/views/TesteFormValidate.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,14 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: LadingPageView,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/teste',
+      name: 'teste',
+      component: TesteFormValidate,
       meta: {
         public: true
       }
