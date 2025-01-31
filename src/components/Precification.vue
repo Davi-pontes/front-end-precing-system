@@ -23,10 +23,6 @@ import { HttpCreateProduct } from '@/http/product/create-product'
 import { HttpUpdateProduct } from '@/http/product/update-product'
 import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIngredient'
 import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useFieldArray, useForm } from 'vee-validate'
-import { Form, Field } from 'vee-validate';
-import * as z from 'zod'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
@@ -39,21 +35,9 @@ const httpGetProductIngredient = new HttpGetProductIngredient(axios, urlApiBackE
 const httpCreateProduct = new HttpCreateProduct(axios, urlApiBackEnd)
 const httpUpdateProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
 
-const formSchema = toTypedSchema(
-  z.object({
-    nameProduct: z.string({ message: 'Adicione um nome!' })
-      .min(2, { message: 'Nome de conter pelo menos 2 caractere(s).' })
-      .max(100, { message: 'Texto muito longo.' }),
-  })
-)
-const form  = useForm({
-  validationSchema: formSchema,
-})
-const fieldArray  = ref(useFieldArray('all'))
-
 const dataProduct = ref<IProductRender>({
   nameProduct: '',
-  income: 0,
+  income: 1,
   recipeTime: 0,
   operationalCost: 0,
   profitPecentage: 0,
@@ -66,35 +50,18 @@ const dataProduct = ref<IProductRender>({
   costOfRevenue: 0,
   labor: 0
 });
-function addNewIngredient(): void {
-  const newIngredient = {
-    name: '',
-    weight: 0,
-    unit1: 'GRAMAS',
-    price: 0,
-    quantity: 0,
-    ingredient_cost: 0
-  }
-  fieldArray.value.push(newIngredient)
-  //all.value.push(newIngredient)
-}
-function deleteIngredientOfArray(index: number) {
-  fieldArray.value.remove(index)
-  //all.value.splice(index, 1)
-  updateAllNumbers(true)
-}
+
 
 const id_product = ref<string | null>(null)
 const id_category = ref<string | null>(null)
 const all = ref<IProductIngredient[]>([{
-    name: '',
-    weight: 0,
-    unit1: 'Selecione',
-    price: 0,
-    unit2: 'Selecione',
-    quantity: 0,
-    ingredient_cost: 0
-  }])
+  name: '',
+  weight: 0,
+  unit1: 'GRAMAS',
+  price: 0,
+  quantity: 0,
+  ingredient_cost: 0
+}])
 const productsJoker = ref<IProduct[]>([])
 const productJokerSelected = ref<IProduct>({} as IProduct)
 const idUser = ref<LocationQueryValue | LocationQueryValue[]>(null)
@@ -134,6 +101,7 @@ async function controllerCreated() {
 }
 
 function updateAllNumbers(functionThatCalled: boolean) {
+
   if (id_product.value && !functionThatCalled) changedSomething.value = true
   calculatecostOfAllIngredients()
   calculateCostFixed()
@@ -151,13 +119,18 @@ function calculatecostOfAllIngredients(): void {
 }
 
 function calculateCostFixed(): void {
+  if (dataProduct.value.operationalCost === 0) {
+    return
+  }
   const result = (dataProduct.value.costOfAllIngredients * dataProduct.value.operationalCost) / 100
   dataProduct.value.fixedCost = parseFloat(result.toFixed(2))
 }
 
 function calculateProfit(): void {
+  console.log(dataProduct.value.profitPecentage);
+
   const resultCalculateProfit =
-    ((dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost) * dataProduct.value.profitPecentage) / 100
+    ((dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost) * (dataProduct.value.profitPecentage * 100)) / 100
   dataProduct.value.profit = parseFloat(resultCalculateProfit.toFixed(2))
 }
 
@@ -202,14 +175,27 @@ function addProductJoker(): void {
     weight: productJokerSelected.value.income,
     unit1: 'UNIDADE',
     price: productJokerSelected.value.revenue_cost,
-    unit2: 'UNIDADE',
     quantity: 1,
     ingredient_cost: ingredientCostFormated
   }
   all.value.push(addProductJoker)
   updateAllNumbers(true)
 }
-
+function addNewIngredient(): void {
+  const newIngredient = {
+    name: '',
+    weight: 0,
+    unit1: 'GRAMAS',
+    price: 0,
+    quantity: 0,
+    ingredient_cost: 0
+  }
+  all.value.push(newIngredient)
+}
+function deleteIngredientOfArray(index: number) {
+  all.value.splice(index, 1)
+  updateAllNumbers(true)
+}
 function validateIfThereIsANumber0(index: number) {
   const validate = Object.entries(all.value[index]).some(
     ([key, value]) => typeof value === 'number' && value === 0 && key != 'ingredient_cost'
@@ -230,27 +216,12 @@ function prepareData() {
 }
 
 function sendDataToTheBackend(): void {
-  console.log(dataProduct.value);
-  console.log(all.value);
-  
-  // const ingredients = validateIngredients()
-
-  // if (!ingredients) {
-  //   message.value = 'Não é possível salvar sem passar todas informações.'
-  //   showMessage.value = true
-  //   setTimeout(() => {
-  //     showMessage.value = false
-  //   }, 5000)
-  // } else {
-  //   const dataFormated = prepareData()
-  //   if (changedSomething.value && id_product.value) {
-  //     sendUpdateData(dataFormated, id_product.value)
-  //   } else if (!id_product.value) {
-  //     sendNewData(dataFormated)
-  //   } else {
-  //     router.push({ path: 'home' })
-  //   }
-  // }
+  const dataFormated = prepareData()
+  if (changedSomething.value && id_product.value) {
+    sendUpdateData(dataFormated, id_product.value)
+  } else {
+    sendNewData(dataFormated)
+  }
 }
 
 function removeAlertError() {
@@ -364,6 +335,11 @@ function formatedDataToCombobox(data: any) {
 
 function handleItemSelected(item: any) {
   id_category.value = item.value as string
+  selectedCategory.value = item.label
+}
+function isJokerSelected(item: string) {
+
+  dataProduct.value.isJoker = parseInt(item)
 }
 
 function returnToHomePage() {
@@ -380,16 +356,17 @@ function updateNameProduct() {
     <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
     <div class="flex items-center h-20 bg-muted gap-4 px-4">
-      <div class="flex-1">
-        <Input class="bg-white w-full" name="nameProduct" type="text" v-model="form.values.nameProduct" @change="updateNameProduct"
-          placeholder="Nome do produto" />
+      <div class="flex-1 h-[4em]">
+        <Input class="bg-white w-full" name="nameProduct" type="text" v-model="dataProduct.nameProduct"
+          @change="updateNameProduct" placeholder="Nome do produto" />
       </div>
-      <div class="flex-1">
+      <div class="flex-1 h-[4em]">
         <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
-          :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
+          :items="dataFormatedToComboBox" name="selectedCategory" v-model="selectedCategory"
+          @itemSelected="handleItemSelected" />
       </div>
-      <div class="flex-1">
-        <SelectBoolean v-model="dataProduct.isJoker" />
+      <div class="flex-1 h-[4em]">
+        <SelectBoolean @selected="isJokerSelected" />
       </div>
     </div>
     <div class="w-full h-[30em] overflow-y-auto shadow-md">
@@ -436,7 +413,7 @@ function updateNameProduct() {
             <td class="p-3">
               <select name="SelectedUnit1" v-model="data.unit1"
                 class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
-                <option disabled selected>Selecione uma unidade</option>
+                <option disabled selected>Selecione uma unidade.</option>
                 <option value="GRAMAS">GRAMAS</option>
                 <option value="UNIDADE">UNIDADE</option>
                 <option value="ML">ML</option>
@@ -446,7 +423,8 @@ function updateNameProduct() {
             <!-- Preço -->
             <td class="p-3">
               <div class="flex items-center gap-2">
-                <InputCurrency v-model="data.price" @change="calculateCostOfAnIngredient(index)" />
+                <InputCurrency v-model="data.price" @change="calculateCostOfAnIngredient(index)"
+                  @update="calculateCostOfAnIngredient(index)" />
               </div>
             </td>
 
@@ -466,8 +444,7 @@ function updateNameProduct() {
     </div>
     <div class="flex w-full h-[4em] justify-around items-center border-y-2 gap-10 px-4">
       <div class="flex-1">
-        <select class="border-2 rounded-md w-full h-8" v-model="productJokerSelected"
-          @change="addProductJoker">
+        <select class="border-2 rounded-md w-full h-8" v-model="productJokerSelected" @change="addProductJoker">
           <option disabled :value="null">Selecione produtos coringa.</option>
           <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
             {{ productJoker.name }}
@@ -484,7 +461,7 @@ function updateNameProduct() {
         <!-- Rendimentos -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Rendimentos:</p>
-          <InputNumber v-model="dataProduct.income" @change="updateAllNumbers(false)"
+          <InputNumber v-model="dataProduct.income" @change="updateAllNumbers(false)" @update="updateAllNumbers(false)"
             class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
@@ -492,21 +469,21 @@ function updateNameProduct() {
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Tempo da receita (min):</p>
           <InputNumber v-model="dataProduct.recipeTime" @change="updateAllNumbers(false)"
-            class="w-[10em] px-2 py-1 text-sm" />
+            @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Porcentagem de lucro -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Lucro (%):</p>
           <InputPercentage v-model="dataProduct.profitPecentage" @change="updateAllNumbers(false)"
-            class="w-[10em] px-2 py-1 text-sm" />
+            @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Custo Operacional -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Custo Operacional:</p>
           <InputCurrency v-model="dataProduct.operationalCost" @change="updateAllNumbers(false)"
-            class="w-[10em] px-2 py-1 text-sm" />
+            @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
       </div>
 

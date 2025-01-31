@@ -16,7 +16,6 @@ export interface IProductIngredient {
   weight: number 
   unit1: string
   price: number 
-  unit2: string 
   quantity: number 
   ingredient_cost: number
 }

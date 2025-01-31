@@ -6,8 +6,16 @@ import {
   NumberFieldIncrement,
   NumberFieldInput
 } from '@/components/ui/number-field'
+import { watch } from 'vue';
 
 const model = defineModel({ required: true, type: Number })
+
+const emit = defineEmits(['update'])
+watch(model, (newValue) => {
+  console.log(newValue);
+  
+  emit('update', newValue)
+})
 </script>
 
 <template>
@@ -20,7 +28,7 @@ const model = defineModel({ required: true, type: Number })
     <NumberFieldContent>
       <NumberFieldDecrement />
       <NumberFieldInput />
-      <NumberFieldIncrement />
+      <NumberFieldIncrement/>
     </NumberFieldContent>
   </NumberField>
 </template>
