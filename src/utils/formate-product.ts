@@ -15,7 +15,7 @@ export class UtilsFormateProduct {
       costOfAllIngredients: productData.cost_of_all_ingredient,
       priceFinalRevenue: productData.final_recipe_price,
       pricePerUnit: productData.price_per_unit,
-      isJoker: productData.is_joker
+      isJoker: productData.is_joker.toString()
     }
     return structuProduct
   }
@@ -33,7 +33,7 @@ export class UtilsFormateProduct {
       price_per_unit: productData.pricePerUnit,
       operacional_cost: productData.operationalCost,
       id_category: productData.id_category,
-      is_joker: productData.isJoker,
+      is_joker: parseInt(productData.isJoker),
       cost_of_all_ingredients: productData.costOfAllIngredients
     }
     return structureProduct

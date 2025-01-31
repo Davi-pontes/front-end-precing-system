@@ -7,15 +7,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ref, watch } from 'vue';
 
-const value = ref()
+const value = defineModel<string>()
 
-const emit = defineEmits(['selected'])
-
-watch(value, (newValue) => {
-  emit('selected', newValue)
-})
 </script>
 
 <template>

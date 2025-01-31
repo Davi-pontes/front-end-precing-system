@@ -28,7 +28,7 @@ export interface IProductRender {
   pricePerUnit: number
   costOfAllIngredients: number
   priceFinalRevenue: number
-  isJoker: number
+  isJoker: string;
 }
 
 export interface IColumnsTableProduct extends IProduct {}

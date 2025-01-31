@@ -23,6 +23,7 @@ import { HttpCreateProduct } from '@/http/product/create-product'
 import { HttpUpdateProduct } from '@/http/product/update-product'
 import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIngredient'
 import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
+import type { ICategory } from '@/interface/Category'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
@@ -41,7 +42,7 @@ const dataProduct = ref<IProductRender>({
   recipeTime: 0,
   operationalCost: 0,
   profitPecentage: 0,
-  isJoker: 0,
+  isJoker: '0',
   costOfAllIngredients: 0,
   fixedCost: 0,
   profit: 0,
@@ -54,7 +55,7 @@ const dataProduct = ref<IProductRender>({
 
 const id_product = ref<string | null>(null)
 const id_category = ref<string | null>(null)
-const all = ref<IProductIngredient[]>([{
+const allProductIngredient = ref<IProductIngredient[]>([{
   name: '',
   weight: 0,
   unit1: 'GRAMAS',
@@ -65,6 +66,7 @@ const all = ref<IProductIngredient[]>([{
 const productsJoker = ref<IProduct[]>([])
 const productJokerSelected = ref<IProduct>({} as IProduct)
 const idUser = ref<LocationQueryValue | LocationQueryValue[]>(null)
+const allCategories = ref<ICategory[]>([])
 const showMessage = ref(false)
 const message = ref('')
 const changedSomething = ref(false)
@@ -89,10 +91,10 @@ async function controllerCreated() {
   if (route.query.idP) {
     getQueryIdProduct()
     getQueryIdCategory()
+    await getCategory()
     await getProduct()
     await getProductIngredient()
     await getProducsJoker()
-    await getCategory()
   } else {
     getQueryIdCategory()
     await getProducsJoker()
@@ -112,8 +114,8 @@ function updateAllNumbers(functionThatCalled: boolean) {
 }
 
 function calculatecostOfAllIngredients(): void {
-  if (all.value) {
-    const totalCost = all.value.reduce((acc, data) => acc + data.ingredient_cost, 0)
+  if (allProductIngredient.value) {
+    const totalCost = allProductIngredient.value.reduce((acc, data) => acc + data.ingredient_cost, 0)
     dataProduct.value.costOfAllIngredients = parseFloat(totalCost.toFixed(2))
   }
 }
@@ -127,8 +129,6 @@ function calculateCostFixed(): void {
 }
 
 function calculateProfit(): void {
-  console.log(dataProduct.value.profitPecentage);
-
   const resultCalculateProfit =
     ((dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost) * (dataProduct.value.profitPecentage * 100)) / 100
   dataProduct.value.profit = parseFloat(resultCalculateProfit.toFixed(2))
@@ -156,12 +156,12 @@ function calculateCostOfAnIngredient(index: number): void {
   const resultvalidate = validateIfThereIsANumber0(index)
 
   if (resultvalidate) {
-    all.value[index].ingredient_cost = 0
+    allProductIngredient.value[index].ingredient_cost = 0
     updateAllNumbers(true)
   } else {
     const updateingredientCost =
-      (all.value[index].quantity * all.value[index].price) / all.value[index].weight
-    all.value[index].ingredient_cost = parseFloat(updateingredientCost.toFixed(2))
+      (allProductIngredient.value[index].quantity * allProductIngredient.value[index].price) / allProductIngredient.value[index].weight
+    allProductIngredient.value[index].ingredient_cost = parseFloat(updateingredientCost.toFixed(2))
     updateAllNumbers(true)
   }
 }
@@ -173,12 +173,12 @@ function addProductJoker(): void {
   const addProductJoker = {
     name: productJokerSelected.value.name,
     weight: productJokerSelected.value.income,
-    unit1: 'UNIDADE',
+    unit1: 'GRAMAS',
     price: productJokerSelected.value.revenue_cost,
     quantity: 1,
     ingredient_cost: ingredientCostFormated
   }
-  all.value.push(addProductJoker)
+  allProductIngredient.value.push(addProductJoker)
   updateAllNumbers(true)
 }
 function addNewIngredient(): void {
@@ -190,14 +190,14 @@ function addNewIngredient(): void {
     quantity: 0,
     ingredient_cost: 0
   }
-  all.value.push(newIngredient)
+  allProductIngredient.value.push(newIngredient)
 }
 function deleteIngredientOfArray(index: number) {
-  all.value.splice(index, 1)
+  allProductIngredient.value.splice(index, 1)
   updateAllNumbers(true)
 }
 function validateIfThereIsANumber0(index: number) {
-  const validate = Object.entries(all.value[index]).some(
+  const validate = Object.entries(allProductIngredient.value[index]).some(
     ([key, value]) => typeof value === 'number' && value === 0 && key != 'ingredient_cost'
   )
   return validate
@@ -210,7 +210,7 @@ function prepareData() {
 
   const dataAssembly = {
     productInformation: productDataAssembly,
-    productIngredients: all.value
+    productIngredients: allProductIngredient.value
   }
   return dataAssembly
 }
@@ -275,8 +275,10 @@ async function getProduct() {
   if (id_product.value) {
     try {
       const productSpecific = await httpGetProduct.getSpecificProduct(id_product.value)
-
+      
       dataProduct.value = UtilsFormateProduct.formateSpecificProduct(productSpecific)
+      
+      categoryAlreadySelected(productSpecific.id_category)
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         handleError(error.response?.data)
@@ -292,7 +294,7 @@ async function getProductIngredient() {
   try {
     if (id_product.value) {
       const productIngredient = await httpGetProductIngredient.getProductIngredient(id_product.value)
-      all.value = productIngredient
+      allProductIngredient.value = productIngredient
       updateAllNumbers(true)
     }
   } catch (error: unknown) {
@@ -319,14 +321,18 @@ async function getProducsJoker() {
     }
   }
 }
-
 async function getCategory() {
   if (idUser.value) {
     const data = await httpGetCategory.getAllCategory(idUser.value as string)
-    formatedDataToCombobox(data)
+    allCategories.value = data
+    formatedDataToCombobox(allCategories.value)
   }
 }
 
+function categoryAlreadySelected(idCategory: string){
+  const categorySelected = allCategories.value.find(category => category.id === idCategory)
+  if(categorySelected) selectedCategory.value = categorySelected.name 
+}
 function formatedDataToCombobox(data: any) {
   dataFormatedToComboBox.value = data.map((item: any) => {
     return { value: item.id, label: item.name }
@@ -336,10 +342,6 @@ function formatedDataToCombobox(data: any) {
 function handleItemSelected(item: any) {
   id_category.value = item.value as string
   selectedCategory.value = item.label
-}
-function isJokerSelected(item: string) {
-
-  dataProduct.value.isJoker = parseInt(item)
 }
 
 function returnToHomePage() {
@@ -356,17 +358,17 @@ function updateNameProduct() {
     <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
     <div class="flex items-center h-20 bg-muted gap-4 px-4">
-      <div class="flex-1 h-[4em]">
+      <div class="flex-1">
         <Input class="bg-white w-full" name="nameProduct" type="text" v-model="dataProduct.nameProduct"
           @change="updateNameProduct" placeholder="Nome do produto" />
       </div>
-      <div class="flex-1 h-[4em]">
+      <div class="flex-1">
         <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
           :items="dataFormatedToComboBox" name="selectedCategory" v-model="selectedCategory"
           @itemSelected="handleItemSelected" />
       </div>
-      <div class="flex-1 h-[4em]">
-        <SelectBoolean @selected="isJokerSelected" />
+      <div class="flex-1">
+        <SelectBoolean v-model="dataProduct.isJoker"/>
       </div>
     </div>
     <div class="w-full h-[30em] overflow-y-auto shadow-md">
@@ -390,7 +392,7 @@ function updateNameProduct() {
 
         <!-- Corpo da tabela -->
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="(data, index) of all" :key="index" class="hover:bg-gray-50 transition-colors">
+          <tr v-for="(data, index) of allProductIngredient" :key="index" class="hover:bg-gray-50 transition-colors">
             <!-- Botão de deletar -->
             <td class="p-3">
               <CircleX class="text-red-500 hover:text-red-700 transition-colors"
@@ -442,7 +444,7 @@ function updateNameProduct() {
         </tbody>
       </table>
     </div>
-    <div class="flex w-full h-[4em] justify-around items-center border-y-2 gap-10 px-4">
+    <div class="flex w-full justify-around items-center border-y-2 gap-10 p-4 ">
       <div class="flex-1">
         <select class="border-2 rounded-md w-full h-8" v-model="productJokerSelected" @change="addProductJoker">
           <option disabled :value="null">Selecione produtos coringa.</option>

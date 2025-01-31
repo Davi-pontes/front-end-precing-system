@@ -12,8 +12,6 @@ const model = defineModel({ required: true, type: Number })
 
 const emit = defineEmits(['update'])
 watch(model, (newValue) => {
-  console.log(newValue);
-
   emit('update', newValue)
 })
 </script>

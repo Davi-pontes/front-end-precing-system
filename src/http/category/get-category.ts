@@ -1,4 +1,4 @@
-import type { ICategoryWithProducts } from "@/interface/Category";
+import type { ICategory, ICategoryWithProducts } from "@/interface/Category";
 import type { Axios } from "axios";
 
 export class HttpGetCategory {
@@ -22,7 +22,7 @@ export class HttpGetCategory {
             throw new Error("Não foi possível buscar as categorias e produtos.");
         }
     }
-    async getAllCategory(idUser: string): Promise<ICategoryWithProducts> {
+    async getAllCategory(idUser: string): Promise<ICategory[]> {
         try {
             const { data } = await this.axios.get(`${this.baseUrl}/category/only`, {
                 params: { idUser },
