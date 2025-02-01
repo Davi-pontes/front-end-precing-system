@@ -36,13 +36,8 @@ function getLocalStorage(): void {
 async function getAllCategoryAndProduct(): Promise<void> {
   try {
     const data = await httpGetCategory.getAllCategoryAndProduct(idUser.value)
-    
-    const calculatePricePerUnit = data.products.map((it: any) => {
-      return { ...it, price_per_unit: it.final_recipe_price / it.income }
-    })
 
-    if (data)
-      allCategoryAndProducts.value = { category: data.category, products: calculatePricePerUnit }
+    if (data) allCategoryAndProducts.value = data
   } catch (error) {
     if (error instanceof AxiosError) {
       handleError(error.response?.data)

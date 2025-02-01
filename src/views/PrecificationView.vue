@@ -64,7 +64,6 @@ const allProductIngredient = ref<IProductIngredient[]>([{
   ingredient_cost: 0
 }])
 const productsJoker = ref<IProduct[]>([])
-const productJokerSelected = ref<IProduct>({} as IProduct)
 const idUser = ref<LocationQueryValue | LocationQueryValue[]>(null)
 const allCategories = ref<ICategory[]>([])
 const showMessage = ref(false)
@@ -72,7 +71,9 @@ const message = ref('')
 const thereWasChanged = ref(false)
 const showLoading = ref(false)
 const dataFormatedToComboBox = ref([])
+const dataProductJokerFormatedToComboBox = ref([])
 const selectedCategory = ref('')
+const selectedProductJoker = ref('')
 const messageForError = ref('')
 const showMessageErro = ref(false)
 
@@ -165,20 +166,25 @@ function calculateCostOfAnIngredient(index: number): void {
   }
 }
 
-function addProductJoker(): void {
-  const ingredient_cost =
-    productJokerSelected.value.revenue_cost / productJokerSelected.value.income
-  const ingredientCostFormated = parseFloat(ingredient_cost.toFixed(2))
-  const addProductJoker = {
-    name: productJokerSelected.value.name,
-    weight: productJokerSelected.value.income,
-    unit1: 'GRAMAS',
-    price: productJokerSelected.value.revenue_cost,
-    quantity: 1,
-    ingredient_cost: ingredientCostFormated
+function handleProductJokerSelected(item: any): void {
+  const productJokerSelected = productsJoker.value.find(it => it.id_product === item.value)
+  
+  if(productJokerSelected){
+    const ingredient_cost =
+      productJokerSelected.revenue_cost / productJokerSelected.income
+    const ingredientCostFormated = parseFloat(ingredient_cost.toFixed(2))
+    const addProductJoker = {
+      name: productJokerSelected.name,
+      weight: productJokerSelected.income,
+      unit1: 'UNIDADE',
+      price: productJokerSelected.revenue_cost,
+      quantity: 1,
+      ingredient_cost: ingredientCostFormated,
+      id_product: id_product.value ? id_product.value : null
+    }
+    allProductIngredient.value.push(addProductJoker)
+    updateAllNumbers(true)
   }
-  allProductIngredient.value.push(addProductJoker)
-  updateAllNumbers(true)
 }
 function addNewIngredient(): void {
   if (id_product.value) thereWasChanged.value = true
@@ -295,7 +301,6 @@ async function getProductIngredient() {
     if (id_product.value) {
       const productIngredient = await httpGetProductIngredient.getProductIngredient(id_product.value)
       allProductIngredient.value = productIngredient
-      //updateAllNumbers(true)
     }
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -312,6 +317,7 @@ async function getProducsJoker() {
       const result = await httpGetProductJoker.getProductJoker(idUser.value as string)
 
       productsJoker.value = result
+      formatedProductJokerDataToCombobox(result)
     }
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -336,6 +342,11 @@ function categoryAlreadySelected(idCategory: string) {
 function formatedDataToCombobox(data: any) {
   dataFormatedToComboBox.value = data.map((item: any) => {
     return { value: item.id, label: item.name }
+  })
+}
+function formatedProductJokerDataToCombobox(data: any) {
+  dataProductJokerFormatedToComboBox.value = data.map((item: any) => {
+    return { value: item.id_product, label: item.name }
   })
 }
 
@@ -448,12 +459,9 @@ function updateNameProduct() {
     </div>
     <div class="flex w-full justify-around items-center border-y-2 gap-10 p-4 ">
       <div class="flex-1">
-        <select class="border-2 rounded-md w-full h-8" v-model="productJokerSelected" @change="addProductJoker">
-          <option disabled :value="null">Selecione produtos coringa.</option>
-          <option :value="productJoker" v-for="(productJoker, index) in productsJoker" :key="index">
-            {{ productJoker.name }}
-          </option>
-        </select>
+        <Combobox :titleInput="'Selecione um produto coringa...'" :titleSearch="'Pesquise por um produto coringa...'"
+          :items="dataProductJokerFormatedToComboBox" name="selectedCategory" v-model="selectedProductJoker"
+          @itemSelected="handleProductJokerSelected" />
       </div>
       <Button class="flex-1 bg-[#5A6FA5]" @click="handleButtonToGoBack">Voltar</Button>
       <Button class="flex-1 bg-[#5A6FA5]" @click="addNewIngredient">Adicionar novo ingrediente</Button>

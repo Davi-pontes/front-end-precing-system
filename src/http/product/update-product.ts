@@ -12,8 +12,7 @@ export class HttpUpdateProduct {
 
   async updateProduct(productData: any, idProduct: string): Promise<IProduct> {
     try {
-      const { data } = await this.axios.put(this.baseUrl + '/product', {
-        productData,
+      const { data } = await this.axios.put(this.baseUrl + '/product', productData, {
         params: {
           id: idProduct
         },
