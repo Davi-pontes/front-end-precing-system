@@ -1,6 +1,6 @@
 {
   "name": "helqui-client",
-  "version": "1.22",
+  "version": "1.25",
   "private": true,
   "type": "module",
   "scripts": {
