@@ -127,14 +127,6 @@ const router = createRouter({
         }
       ]
     },
-    // {
-    //   path: '/precification',
-    //   name: 'homePrecification',
-    //   component: HomePrecificationView,
-    //   meta: {
-    //     auth: true
-    //   }
-    // },
     {
       path: '/register',
       name: 'precification',
