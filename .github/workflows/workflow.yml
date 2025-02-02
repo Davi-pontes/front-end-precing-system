@@ -58,6 +58,7 @@ jobs:
             docker run -d \
               --name frontendprecification \
               --network precification_network \
+              -e VITE_API_BACKEND="https://helqui.com.br/back" \
               -p 5173:5173 davjose/front-end-precification:v1.26.1
 
             echo "Deploy completed."
