@@ -4,7 +4,7 @@ import LadingPageView from '../views/LadingPage.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
 import LoginView from '../views/LoginView.vue'
-import LoginViewAdmin from '../views/admin/LoginViewAdmin.vue'
+//import LoginViewAdmin from '../views/admin/LoginViewAdmin.vue'
 import ListUsersViewAdmin from '@/views/admin/ListUsersViewAdmin.vue'
 import CreateAccountView from '@/views/CreateAccountView.vue'
 //import HomePageView from '@/views/Menu/HomePageView.vue'
@@ -61,14 +61,14 @@ const router = createRouter({
         public: true
       }
     },
-    {
-      path: '/admin/login',
-      name: 'loginAdmin',
-      component: LoginViewAdmin,
-      meta: {
-        public: true
-      }
-    },
+    // {
+    //   path: '/admin/login',
+    //   name: 'loginAdmin',
+    //   component: LoginViewAdmin,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
     {
       path: '/admin/users',
       name: 'listUsersAdmin',
