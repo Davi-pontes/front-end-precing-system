@@ -8,14 +8,19 @@ export default {
   components: {},
   data() {
     return {
-      user: { name: null, phone_number: null, email: null, password: null },
+      user: { name: null, phone_number: '', email: null, password: null },
       showMessage: true,
       message: ''
     }
   },
   methods: {
+    formatPhoneNumber(numero: string): string {
+    const numeroFormatado = numero.replace(/\D/g, '');
+    return numeroFormatado;
+},
     async registrationUser() {
       try {
+        this.user.phone_number = this.formatPhoneNumber(this.user.phone_number)
         await axios.post(urlApiBackEnd + '/user/sign-up', this.user, {
           withCredentials: true
         })
