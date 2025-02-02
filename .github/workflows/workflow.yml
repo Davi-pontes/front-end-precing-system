@@ -31,12 +31,12 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build --build-arg VITE_API_BACKEND=${{vars.SERVICE_HOST}} -t davjose/front-end-precification:v1.26.7 .
+          docker build --build-arg VITE_API_BACKEND=${{vars.SERVICE_HOST}} -t davjose/front-end-precification:v1.27 .
         #  docker build -t davjose/front-end-precification:latest .
 
       - name: Push Docker Images
         run: |
-          docker push davjose/front-end-precification:v1.26.7
+          docker push davjose/front-end-precification:v1.27
         #  docker push davjose/front-end-precification:latest
 
       - name: Hostinger Deployment
@@ -52,11 +52,11 @@ jobs:
             ls
           SCRIPT_AFTER: |
             echo "Starting deploy..."
-            docker pull davjose/front-end-precification:v1.26.7
+            docker pull davjose/front-end-precification:v1.27
             docker stop frontendprecification || true
             docker rm frontendprecification || true
             docker run -d \
               --name frontendprecification \
               --network precification_network \
-              -p 5173:5173 davjose/front-end-precification:v1.26.7
+              -p 5173:5173 davjose/front-end-precification:v1.27
             echo "Deploy completed."
