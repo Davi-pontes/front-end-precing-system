@@ -76,20 +76,6 @@ getLocalStorage()
             </router-link>
             <router-link
               :to="{
-                path: '/order',
-                query: { id: idUser }
-              }"
-              class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              :class="{ 'bg-muted': $route.path === '/order' }"
-            >
-              <ShoppingCart class="h-4 w-4" />
-              Venda
-              <!-- <Badge class="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                                6
-                            </Badge> -->
-            </router-link>
-            <router-link
-              :to="{
                 path: '/category/add',
                 query: { id: idUser }
               }"
@@ -109,6 +95,20 @@ getLocalStorage()
             >
               <Package class="h-4 w-4" />
               Produtos
+            </router-link>
+            <router-link
+              :to="{
+                path: '/order',
+                query: { id: idUser }
+              }"
+              class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+              :class="{ 'bg-muted': $route.path === '/order' }"
+            >
+              <ShoppingCart class="h-4 w-4" />
+              Venda
+              <!-- <Badge class="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                                6
+                            </Badge> -->
             </router-link>
             <router-link
               :to="{
