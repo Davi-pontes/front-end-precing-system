@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import axios, { AxiosError } from 'axios'
 import TableComponent from '@/components/Table.vue'
-import type { ICategoryWithProducts } from '@/interface/Category'
+import type { ICategory, ICategoryWithProducts } from '@/interface/Category'
 import { useRouter } from 'vue-router'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { columnsProduct } from '@/components/ColumnsProduct'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import TagInput from '@/components/TagInput.vue'
 import { HttpGetCategory } from '@/http/category/get-category'
+import type { IProduct } from '@/interface/Product'
 
 const router = useRouter()
 
@@ -21,6 +22,7 @@ const allCategoryAndProducts = ref<ICategoryWithProducts>({
   category: [],
   products: []
 })
+const productToRender = ref<IProduct[]>([])
 const nameUser = ref('')
 const idUser = ref('')
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
@@ -37,7 +39,10 @@ async function getAllCategoryAndProduct(): Promise<void> {
   try {
     const data = await httpGetCategory.getAllCategoryAndProduct(idUser.value)
 
-    if (data) allCategoryAndProducts.value = data
+    if (data) {
+      allCategoryAndProducts.value = data
+      productToRender.value = allCategoryAndProducts.value.products
+    }
   } catch (error) {
     if (error instanceof AxiosError) {
       handleError(error.response?.data)
@@ -118,14 +123,16 @@ function handleAlert(message: string) {
 function removeAlert() {
   showMessageAlert.value = false
 }
-watch(
-  () => allCategoryAndProducts.value.category,
-  (newCategories: any) => {
-    allCategoryAndProducts.value.products = allCategoryAndProducts.value.products.filter(
-      (product) => newCategories.some((category: any) => category.id === product.id_category)
+//Função para filtra produtos com base na categoria selecionada no meu tag input
+function filterProductByCategory(categories: ICategory[]) {
+  if(categories.length === 0){
+    productToRender.value = allCategoryAndProducts.value.products 
+  } else{
+    productToRender.value = allCategoryAndProducts.value.products.filter(
+      (product) => categories.some((category: ICategory) => category.id === product.id_category)
     )
   }
-)
+}
 getLocalStorage()
 getAllCategoryAndProduct()
 </script>
@@ -133,24 +140,12 @@ getAllCategoryAndProduct()
 <template>
   <div class="w-full h-full border shadow-lg rounded-md p-4 mt-7">
     <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
-    <MessageError
-      v-if="showMessageErro"
-      :message="messageForError"
-      @removeAlert="removeAlertError"
-    />
-    <TagInput
-      :label="'Categorias'"
-      :description="'Filtre os produtos de acordo com as categorias.'"
-      v-model="allCategoryAndProducts.category"
-    />
-    <TableComponent
-      :columns="columnsProduct"
-      :data-props="allCategoryAndProducts?.products"
-      :informationsInputSearch="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }"
-      @update="handleUpdate"
-      @delete="handleDelete"
-      @detail="handleDetail"
-    >
+    <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
+    <TagInput :label="'Categorias'" :description="'Filtre os produtos de acordo com as categorias.'"
+      @filter="filterProductByCategory" v-model="allCategoryAndProducts.category" />
+    <TableComponent :columns="columnsProduct" :data-props="productToRender"
+      :informationsInputSearch="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }" @update="handleUpdate"
+      @delete="handleDelete" @detail="handleDetail">
     </TableComponent>
   </div>
 </template>
