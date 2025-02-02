@@ -31,12 +31,12 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t davjose/front-end-precification:v1.26 .
+          docker build -t davjose/front-end-precification:v1.26.1 .
         #  docker build -t davjose/front-end-precification:latest .
 
       - name: Push Docker Images
         run: |
-          docker push davjose/front-end-precification:v1.26
+          docker push davjose/front-end-precification:v1.26.1
         #  docker push davjose/front-end-precification:latest
 
       - name: Hostinger Deployment
@@ -52,14 +52,12 @@ jobs:
             ls
           SCRIPT_AFTER: |
             echo "Starting deploy..."
-            docker pull davjose/front-end-precification:v1.26
+            docker pull davjose/front-end-precification:v1.26.1
             docker stop frontendprecification || true
             docker rm frontendprecification || true
-            cd ./helqui
             docker run -d \
               --name frontendprecification \
-              --env-file .env.development \
               --network precification_network \
-              -p 5173:5173 davjose/front-end-precification:v1.26
+              -p 5173:5173 davjose/front-end-precification:v1.26.1
 
             echo "Deploy completed."
