@@ -1,5 +1,9 @@
 FROM node:lts-alpine AS build-stage
 
+ARG VITE_API_BACKEND
+
+ENV VITE_API_BACKEND=$VITE_API_BACKEND
+
 RUN npm install -g vite
 
 WORKDIR /app
