@@ -17,7 +17,7 @@ watch(model, (newValue) => {
 </script>
 
 <template>
-  <NumberField id="balance" :min="0" :default-value="0" v-model="model" :format-options="{
+  <NumberField id="balance" :min="0" :step="0.01" :default-value="0" v-model="model" :format-options="{
     style: 'currency',
     currency: 'BRL',
     currencyDisplay: 'symbol',
