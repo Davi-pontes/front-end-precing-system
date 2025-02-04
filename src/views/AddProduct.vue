@@ -9,6 +9,13 @@ import type { ICommandItem } from '@/interface/Combobox'
 import { Button } from '@/components/ui/button'
 import { FileUp } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput
+} from '@/components/ui/number-field'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
 
@@ -174,20 +181,21 @@ async function sendDataToUpdate() {
     }
   }
 }
-// Função para calcular o custo total
-function calculateCostTotal() {
-  const calculatePricePerUnit =
-    (datasProduct.value.profit +
-      datasProduct.value.priceProduct +
+// Função para calcular o preço de cada produto
+function calculatePricePerUnit() {
+  let calculatePricePerUnit =
+    (datasProduct.value.priceProduct +
       datasProduct.value.tax +
       datasProduct.value.fixedCost +
       datasProduct.value.freigth) /
     datasProduct.value.qtdInBox
 
+  if (datasProduct.value.profit > 0) calculatePricePerUnit += datasProduct.value.profit
+
   datasProduct.value.pricePerUnit = parseFloat(calculatePricePerUnit.toFixed(2))
 }
 // Função para calcular o custo
-function calculateCost() {
+function calculateTotalCost() {
   datasProduct.value.costProduct =
     datasProduct.value.tax +
     datasProduct.value.fixedCost +
@@ -197,14 +205,16 @@ function calculateCost() {
 // Função para calcular o lucro
 function calculateProfit() {
   datasProduct.value.profit =
-    (datasProduct.value.costProduct * datasProduct.value.profitPecentage) / 100
-  calculateCostTotal()
+    (datasProduct.value.costProduct * (datasProduct.value.profitPecentage * 100)) / 100
+
+  calculatePricePerUnit()
 }
 // Função para atualizar números
 function updateAllNumbers() {
-  calculateCost()
-  calculateCostTotal()
-  if (datasProduct.value.profit > 0) calculateProfit()
+  console.log('Update all numbers');
+  
+  //calculatePricePerUnit()
+  calculateTotalCost()
 }
 // Função para limpar os dados
 function clearDatas() {
@@ -226,16 +236,17 @@ function clearDatas() {
   }
 }
 function calculateprofitPercentage() {
-  const absoluteProfit = Math.abs(datasProduct.value.costProduct - datasProduct.value.pricePerUnit);
-  const profitPecentage = (absoluteProfit / datasProduct.value.costProduct) * 100
+
+  const absoluteProfit = datasProduct.value.costProduct - datasProduct.value.pricePerUnit
+
+  const profitPecentage = (absoluteProfit / datasProduct.value.costProduct)
 
   datasProduct.value.profitPecentage = parseFloat(profitPecentage.toFixed(2))
-
-  calculateProfit()
 }
 function handleChangedSellingPrice() {
   calculateprofitPercentage()
 }
+//Atualiza o resumo a cada alteração
 watch(() => datasProduct.value, () => {
   costProductDisplay.value = datasProduct.value.costProduct.toFixed(2)
   profitDisplay.value = datasProduct.value.profit.toFixed(2)
@@ -250,7 +261,7 @@ if (idProduct) {
 <template>
   <main>
     <div class="flex w-full gap-2">
-      <div class="bg-white w-[60vw] border rounded-md shadow-sm">
+      <div class="bg-white w-[60vw] h-[38em] border rounded-md shadow-sm">
         <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
         <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
         <!-- Conteúdo principal -->
@@ -279,44 +290,117 @@ if (idProduct) {
                 v-model="datasProduct.descriptionProduct"></textarea>
             </div>
             <!-- Segunda coluna -->
-            <div class="flex h-full flex-col w-1/2">
+            <div class="flex items-center h-full flex-col w-1/2">
               <div class="flex w-[95%] h-full gap-4">
                 <!-- Primeiro bloco interno -->
-                <div class="flex flex-col w-1/2 mt-6">
-                  <label for="price">Quantidade em caixa*</label>
-                  <input type="number" placeholder="1" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.qtdInBox" @change="updateAllNumbers" />
-                  <label for="stock">Imposto</label>
-                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.tax" @change="updateAllNumbers" />
-                  <label for="price">Frete</label>
-                  <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.freigth" @change="updateAllNumbers" />
-                  <label for="price">Quantidade em estoque</label>
-                  <input type="number" placeholder="0" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.qtdStock" @change="updateAllNumbers" />
+                <div class="flex justify-between flex-col w-1/2 mt-6">
+                  <label for="qtdInBox">Quantidade em caixa *</label>
+                  <NumberField v-model="datasProduct.qtdInBox" @change="updateAllNumbers" id="qtdInBox" :min="1">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputNumber v-model="datasProduct.qtdInBox" @update="updateAllNumbers" id="qtdInBox" /> -->
+
+                  <label for="tax">Imposto</label>
+                  <NumberField id="tax" :min="0" :step="0.01" :default-value="0" v-model="datasProduct.tax"
+                    @change="updateAllNumbers" :format-options="{
+                      style: 'currency',
+                      currency: 'BRL',
+                      currencyDisplay: 'symbol',
+                      currencySign: 'accounting'
+                    }">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputCurrency id="tax" v-model="datasProduct.tax" @update="updateAllNumbers" /> -->
+
+                  <label for="freight">Frete</label>
+                  <NumberField id="freight" :min="0" :step="0.01" :default-value="0" v-model="datasProduct.freigth"
+                    @change="updateAllNumbers" :format-options="{
+                      style: 'currency',
+                      currency: 'BRL',
+                      currencyDisplay: 'symbol',
+                      currencySign: 'accounting'
+                    }">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputCurrency v-model="datasProduct.freigth" @update="updateAllNumbers" id="freight" /> -->
+
+                  <label for="qtyStock">Quantidade em estoque</label>
+                  <NumberField v-model="datasProduct.qtdStock" @change="updateAllNumbers" id="qtyStock" :min="1">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputNumber v-model="datasProduct.qtdStock" @update="updateAllNumbers" id="qtyStock" /> -->
                 </div>
                 <!-- Segundo bloco interno -->
-                <div class="flex flex-col w-1/2 mt-6">
-                  <label for="price">Preço de compra*</label>
-                  <input type="number" placeholder="1" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.priceProduct" @change="updateAllNumbers" />
-                  <label for="stock">Custo operacional</label>
-                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.fixedCost" @change="updateAllNumbers" />
-                  <label for="stock">Porcentagem de lucro*</label>
-                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.profitPecentage" @change="calculateProfit" />
-                  <label for="stock">Preço de venda</label>
-                  <input type="number" placeholder="0" id="stock" class="border-2 outline-none rounded-md mb-4 pl-2"
-                    v-model="datasProduct.pricePerUnit" @change="handleChangedSellingPrice" />
+                <div class="flex justify-between flex-col w-1/2 mt-6">
+                  <label for="pricePurchase">Preço de compra *</label>
+                  <NumberField v-model="datasProduct.priceProduct" @change="updateAllNumbers" id="pricePurchase"
+                    :min="1">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputCurrency placeholder="1" v-model="datasProduct.priceProduct" @update="updateAllNumbers"
+                    id="pricePurchase" /> -->
+
+                  <label for="operationalCost">Custo operacional</label>
+                  <NumberField v-model="datasProduct.fixedCost" @change="updateAllNumbers" id="operationalCost"
+                    :min="1">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputCurrency id="operationalCost" v-model="datasProduct.fixedCost" @update="updateAllNumbers" /> -->
+
+                  <label for="profitPecentage">Porcentagem de lucro *</label>
+                  <NumberField v-model="datasProduct.profitPecentage" id="profitPecentage" @change="calculateProfit" :default-value="0.00" :step="0.01" :format-options="{
+                    style: 'percent',
+                  }">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputPercentage id="profitPecentage" v-model="datasProduct.profitPecentage"
+                    @update="calculateProfit" /> -->
+
+                  <label for="pricePerUnit">Preço de venda</label>
+                  <NumberField v-model="datasProduct.pricePerUnit" @chage="handleChangedSellingPrice" id="pricePerUnit"
+                    :min="1">
+                    <NumberFieldContent>
+                      <NumberFieldDecrement />
+                      <NumberFieldInput />
+                      <NumberFieldIncrement />
+                    </NumberFieldContent>
+                  </NumberField>
+                  <!-- <InputCurrency id="stock" v-model="datasProduct.pricePerUnit" @update="handleChangedSellingPrice" /> -->
                 </div>
               </div>
             </div>
           </div>
         </div>
         <!-- Botão de salvar -->
-        <div class="flex justify-end w-[95%] mx-auto mb-4">
+        <div class="flex justify-end w-[95%] mx-auto mt-3">
           <Button class="bg-muted" @click="handleSendDatasToBackend()">SALVAR PRODUTO</Button>
         </div>
       </div>

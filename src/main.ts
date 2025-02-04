@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import { MaskInput } from 'vue-3-mask'
+import { createPinia } from 'pinia';
 import axios from 'axios';
 
 const instanceAxios = axios.create({
@@ -16,4 +17,5 @@ app.config.globalProperties.$axios = instanceAxios
 
 app.component('MaskInput', MaskInput)
 app.use(router)
+app.use(createPinia());
 app.mount('#app')
