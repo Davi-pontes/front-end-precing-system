@@ -18,7 +18,7 @@ watch(model, (newValue) => {
 </script>
 
 <template>
-  <NumberField v-model="model" id="percent" :default-value="0.00" :step="0.01" :format-options="{
+  <NumberField v-model="model" id="percent" :step="0.01" :format-options="{
     style: 'percent',
   }">
     <NumberFieldContent>
