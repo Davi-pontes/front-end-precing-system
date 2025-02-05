@@ -17,6 +17,7 @@ import AddProduct from '@/views/AddProduct.vue'
 import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
 import HomeView from '@/views/HomeView.vue'
+import MainLayoutAdmin from '@/views/admin/MainLayoutAdmin.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,21 +62,28 @@ const router = createRouter({
         public: true
       }
     },
+
     {
       path: '/admin/login',
       name: 'loginAdmin',
       component: LoginViewAdmin,
       meta: {
         public: true
-      }
+      },
     },
     {
-      path: '/admin/users',
-      name: 'listUsersAdmin',
-      component: ListUsersViewAdmin,
+      path: '/admin/',
+      name: 'mainAdmin',
+      component: MainLayoutAdmin,
       meta: {
-        auth: true
+        public: true
+      },
+      children:[{
+        path: 'users',
+        component: ListUsersViewAdmin,
+        name: 'AdminUsers'
       }
+    ]
     },
     {
       path: '/',
