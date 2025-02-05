@@ -33,7 +33,7 @@ export default {
         localStorage.setItem('User', JSON.stringify(data))
 
         if (this.routeName && this.routeName === 'loginAdmin') {
-          this.$router.push({ name: 'listUsersAdmin' })
+          this.$router.push({ name: 'AdminUsers' })
         } else {
           this.$router.push({ name: 'Inicio' })
         }
