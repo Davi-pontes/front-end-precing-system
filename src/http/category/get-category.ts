@@ -18,7 +18,6 @@ export class HttpGetCategory {
             });
             return data;
         } catch (error) {
-            console.error("Erro ao buscar categorias e produtos:", error);
             throw new Error("Não foi possível buscar as categorias e produtos.");
         }
     }
@@ -30,7 +29,6 @@ export class HttpGetCategory {
             });
             return data;
         } catch (error) {
-            console.error("Erro ao buscar categorias e produtos:", error);
             throw new Error("Não foi possível buscar as categorias e produtos.");
         }
     }
