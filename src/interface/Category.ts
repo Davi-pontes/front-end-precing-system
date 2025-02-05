@@ -9,4 +9,6 @@ export interface ICategory {
 export interface ICategoryWithProducts {
   category: ICategory[]
   products: IProduct[]
+  totalProducts: number
+  averageProfit: number
 }

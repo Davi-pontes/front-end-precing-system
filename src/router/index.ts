@@ -30,22 +30,6 @@ const router = createRouter({
         public: true
       }
     },
-    // {
-    //   path: '/menu',
-    //   name: 'homePageMenu',
-    //   component: HomePageView,
-    //   meta: {
-    //     public: true
-    //   }
-    // },
-    // {
-    //   path: '/menu/carrinho',
-    //   name: 'cartMenu',
-    //   component: CartView,
-    //   meta: {
-    //     public: true
-    //   }
-    // },
     {
       path: '/login',
       name: 'login',
@@ -143,6 +127,22 @@ const router = createRouter({
         auth: true
       }
     }
+    // {
+    //   path: '/menu',
+    //   name: 'homePageMenu',
+    //   component: HomePageView,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
+    // {
+    //   path: '/menu/carrinho',
+    //   name: 'cartMenu',
+    //   component: CartView,
+    //   meta: {
+    //     public: true
+    //   }
+    // },
     // {
     //   path: '/ingredients/all',
     //   name: 'allIngredients',
