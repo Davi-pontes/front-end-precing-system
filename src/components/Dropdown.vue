@@ -46,9 +46,9 @@ function handleDetail() {
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>{{ label }}</DropdownMenuLabel>
       <DropdownMenuItem @click="handleUpdate()"> Alterar </DropdownMenuItem>
+      <DropdownMenuItem @click="handleDetail()">Ver detalhes</DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleDelete()">Deletar</DropdownMenuItem>
-      <DropdownMenuItem @click="handleDetail()">Ver detalhes</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

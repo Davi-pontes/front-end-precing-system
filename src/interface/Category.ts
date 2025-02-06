@@ -1,7 +1,7 @@
 import type { IProduct } from './Product'
 
 export interface ICategory {
-  id: string
+  id?: string
   name: string
   user_id: string
 }
@@ -11,4 +11,9 @@ export interface ICategoryWithProducts {
   products: IProduct[]
   totalProducts: number
   averageProfit: number
+}
+
+export interface IColumnsTableCategory{
+  id: string
+  name: string
 }

@@ -150,7 +150,7 @@ getAllCategoryAndProduct()
           {{ allCategoryAndProducts.totalProducts }}
         </template>
         <template v-slot:averageProfit>
-          {{ allCategoryAndProducts.averageProfit }}
+          {{ allCategoryAndProducts.averageProfit.toFixed(2) }}
         </template>
       </Card>
     </div>

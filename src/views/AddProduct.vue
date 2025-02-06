@@ -215,14 +215,11 @@ function calculateProfit() {
 // Função para atualizar números
 function updateAllNumbers(method:string | null) {
   if(method === 'profit' || profitPercentageAdded.value){
-    console.log(method);
-    console.log('profit');
     profitPercentageAdded.value = true
     calculateTotalCost()
     calculateProfit()
     calculatePricePerUnitPlusProfit()
   } else{
-    console.log('normal');
     calculateTotalCost()
     calculatePricePerUnit()
   }
