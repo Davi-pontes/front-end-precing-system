@@ -8,44 +8,42 @@ import { ref, watch } from 'vue';
 
 const model = defineModel({ required: true, type: Number });
 const isFocused = ref(false);
-
 const emit = defineEmits(['update']);
+
 watch(model, (newValue) => {
   emit('update', newValue);
 });
 
-// Formata para sempre ter duas casas decimais ao digitar
-const formatDecimal = (value: string) => {
-  let numericValue = value.replace(/\D/g, ''); // Remove tudo que não for número
-  while (numericValue.length < 3) {
-    numericValue = '0' + numericValue; // Garante pelo menos 3 dígitos para evitar erro
-  }
-  const intPart = numericValue.slice(0, -2) || '0';
-  const decimalPart = numericValue.slice(-2);
-  return `${parseInt(intPart, 10)}.${decimalPart}`;
+const maskCurrency = (valor: any, locale: any = 'pt-BR', currency = 'BRL') => {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency
+  }).format(valor);
 };
 
-// Sempre exibir o valor formatado como moeda quando não estiver editando
-const getFormattedValue = () => {
-  return model.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const mascaraMoeda = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const onlyDigits = input.value
+    .split("")
+    .filter((s: any) => /\d/.test(s))
+    .join("")
+    .padStart(3, "0");
+
+  const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
+  model.value = parseFloat(digitsFloat);
 };
 
-// Evento de foco
+const getFormatValue = () => {
+  return maskCurrency(model.value);
+};
+
 const handleFocus = () => {
   isFocused.value = true;
 };
 
-// Evento de perda de foco
 const handleBlur = () => {
   isFocused.value = false;
-  model.value = parseFloat(formatDecimal(model.value.toString())); // Garante formatação correta
-};
-
-// Evento quando o usuário digita
-const handleInput = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const formattedValue = formatDecimal(input.value);
-  model.value = parseFloat(formattedValue);
+  model.value = parseFloat(model.value.toFixed(2));
 };
 </script>
 
@@ -67,8 +65,8 @@ const handleInput = (event: Event) => {
       <NumberFieldInput
         @focus="handleFocus"
         @blur="handleBlur"
-        @input="handleInput"
-        :value="isFocused ? model.toFixed(2) : getFormattedValue()"
+        @input="mascaraMoeda"
+        :value="isFocused ? model.toFixed(2) : getFormatValue()"
       />
     </NumberFieldContent>
   </NumberField>

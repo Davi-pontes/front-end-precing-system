@@ -94,7 +94,7 @@ async function handleDelete(dataToDeleted: any) {
   }
 }
 function productDeletedUpdateData(data: any) {
-  allCategoryAndProducts.value.products = allCategoryAndProducts.value.products.filter(
+  productToRender.value = allCategoryAndProducts.value.products.filter(
     (it) => it.id_product !== data.id_product
   )
 }
@@ -150,7 +150,7 @@ getAllCategoryAndProduct()
           {{ allCategoryAndProducts.totalProducts }}
         </template>
         <template v-slot:averageProfit>
-          {{ allCategoryAndProducts.averageProfit.toFixed(2) }}
+          {{ allCategoryAndProducts.averageProfit ? allCategoryAndProducts.averageProfit.toFixed(2) : 0 }}
         </template>
       </Card>
     </div>
