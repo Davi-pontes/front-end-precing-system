@@ -60,8 +60,6 @@ async function getStockAllProductByIdUser() {
 
     formatedDataToCombobox(allUserProducts.value)
   } catch (error) {
-    console.log(error);
-    
     if (error instanceof AxiosError) {
       handleError(error.response?.data)
     } else {

@@ -82,8 +82,8 @@ async function handleDelete(dataToDeleted: any) {
       withCredentials: true
     })
     if (data) {
-      handleAlert('Produto deletado com sucesso!')
       productDeletedUpdateData(data)
+      handleAlert('Produto deletado com sucesso!')
     }
   } catch (error) {
     if (error instanceof AxiosError) {

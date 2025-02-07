@@ -143,6 +143,7 @@ async function sendDatasForDataBase() {
       handleError('Selecione uma categoria.')
       return
     }
+    datasProduct.value.pricePerUnit = Number(pricePerUnitDisplay.value)
     const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value, { withCredentials: true })
 
     if (data) handleAlert('Produto adicionado com sucesso!')
