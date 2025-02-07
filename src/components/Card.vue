@@ -13,7 +13,6 @@ import {
                 <CardTitle class="text-sm font-medium truncate">
                     Produtos cadastrados
                 </CardTitle>
-                <DollarSign class="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
                 <div class="text-2xl font-bold">
@@ -29,11 +28,10 @@ import {
                 <CardTitle class="text-sm font-medium">
                     Lucro médio
                 </CardTitle>
-                <Users class="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
                 <div class="text-2xl font-bold">
-                    <slot name="averageProfit">0</slot>
+                    <slot name="averageProfit"></slot>
                     %
                 </div>
                 <p class="text-xs text-muted-foreground">

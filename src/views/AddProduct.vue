@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 import Combobox from '@/components/Combobox.vue'
 import type { ICommandItem } from '@/interface/Combobox'
 import { Button } from '@/components/ui/button'
-import { FileUp } from 'lucide-vue-next'
+// import { FileUp } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import InputNumber from '@/components/InputNumber.vue'
 import InputCurrency from '@/components/InputCurrency.vue'
@@ -143,6 +143,7 @@ async function sendDatasForDataBase() {
       handleError('Selecione uma categoria.')
       return
     }
+    datasProduct.value.pricePerUnit = Number(pricePerUnitDisplay.value)
     const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value, { withCredentials: true })
 
     if (data) handleAlert('Produto adicionado com sucesso!')
@@ -183,7 +184,7 @@ async function sendDataToUpdate() {
 function calculatePricePerUnit() {
   let calculatePricePerUnit = datasProduct.value.costProduct /
     datasProduct.value.qtdInBox
-  
+
   pricePerUnitDisplay.value = calculatePricePerUnit.toFixed(2)
 }
 // Função para calcular o custo
@@ -197,32 +198,29 @@ function calculateTotalCost() {
 function calculatePricePerUnitPlusProfit() {
   let calculatePricePerUnit = (datasProduct.value.costProduct + datasProduct.value.profit) /
     datasProduct.value.qtdInBox
-  
+
   pricePerUnitDisplay.value = calculatePricePerUnit.toFixed(2)
 }
 // Função para calcular o lucro
 function calculateProfit() {
   datasProduct.value.profit =
     (datasProduct.value.costProduct * (datasProduct.value.profitPecentage * 100)) / 100
-    let calculatePricePerUnit = datasProduct.value.costProduct /
+  let calculatePricePerUnit = datasProduct.value.costProduct /
     datasProduct.value.qtdInBox
 
-    calculatePricePerUnit += datasProduct.value.profit
-  
+  calculatePricePerUnit += datasProduct.value.profit
+
   pricePerUnitDisplay.value = calculatePricePerUnit.toFixed(2)
-  
+
 }
 // Função para atualizar números
-function updateAllNumbers(method:string | null) {
-  if(method === 'profit' || profitPercentageAdded.value){
-    console.log(method);
-    console.log('profit');
+function updateAllNumbers(method: string | null) {
+  if (method === 'profit' || profitPercentageAdded.value) {
     profitPercentageAdded.value = true
     calculateTotalCost()
     calculateProfit()
     calculatePricePerUnitPlusProfit()
-  } else{
-    console.log('normal');
+  } else {
     calculateTotalCost()
     calculatePricePerUnit()
   }
@@ -247,18 +245,17 @@ function clearDatas() {
   }
 }
 function calculateprofitPercentage() {
+  const absoluteProfit = Math.abs(datasProduct.value.costProduct - sellingPrice.value);
 
-  const absoluteProfit = Math.abs(datasProduct.value.costProduct - sellingPrice.value)
+  const profitPercentage = (absoluteProfit / datasProduct.value.costProduct);
 
-  const profitPercentage = (absoluteProfit / datasProduct.value.costProduct)
-
-  datasProduct.value.profitPecentage = parseFloat(profitPercentage.toFixed(2))
+  datasProduct.value.profitPecentage = Number(datasProduct.value.costProduct > sellingPrice.value ? -profitPercentage.toFixed(4) : profitPercentage.toFixed(4));
 }
+
 function handleCalculateProfit() {
   updateAllNumbers('profit')
-  //calculateprofitPercentage()
 }
-function handleCalculateSellingPrice(){
+function handleCalculateSellingPrice() {
   sellingPriceAdded.value = true
   calculateprofitPercentage()
 }
@@ -286,11 +283,11 @@ if (idProduct) {
             <div class="flex justify-between">
               <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
                 :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
-              <label for="file-upload"
+              <!-- <label for="file-upload"
                 class="cursor-pointer flex items-center space-x-2 w-[30%] bg-muted text-white rounded px-4 py-2">
                 <FileUp />
                 <span>Exporta planilha</span>
-              </label>
+              </label> -->
               <Input id="file-upload" class="hidden" type="file" />
             </div>
           </div>
@@ -312,7 +309,7 @@ if (idProduct) {
                   <label for="qtdInBox">Quantidade em caixa *</label>
                   <InputNumber v-model="datasProduct.qtdInBox" @update="updateAllNumbers" id="qtdInBox" />
 
-                  <label for="tax">Imposto</label>
+                  <label for="tax">Taxa</label>
                   <InputCurrency id="tax" v-model="datasProduct.tax" @update="updateAllNumbers" />
 
                   <label for="freight">Frete</label>
@@ -331,12 +328,11 @@ if (idProduct) {
 
                   <label for="profitPecentage">Porcentagem de lucro *</label>
                   <InputPercentage id="profitPecentage" v-model="datasProduct.profitPecentage"
-                    @update="handleCalculateProfit" 
-                    :disabled="datasProduct.costProduct === 0"/>
+                    @update="handleCalculateProfit" :disabled="datasProduct.costProduct === 0" />
 
                   <label for="pricePerUnit">Preço de venda</label>
                   <InputCurrency id="stock" v-model="sellingPrice" @update="handleCalculateSellingPrice"
-                  :disabled="datasProduct.costProduct === 0"/>
+                    :disabled="datasProduct.costProduct === 0" />
                 </div>
               </div>
             </div>
