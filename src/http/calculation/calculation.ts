@@ -1,7 +1,8 @@
 import { HttpError } from '@/errors/errorsHttp'
+import type { IBasesCalculation, ICalculationResult } from '@/interface/Calculation'
 import { AxiosError, type Axios } from 'axios'
 
-export class HttpGetProduct {
+export class HttpCalculation {
   private axios: Axios
   private baseUrl: string
 
@@ -10,16 +11,13 @@ export class HttpGetProduct {
     this.baseUrl = baseUrl
   }
 
-  async getSpecificProduct(idProduct: string): Promise<any> {
+  async calculationDatasProduct(basesCalculation: IBasesCalculation): Promise<ICalculationResult> {
     try {
-      const { data } = await this.axios.get(this.baseUrl + '/product/specific', {
-        params: {
-          id: idProduct
-        },
+      const { data } = await this.axios.post(this.baseUrl + '/calculate', basesCalculation, {
         withCredentials: true
       })
       return data
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof AxiosError) {
         throw new HttpError(error.message)
       }

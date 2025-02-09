@@ -28,6 +28,7 @@ const allCategoryAndProducts = ref<ICategoryWithProducts>({
 const productToRender = ref<IProduct[]>([])
 const nameUser = ref('')
 const idUser = ref('')
+
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 
 function getLocalStorage(): void {
