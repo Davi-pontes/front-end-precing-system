@@ -95,11 +95,12 @@ async function handleSendCategory() {
     }
     const dataFormated = prepareData()
 
-    const { data } = await httpPostCategory.createCategory(dataFormated)
-
+    const data = await httpPostCategory.createCategory(dataFormated)
+    
     if (data) {
       nameCategory.value = ''
       handleAlert('Categoria adicionada com sucesso!')
+      allCategory.value = [...allCategory.value, {...data, product_count:0}]
     }
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -169,7 +170,7 @@ allCategoryByIdUser()
       <FormField name="nameCategory" :validate-on-blur="!isFieldDirty">
         <FormItem>
           <FormControl>
-            <Input type="text" placeholder="Adicione o nome da categoria" v-model="nameCategory" />
+            <Input type="text" placeholder="Adicione o nome da categoria" v-model="nameCategory"/>
           </FormControl>
           <FormDescription>Adicione uma nova categoria.</FormDescription>
           <FormMessage />
