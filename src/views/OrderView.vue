@@ -79,7 +79,7 @@ async function getAllProductByIdUser() {
       params: { idUser },
       withCredentials: true
     })
-    allUserProducts.value = data
+    allUserProducts.value = data.allProducts
 
     formatedDataToCombobox(allUserProducts.value)
   } catch (error) {

@@ -1,56 +1,62 @@
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import type { RouteRecordName } from 'vue-router'
+import { LoaderCircle } from 'lucide-vue-next';
+import type { RouteRecordName } from 'vue-router';
 
-const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
+const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
+const email = ref<string | null>(null);
+const password = ref<string | null>(null);
+const routeName = ref<RouteRecordName | null | undefined>(null);
+const showSpinner = ref(false)
 
-export default {
-  name: 'Login',
-  data() {
-    return {
-      email: null,
-      password: null,
-      routeName: null as RouteRecordName | null | undefined
+const route = useRoute();
+const router = useRouter();
+
+const getRouteName = () => {
+  routeName.value = route.name;
+};
+
+const login = async () => {
+  try {
+    showSpinner.value=true
+    const { data } = await axios.post(
+      urlApiBackEnd + '/login',
+      {
+        email: email.value,
+        password: password.value
+      },
+      { withCredentials: true }
+    );
+    localStorage.setItem('User', JSON.stringify(data));
+
+    if (routeName.value && routeName.value === 'loginAdmin') {
+      showSpinner.value=false
+      router.push({ name: 'listUsersAdmin' });
+    } else {
+      showSpinner.value=false
+      router.push({ name: 'Inicio' });
     }
-  },
-  created() {
-    this.getRouteName()
-  },
-  methods: {
-    getRouteName() {
-      this.routeName = this.$route.name
-    },
-    async login() {
-      try {
-        const { data } = await axios.post(
-          urlApiBackEnd + '/login',
-          {
-            email: this.email,
-            password: this.password
-          },
-          { withCredentials: true }
-        )
-        localStorage.setItem('User', JSON.stringify(data))
-
-        if (this.routeName && this.routeName === 'loginAdmin') {
-          this.$router.push({ name: 'listUsersAdmin' })
-        } else {
-          this.$router.push({ name: 'Inicio' })
-        }
-      } catch (error: any) {
-        if (error.response && error.response.status) {
-          alert('Login ou/e senha incorreto.')
-        } else {
-          alert('Não foi possível fazer o login, por favor entre em contato com o suporte.')
-        }
-      }
-    },
-    createAccount(){
-      this.$router.push({ name: 'createAccount' })
+  } catch (error: any) {
+    showSpinner.value=false
+    if (error.response && error.response.status) {
+      alert('Login ou/e senha incorreto.');
+    } else {
+      alert('Não foi possível fazer o login, por favor entre em contato com o suporte.');
     }
   }
-}
+};
+
+const createAccount = () => {
+  router.push({ name: 'createAccount' });
+};
+
+onMounted(() => {
+  getRouteName();
+});
 </script>
+
 
 <template>
   <main>
@@ -63,7 +69,11 @@ export default {
         <input type="email" placeholder="E-mail" v-model="email" />
         <input type="password" placeholder="Senha" v-model="password" @keyup.enter="login" />
         <div>
-          <button @click="login">Login</button>
+          <button @click="login" :disabled="showSpinner">
+            <LoaderCircle v-if="showSpinner" class="mr-3 size-5 animate-spin" />
+            Login
+          </button>
+
           <button @click="createAccount">Registre-se agora.</button>
         </div>
         <span>Ao se conectar, você concorda com os Termos, Condições e Políticas de Privacidade da
@@ -132,6 +142,9 @@ main {
 }
 
 .content button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 2.5em;
   border: none;

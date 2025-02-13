@@ -71,6 +71,7 @@ async function sendDataToupdateIngredient(dataToUpdate: any) {
     )
     showPopUpUpdateIngredient.value = false
   } catch (error: unknown) {
+    showPopUpUpdateIngredient.value = false
     if (error instanceof AxiosError) {
       handleError(error.response?.data)
     } else {

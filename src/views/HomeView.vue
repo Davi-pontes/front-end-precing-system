@@ -10,6 +10,7 @@ import MessageError from '@/components/MessageError.vue'
 import TagInput from '@/components/TagInput.vue'
 import { HttpGetCategory } from '@/http/category/get-category'
 import type { IProduct } from '@/interface/Product'
+import Card from '@/components/Card.vue'
 
 const router = useRouter()
 
@@ -20,11 +21,14 @@ const messageForAlert = ref('')
 const showMessageAlert = ref(false)
 const allCategoryAndProducts = ref<ICategoryWithProducts>({
   category: [],
-  products: []
+  products: [],
+  totalProducts: 0,
+  averageProfit: 0
 })
 const productToRender = ref<IProduct[]>([])
 const nameUser = ref('')
 const idUser = ref('')
+
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 
 function getLocalStorage(): void {
@@ -79,8 +83,8 @@ async function handleDelete(dataToDeleted: any) {
       withCredentials: true
     })
     if (data) {
-      handleAlert('Produto deletado com sucesso!')
       productDeletedUpdateData(data)
+      handleAlert('Produto deletado com sucesso!')
     }
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -91,7 +95,7 @@ async function handleDelete(dataToDeleted: any) {
   }
 }
 function productDeletedUpdateData(data: any) {
-  allCategoryAndProducts.value.products = allCategoryAndProducts.value.products.filter(
+  productToRender.value = allCategoryAndProducts.value.products.filter(
     (it) => it.id_product !== data.id_product
   )
 }
@@ -125,9 +129,9 @@ function removeAlert() {
 }
 //Função para filtra produtos com base na categoria selecionada no meu tag input
 function filterProductByCategory(categories: ICategory[]) {
-  if(categories.length === 0){
-    productToRender.value = allCategoryAndProducts.value.products 
-  } else{
+  if (categories.length === 0) {
+    productToRender.value = allCategoryAndProducts.value.products
+  } else {
     productToRender.value = allCategoryAndProducts.value.products.filter(
       (product) => categories.some((category: ICategory) => category.id === product.id_category)
     )
@@ -141,6 +145,16 @@ getAllCategoryAndProduct()
   <div class="w-full h-full border shadow-lg rounded-md p-4 mt-7">
     <MessageAlert :message="messageForAlert" @removeAlert="removeAlert" v-if="showMessageAlert" />
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
+    <div class="w-full h-[12em] border shadow-lg rounded-md p-4 my-7">
+      <Card>
+        <template v-slot:qtdProducts>
+          {{ allCategoryAndProducts.totalProducts }}
+        </template>
+        <template v-slot:averageProfit>
+          {{ allCategoryAndProducts.averageProfit ? allCategoryAndProducts.averageProfit.toFixed(2) : 0 }}
+        </template>
+      </Card>
+    </div>
     <TagInput :label="'Categorias'" :description="'Filtre os produtos de acordo com as categorias.'"
       @filter="filterProductByCategory" v-model="allCategoryAndProducts.category" />
     <TableComponent :columns="columnsProduct" :data-props="productToRender"

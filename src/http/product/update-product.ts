@@ -23,4 +23,17 @@ export class HttpUpdateProduct {
       throw new Error('Não foi possivel concluir solicitação.')
     }
   }
+  async updateOnlyProduct(productData: any, idProduct: string): Promise<IProduct> {
+    try {
+      const { data } = await this.axios.put(this.baseUrl + '/product/only', productData, {
+        params: {
+          id: idProduct
+        },
+        withCredentials: true
+      })
+      return data
+    } catch (error) {
+      throw new Error('Não foi possivel concluir solicitação.')
+    }
+  }
 }

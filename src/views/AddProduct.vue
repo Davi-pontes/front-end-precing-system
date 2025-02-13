@@ -1,19 +1,32 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import { useRoute } from 'vue-router'
 import Combobox from '@/components/Combobox.vue'
 import type { ICommandItem } from '@/interface/Combobox'
 import { Button } from '@/components/ui/button'
-import { FileUp } from 'lucide-vue-next'
+// import { FileUp } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import InputNumber from '@/components/InputNumber.vue'
 import InputCurrency from '@/components/InputCurrency.vue'
 import InputPercentage from '@/components/InputPercentage.vue'
+import { HttpGetProduct } from '@/http/product/get-product'
+import { HttpError } from '@/errors/errorsHttp'
+import { HttpGetCategory } from '@/http/category/get-category'
+import { HttpCreateProduct } from '@/http/product/create-product'
+import { HttpUpdateProduct } from '@/http/product/update-product'
+import { HttpCalculation } from '@/http/calculation/calculation'
+import type { IBasesCalculation } from '@/interface/Calculation'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
+
+const httpGetProduct = new HttpGetProduct(axios, urlApiBackEnd)
+const httpPostProduct = new HttpCreateProduct(axios, urlApiBackEnd)
+const httpPutProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
+const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
+const httpCalculation = new HttpCalculation(axios, urlApiBackEnd)
 
 const idUser = route.query.id
 const idProduct = route.query?.idP
@@ -24,26 +37,27 @@ const dataFormatedToComboBox = ref<ICommandItem[]>([])
 const selectedCategory = ref('')
 const showMessageAlert = ref(false)
 const showMessageErro = ref(false)
-const profitPercentageAdded = ref(false)
 const sellingPriceAdded = ref(false)
-const sellingPrice = ref(0)
 const messageForAlert = ref('')
 const messageForError = ref('')
-const costProductDisplay = ref('0.00')
-const profitDisplay = ref('0.00')
-const pricePerUnitDisplay = ref('0.00')
+const basesCalculation = ref<IBasesCalculation>({
+  tax: 0,
+  fixedCost: 0,
+  freigth: 0,
+  qtyInBox: 1,
+  profitPercentage: 0,
+  priceProduct: 0,
+  sellingPrice: 0
+})
+const resultCalculation = ref({
+  profit: 0,
+  pricePerUnit: 0,
+  costProduct: 0,
+  priceWithProfit: 0
+})
 const datasProduct = ref({
   nameProduct: '',
-  priceProduct: 0,
   descriptionProduct: null,
-  qtdInBox: 1,
-  tax: 0,
-  freigth: 0,
-  fixedCost: 0,
-  pricePerUnit: 0,
-  profitPecentage: 0,
-  costProduct: 0,
-  profit: 0,
   idCategory: idCategory.value,
   qtdStock: 0,
   only: true
@@ -78,14 +92,11 @@ async function handleSendDatasToBackend() {
 // Função para buscar todas categoria do usuario
 async function getCategoryData() {
   try {
-    const { data } = await axios.get(urlApiBackEnd + '/category/only', {
-      params: { idUser: idUser },
-      withCredentials: true
-    })
+    const data = await httpGetCategory.getAllCategory(idUser as string)
     formatedDataToCombobox(data)
   } catch (error) {
-    if (error instanceof AxiosError) {
-      handleError(error.response?.data)
+    if (error instanceof HttpError) {
+      handleError(error.message)
     } else {
       handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
     }
@@ -105,35 +116,63 @@ function handleItemSelected(item: ICommandItem) {
 // Função para buscar dados do produto específico
 async function getProductData() {
   try {
-    const { data } = await axios.get(urlApiBackEnd + '/product/specific', {
-      params: { id: idProduct },
-      withCredentials: true
-    })
+    const data = await httpGetProduct.getSpecificProduct(idProduct as string)
+    basesCalculation.value = {
+      fixedCost: data.fixed_cost,
+      freigth: data.freight,
+      priceProduct: data.final_recipe_price,
+      profitPercentage: data.profit_percentage,
+      qtyInBox: data.qtd_box,
+      tax: data.tax,
+      sellingPrice: 0
+
+    }
+
+    resultCalculation.value = {
+      costProduct: data.revenue_cost,
+      pricePerUnit: data.price_per_unit,
+      profit: data.profit,
+      priceWithProfit: data.price_per_unit
+    }
+
     datasProduct.value = {
       nameProduct: data.name,
-      priceProduct: data.final_recipe_price,
       descriptionProduct: data.description,
-      qtdInBox: data.qtd_box,
-      tax: data.tax,
-      freigth: data.freight,
-      fixedCost: data.fixed_cost,
-      pricePerUnit: data.price_per_unit,
-      profitPecentage: data.profit_percentage,
-      costProduct: data.revenue_cost,
-      profit: data.profit,
       idCategory: data.id_category,
       qtdStock: data.qtdStock,
       only: true
     }
-    const productCategory = dataFormatedToComboBox.value.find((it) => it.value === data.id_category)
 
-    if (productCategory) selectedCategory.value = productCategory.label
+    const productCategory = dataFormatedToComboBox.value.find((it) => it.value === data.id_category)
+    
+    if (productCategory) {
+      selectedCategory.value = productCategory.label
+      idCategory.value = productCategory.value as string
+    }
   } catch (error) {
-    if (error instanceof AxiosError) {
-      handleError(error.response?.data)
+    if (error instanceof HttpError) {
+      handleError(error.message)
     } else {
       handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
     }
+  }
+}
+function formateDatasToSendService() {
+  return {
+    nameProduct: datasProduct.value.nameProduct,
+    priceProduct: basesCalculation.value.priceProduct,
+    descriptionProduct: datasProduct.value.descriptionProduct,
+    qtdInBox: basesCalculation.value.qtyInBox,
+    tax: basesCalculation.value.tax,
+    freigth: basesCalculation.value.freigth,
+    fixedCost: basesCalculation.value.fixedCost,
+    pricePerUnit: resultCalculation.value.priceWithProfit,
+    profitPecentage: basesCalculation.value.profitPercentage,
+    costProduct: resultCalculation.value.costProduct,
+    profit: resultCalculation.value.profit,
+    idCategory: idCategory.value,
+    qtdStock: datasProduct.value.qtdStock,
+    only: true
   }
 }
 // Função para enviar dados ao backend
@@ -143,13 +182,14 @@ async function sendDatasForDataBase() {
       handleError('Selecione uma categoria.')
       return
     }
-    const { data } = await axios.post(urlApiBackEnd + '/product/only', datasProduct.value, { withCredentials: true })
+    const datasToSend = formateDatasToSendService()
+    const data = await httpPostProduct.createOnlyProduct(datasToSend)
 
     if (data) handleAlert('Produto adicionado com sucesso!')
     clearDatas()
   } catch (error: any) {
-    if (error instanceof AxiosError) {
-      handleError(error.response?.data)
+    if (error instanceof HttpError) {
+      handleError(error.message)
     } else {
       handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
     }
@@ -161,111 +201,73 @@ async function sendDataToUpdate() {
       handleError('Selecione uma categoria.')
       return
     }
-    const { data } = await axios.put(urlApiBackEnd + '/product/only', datasProduct.value, {
-      params: {
-        id: idProduct
-      },
-      withCredentials: true
-    })
+    const datasToSend = formateDatasToSendService()
+    const data = await httpPutProduct.updateOnlyProduct(datasToSend, idProduct as string)
 
     if (data) handleAlert('Produto alterado com sucesso!')
 
     clearDatas()
   } catch (error: any) {
-    if (error instanceof AxiosError) {
-      handleError(error.response?.data)
+    if (error instanceof HttpError) {
+      handleError(error.message)
     } else {
       handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
     }
   }
 }
-// Função para calcular o preço de cada produto
-function calculatePricePerUnit() {
-  let calculatePricePerUnit = datasProduct.value.costProduct /
-    datasProduct.value.qtdInBox
-  
-  pricePerUnitDisplay.value = calculatePricePerUnit.toFixed(2)
-}
-// Função para calcular o custo
-function calculateTotalCost() {
-  datasProduct.value.costProduct =
-    datasProduct.value.tax +
-    datasProduct.value.fixedCost +
-    datasProduct.value.freigth +
-    datasProduct.value.priceProduct
-}
-function calculatePricePerUnitPlusProfit() {
-  let calculatePricePerUnit = (datasProduct.value.costProduct + datasProduct.value.profit) /
-    datasProduct.value.qtdInBox
-  
-  pricePerUnitDisplay.value = calculatePricePerUnit.toFixed(2)
-}
-// Função para calcular o lucro
-function calculateProfit() {
-  datasProduct.value.profit =
-    (datasProduct.value.costProduct * (datasProduct.value.profitPecentage * 100)) / 100
-    let calculatePricePerUnit = datasProduct.value.costProduct /
-    datasProduct.value.qtdInBox
-
-    calculatePricePerUnit += datasProduct.value.profit
-  
-  pricePerUnitDisplay.value = calculatePricePerUnit.toFixed(2)
-  
-}
 // Função para atualizar números
-function updateAllNumbers(method:string | null) {
-  if(method === 'profit' || profitPercentageAdded.value){
-    console.log(method);
-    console.log('profit');
-    profitPercentageAdded.value = true
-    calculateTotalCost()
-    calculateProfit()
-    calculatePricePerUnitPlusProfit()
-  } else{
-    console.log('normal');
-    calculateTotalCost()
-    calculatePricePerUnit()
+async function updateAllNumbers() {
+  try {
+    const data = await httpCalculation.calculationDatasProduct(basesCalculation.value)
+
+    if (sellingPriceAdded.value) basesCalculation.value.profitPercentage = data.profitPercentage
+
+    resultCalculation.value = data
+
+  } catch (error) {
+    if (error instanceof HttpError) {
+      handleError(error.message)
+    } else {
+      handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
+    }
   }
 }
 // Função para limpar os dados
 function clearDatas() {
   datasProduct.value = {
     nameProduct: '',
-    priceProduct: 0,
     descriptionProduct: null,
-    qtdInBox: 1,
-    tax: 0,
-    freigth: 0,
-    fixedCost: 0,
-    pricePerUnit: 0,
-    profitPecentage: 0,
-    costProduct: 0,
-    profit: 0,
     idCategory: idCategory.value,
     qtdStock: 0,
     only: true
   }
+  basesCalculation.value = {
+    tax: 0,
+    fixedCost: 0,
+    freigth: 0,
+    qtyInBox: 1,
+    profitPercentage: 0,
+    priceProduct: 0,
+    sellingPrice: 0
+  }
+  resultCalculation.value = {
+    profit: 0,
+    pricePerUnit: 0,
+    costProduct: 0,
+    priceWithProfit: 0
+  }
 }
-function calculateprofitPercentage() {
 
-  const absoluteProfit = Math.abs(datasProduct.value.costProduct - sellingPrice.value)
-
-  const profitPercentage = (absoluteProfit / datasProduct.value.costProduct)
-
-  datasProduct.value.profitPecentage = parseFloat(profitPercentage.toFixed(2))
-}
 function handleCalculateProfit() {
-  updateAllNumbers('profit')
-  //calculateprofitPercentage()
+  updateAllNumbers()
 }
-function handleCalculateSellingPrice(){
+function handleCalculateSellingPrice() {
   sellingPriceAdded.value = true
-  calculateprofitPercentage()
+  updateAllNumbers()
 }
 //Atualiza o resumo a cada alteração
 watch(() => datasProduct.value, () => {
-  costProductDisplay.value = datasProduct.value.costProduct.toFixed(2)
-  profitDisplay.value = datasProduct.value.profit.toFixed(2)
+  console.log('Teste');
 }, { deep: true })
 getCategoryData()
 if (idProduct) {
@@ -286,11 +288,11 @@ if (idProduct) {
             <div class="flex justify-between">
               <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
                 :items="dataFormatedToComboBox" v-model="selectedCategory" @itemSelected="handleItemSelected" />
-              <label for="file-upload"
+              <!-- <label for="file-upload"
                 class="cursor-pointer flex items-center space-x-2 w-[30%] bg-muted text-white rounded px-4 py-2">
                 <FileUp />
                 <span>Exporta planilha</span>
-              </label>
+              </label> -->
               <Input id="file-upload" class="hidden" type="file" />
             </div>
           </div>
@@ -309,34 +311,33 @@ if (idProduct) {
               <div class="flex w-[95%] h-full gap-4">
                 <!-- Primeiro bloco interno -->
                 <div class="flex justify-between flex-col w-1/2 mt-6">
-                  <label for="qtdInBox">Quantidade em caixa *</label>
-                  <InputNumber v-model="datasProduct.qtdInBox" @update="updateAllNumbers" id="qtdInBox" />
+                  <label for="qtyInBox">Quantidade em caixa *</label>
+                  <InputNumber v-model="basesCalculation.qtyInBox" @update="updateAllNumbers" id="qtyInBox" />
 
-                  <label for="tax">Imposto</label>
-                  <InputCurrency id="tax" v-model="datasProduct.tax" @update="updateAllNumbers" />
+                  <label for="tax">Taxa</label>
+                  <InputCurrency id="tax" v-model="basesCalculation.tax" @change="updateAllNumbers" />
 
                   <label for="freight">Frete</label>
-                  <InputCurrency v-model="datasProduct.freigth" @update="updateAllNumbers" id="freight" />
+                  <InputCurrency v-model="basesCalculation.freigth" @change="updateAllNumbers" id="freight" />
                   <label for="qtyStock">Quantidade em estoque</label>
-                  <InputNumber v-model="datasProduct.qtdStock" @update="updateAllNumbers" id="qtyStock" />
+                  <InputNumber v-model="datasProduct.qtdStock" @change="updateAllNumbers" id="qtyStock" />
                 </div>
                 <!-- Segundo bloco interno -->
                 <div class="flex justify-between flex-col w-1/2 mt-6">
                   <label for="pricePurchase">Preço de compra *</label>
-                  <InputCurrency placeholder="1" v-model="datasProduct.priceProduct" @update="updateAllNumbers"
+                  <InputCurrency placeholder="1" v-model="basesCalculation.priceProduct" @change="updateAllNumbers"
                     id="pricePurchase" />
 
                   <label for="operationalCost">Custo operacional</label>
-                  <InputCurrency id="operationalCost" v-model="datasProduct.fixedCost" @update="updateAllNumbers" />
+                  <InputCurrency id="operationalCost" v-model="basesCalculation.fixedCost" @change="updateAllNumbers" />
 
-                  <label for="profitPecentage">Porcentagem de lucro *</label>
-                  <InputPercentage id="profitPecentage" v-model="datasProduct.profitPecentage"
-                    @update="handleCalculateProfit" 
-                    :disabled="datasProduct.costProduct === 0"/>
+                  <label for="profitPercentage">Porcentagem de lucro *</label>
+                  <InputPercentage id="profitPercentage" v-model="basesCalculation.profitPercentage"
+                    @change="handleCalculateProfit" :disabled="resultCalculation.costProduct === 0" />
 
                   <label for="pricePerUnit">Preço de venda</label>
-                  <InputCurrency id="stock" v-model="sellingPrice" @update="handleCalculateSellingPrice"
-                  :disabled="datasProduct.costProduct === 0"/>
+                  <InputCurrency id="stock" v-model="basesCalculation.sellingPrice"
+                    @change="handleCalculateSellingPrice" :disabled="resultCalculation.costProduct === 0" />
                 </div>
               </div>
             </div>
@@ -356,16 +357,16 @@ if (idProduct) {
         <div class="flex flex-col w-full gap-y-2">
           <div class="flex justify-between">
             <span class="opacity-40">Custo</span>
-            <span>R$ {{ costProductDisplay }}</span>
+            <span>R$ {{ resultCalculation.costProduct.toFixed(2) }}</span>
           </div>
           <div class="flex justify-between">
             <span class="opacity-40">Lucro</span>
-            <span>R$ {{ profitDisplay }}</span>
+            <span>R$ {{ resultCalculation.profit.toFixed(2) }}</span>
           </div>
           <div class="w-full h-[1px] bg-slate-400"></div>
           <div class="flex justify-between">
             <span class="opacity-40">Preço da unidade</span>
-            <span>R$ {{ pricePerUnitDisplay }}</span>
+            <span>R$ {{ resultCalculation.priceWithProfit.toFixed(2) }}</span>
           </div>
         </div>
       </div>

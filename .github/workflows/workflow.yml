@@ -40,7 +40,7 @@ jobs:
 
       - name: Push Docker Images
         run: |
-         docker push davjose/back-end-precification --all-tags
+         docker push davjose/front-end-precification --all-tags
 
       - name: Hostinger Deployment
         uses: easingthemes/ssh-deploy@main

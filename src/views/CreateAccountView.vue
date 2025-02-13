@@ -21,7 +21,7 @@ export default {
     async registrationUser() {
       try {
         this.user.phone_number = this.formatPhoneNumber(this.user.phone_number)
-        await axios.post(urlApiBackEnd + '/user/sign-up', this.user, {
+        await axios.post(urlApiBackEnd + '/sign-up', this.user, {
           withCredentials: true
         })
         this.$router.push({ name: 'login' })
