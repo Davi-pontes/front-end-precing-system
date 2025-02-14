@@ -24,6 +24,7 @@ import { HttpUpdateProduct } from '@/http/product/update-product'
 import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIngredient'
 import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
 import type { ICategory } from '@/interface/Category'
+import { HttpCalculationProductWithIngredient } from '@/http/calculation/calculationProductIngredient'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
@@ -35,6 +36,7 @@ const httpGetProductJoker = new HttpGetProductJoker(axios, urlApiBackEnd)
 const httpGetProductIngredient = new HttpGetProductIngredient(axios, urlApiBackEnd)
 const httpCreateProduct = new HttpCreateProduct(axios, urlApiBackEnd)
 const httpUpdateProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
+const httpCalculation = new HttpCalculationProductWithIngredient(axios, urlApiBackEnd)
 
 const dataProduct = ref<IProductRender>({
   nameProduct: '',
@@ -103,51 +105,9 @@ async function controllerCreated() {
   }
 }
 
-function updateAllNumbers(functionThatCalled: boolean) {
+async function updateAllNumbers(functionThatCalled: boolean) {
   if (id_product.value && !functionThatCalled) thereWasChanged.value = true
-  calculatecostOfAllIngredients()
-  calculateCostFixed()
-  calculateProfit()
-  calculateFinalRevenuePrice()
-  calculatePricePerUnit()
-  calculateCostOfRevenue()
-}
-
-function calculatecostOfAllIngredients(): void {
-  if (allProductIngredient.value) {
-    const totalCost = allProductIngredient.value.reduce((acc, data) => acc + data.ingredient_cost, 0)
-    dataProduct.value.costOfAllIngredients = parseFloat(totalCost.toFixed(2))
-  }
-}
-
-function calculateCostFixed(): void {
-  if (dataProduct.value.operationalCost === 0) {
-    return
-  }
-  const result = (dataProduct.value.costOfAllIngredients * dataProduct.value.operationalCost) / 100
-  dataProduct.value.fixedCost = parseFloat(result.toFixed(2))
-}
-
-function calculateProfit(): void {
-  const resultCalculateProfit =
-    ((dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost) * (dataProduct.value.profitPecentage * 100)) / 100
-  dataProduct.value.profit = parseFloat(resultCalculateProfit.toFixed(2))
-}
-
-function calculateFinalRevenuePrice(): void {
-  const resultCalculatepriceFinalRevenue =
-    dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost + dataProduct.value.profit
-  dataProduct.value.priceFinalRevenue = parseFloat(resultCalculatepriceFinalRevenue.toFixed(2))
-}
-
-function calculatePricePerUnit(): void {
-  const resultCalculatePricePerUnit = dataProduct.value.priceFinalRevenue / dataProduct.value.income
-  dataProduct.value.pricePerUnit = parseFloat(resultCalculatePricePerUnit.toFixed(2))
-}
-
-function calculateCostOfRevenue(): void {
-  const resultCalculateCostOfRevenue = dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost
-  dataProduct.value.costOfRevenue = parseFloat(resultCalculateCostOfRevenue.toFixed(2))
+  const data = await httpCalculation.calculationDatasProductWithIngredient()
 }
 
 function calculateCostOfAnIngredient(index: number): void {
