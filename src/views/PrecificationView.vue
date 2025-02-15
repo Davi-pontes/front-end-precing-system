@@ -16,7 +16,7 @@ import InputNumber from '@/components/InputNumber.vue'
 import InputPercentage from '@/components/InputPercentage.vue'
 import { CircleX } from 'lucide-vue-next';
 import type { IProductIngredient } from '@/interface/Ingredient'
-import type { IProduct, IProductRender } from '@/interface/Product'
+import type { IProduct } from '@/interface/Product'
 import { HttpGetProduct } from '@/http/product/get-product'
 import { UtilsFormateProduct } from '@/utils/formate-product'
 import { HttpCreateProduct } from '@/http/product/create-product'
@@ -38,21 +38,26 @@ const httpCreateProduct = new HttpCreateProduct(axios, urlApiBackEnd)
 const httpUpdateProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
 const httpCalculation = new HttpCalculationProductWithIngredient(axios, urlApiBackEnd)
 
-const dataProduct = ref<IProductRender>({
+const costOfAllIngredients = ref(0)
+
+const dataProduct = ref<any>({
   nameProduct: '',
-  income: 1,
-  recipeTime: 0,
-  operationalCost: 0,
-  profitPecentage: 0,
   isJoker: '0',
-  costOfAllIngredients: 0,
-  fixedCost: 0,
-  profit: 0,
-  priceFinalRevenue: 0,
-  pricePerUnit: 0,
-  costOfRevenue: 0,
-  labor: 0
 });
+const basesCalculation = ref({
+  income: 1,
+  recipe_time: 0,
+  profit_percentage: 0,
+  labor: 0,
+  operacional_cost: 0,
+})
+const resultCalculation = ref({
+  fixed_cost: 0,
+  profit: 0,
+  final_recipe_price: 0,
+  price_per_unit: 0,
+  revenue_cost: 0,
+})
 
 
 const id_product = ref<string | null>(null)
@@ -106,8 +111,34 @@ async function controllerCreated() {
 }
 
 async function updateAllNumbers(functionThatCalled: boolean) {
-  if (id_product.value && !functionThatCalled) thereWasChanged.value = true
-  const data = await httpCalculation.calculationDatasProductWithIngredient()
+  try {
+    if (id_product.value && !functionThatCalled) thereWasChanged.value = true
+
+    const dataToSendService = {
+      productInformation: {
+        ...basesCalculation.value, cost_of_all_ingredients: costOfAllIngredients.value
+      },
+      productIngredients: allProductIngredient.value
+    }
+
+    const data = await httpCalculation.calculationDatasProductWithIngredient(dataToSendService)
+
+    costOfAllIngredients.value = data.cost_of_all_ingredients
+
+    resultCalculation.value = {
+      fixed_cost: data.fixed_cost,
+      profit: data.profit,
+      final_recipe_price: data.final_recipe_price,
+      price_per_unit: data.price_per_unit,
+      revenue_cost: data.revenue_cost
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Estamos com problema no momento por favor tente mais tarde!')
+    }
+  }
 }
 
 function calculateCostOfAnIngredient(index: number): void {
@@ -128,8 +159,8 @@ function calculateCostOfAnIngredient(index: number): void {
 
 function handleProductJokerSelected(item: any): void {
   const productJokerSelected = productsJoker.value.find(it => it.id_product === item.value)
-  
-  if(productJokerSelected){
+
+  if (productJokerSelected) {
     const ingredient_cost =
       productJokerSelected.revenue_cost / productJokerSelected.income
     const ingredientCostFormated = parseFloat(ingredient_cost.toFixed(2))
@@ -433,28 +464,28 @@ function updateNameProduct() {
         <!-- Rendimentos -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Rendimentos:</p>
-          <InputNumber v-model="dataProduct.income" @change="updateAllNumbers(false)" @update="updateAllNumbers(false)"
-            class="w-[10em] px-2 py-1 text-sm" />
+          <InputNumber v-model="basesCalculation.income" @change="updateAllNumbers(false)"
+            @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Tempo da receita -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Tempo da receita (min):</p>
-          <InputNumber v-model="dataProduct.recipeTime" @change="updateAllNumbers(false)"
+          <InputNumber v-model="basesCalculation.recipe_time" @change="updateAllNumbers(false)"
             @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Porcentagem de lucro -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Lucro (%):</p>
-          <InputPercentage v-model="dataProduct.profitPecentage" @change="updateAllNumbers(false)"
+          <InputPercentage v-model="basesCalculation.profit_percentage" @change="updateAllNumbers(false)"
             @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Custo Operacional -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Custo Operacional:</p>
-          <InputCurrency v-model="dataProduct.operationalCost" @change="updateAllNumbers(false)"
+          <InputCurrency v-model="basesCalculation.operacional_cost" @change="updateAllNumbers(false)"
             @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
       </div>
@@ -464,25 +495,25 @@ function updateNameProduct() {
         <!-- Custo da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo da receita:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.costOfAllIngredients }}</p>
+          <p class="text-base font-semibold">R$ {{ costOfAllIngredients }}</p>
         </div>
 
         <!-- Custo fixo -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo fixo:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.fixedCost }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.fixed_cost }}</p>
         </div>
 
         <!-- Mão de Obra -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Mão de Obra:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.labor }}</p>
+          <p class="text-base font-semibold">R$ {{ basesCalculation.labor }}</p>
         </div>
 
         <!-- Lucro -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Lucro:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.profit }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.profit }}</p>
         </div>
       </div>
 
@@ -491,17 +522,17 @@ function updateNameProduct() {
         <!-- Valor final da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Valor final:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.priceFinalRevenue }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.final_recipe_price }}</p>
         </div>
         <!-- Custo total da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo total:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.costOfRevenue }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.revenue_cost }}</p>
         </div>
         <!-- Valor da unidade -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Valor/unidade:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.pricePerUnit }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.price_per_unit }}</p>
         </div>
       </div>
     </div>

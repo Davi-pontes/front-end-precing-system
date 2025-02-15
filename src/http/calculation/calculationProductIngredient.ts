@@ -1,5 +1,5 @@
 import { HttpError } from '@/errors/errorsHttp'
-import type { IBasesCalculation, ICalculationResult } from '@/interface/Calculation'
+import type { IBaseCalculationSendService, IResultCalculationProductIngredient } from '@/interface/Calculation'
 import { AxiosError, type Axios } from 'axios'
 
 export class HttpCalculationProductWithIngredient {
@@ -11,7 +11,7 @@ export class HttpCalculationProductWithIngredient {
     this.baseUrl = baseUrl
   }
 
-  async calculationDatasProductWithIngredient(basesCalculation: IBasesCalculation): Promise<ICalculationResult> {
+  async calculationDatasProductWithIngredient(basesCalculation: IBaseCalculationSendService): Promise<IResultCalculationProductIngredient> {
     try {
       const { data } = await this.axios.post(this.baseUrl + '/calculate/product-ingredient', basesCalculation, {
         withCredentials: true
