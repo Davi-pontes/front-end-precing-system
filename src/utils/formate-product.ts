@@ -1,40 +1,41 @@
-import type { IProductRender } from "@/interface/Product"
-
 export class UtilsFormateProduct {
-  static formateSpecificProduct(productData: any): IProductRender {
-    const structuProduct = {
+  static formateSpecificProduct(productData: any): any {
+    const dataProduct = {
       nameProduct: productData.name,
-      income: productData.income,
-      recipeTime: productData.recipe_time,
-      operationalCost: productData.operacional_cost,
-      profitPecentage: productData.profit_percentage,
-      costOfRevenue: productData.revenue_cost,
-      fixedCost: productData.fixed_cost,
-      labor: productData.labor,
-      profit: productData.profit,
-      costOfAllIngredients: productData.cost_of_all_ingredient,
-      priceFinalRevenue: productData.final_recipe_price,
-      pricePerUnit: productData.price_per_unit,
       isJoker: productData.is_joker.toString()
     }
-    return structuProduct
+    const basesCalculation = {
+      income: productData.income,
+      recipe_time: productData.recipe_time,
+      profit_percentage: productData.profit_percentage,
+      labor: productData.labor,
+      operacional_cost: productData.operacional_cost
+    }
+    const resultCalculation = {
+      fixed_cost: productData.fixed_cost,
+      profit: productData.profit,
+      final_recipe_price: productData.final_recipe_price,
+      price_per_unit: productData.price_per_unit,
+      revenue_cost: productData.revenue_cost
+    }
+    return { dataProduct, basesCalculation, resultCalculation, costOfAllIngredients: productData.cost_of_all_ingredient, }
   }
-  static formatedProductDataToSend(productData: any) {
+  static formatedProductDataToSend(productData: any, basesCalculation: any, resultCalculation:any, costOfAllIngredients:any) {
     const structureProduct = {
       name: productData.nameProduct,
-      income: productData.income,
-      recipe_time: productData.recipeTime,
-      profit_percentage: productData.profitPecentage,
-      revenue_cost: productData.costOfRevenue,
-      fixed_cost: productData.fixedCost,
-      labor: productData.labor,
-      profit: productData.profit,
-      final_recipe_price: productData.priceFinalRevenue,
-      price_per_unit: productData.pricePerUnit,
-      operacional_cost: productData.operationalCost,
+      income: basesCalculation.income,
+      recipe_time: basesCalculation.recipe_time,
+      profit_percentage: basesCalculation.profit_percentage,
+      revenue_cost: resultCalculation.revenue_cost,
+      fixed_cost: resultCalculation.fixed_cost,
+      labor: basesCalculation.labor,
+      profit: resultCalculation.profit,
+      final_recipe_price: resultCalculation.final_recipe_price,
+      price_per_unit: resultCalculation.price_per_unit,
+      operacional_cost: basesCalculation.operacional_cost,
       id_category: productData.id_category,
       is_joker: parseInt(productData.isJoker),
-      cost_of_all_ingredients: productData.costOfAllIngredients
+      cost_of_all_ingredients: costOfAllIngredients
     }
     return structureProduct
   }

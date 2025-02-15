@@ -65,7 +65,7 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
   {
     accessorKey: 'revenue_cost',
     header: () => {
-      return 'Custo total'
+      return 'Custo do Produto'
     },
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('revenue_cost'))

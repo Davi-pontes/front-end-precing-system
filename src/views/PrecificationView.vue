@@ -201,7 +201,12 @@ function validateIfThereIsANumber0(index: number) {
 }
 
 function prepareData() {
-  const productDataAssembly = UtilsFormateProduct.formatedProductDataToSend(dataProduct.value)
+  const productDataAssembly = UtilsFormateProduct.formatedProductDataToSend(
+    dataProduct.value,
+    basesCalculation.value,
+    resultCalculation.value,
+    costOfAllIngredients.value
+  )
 
   productDataAssembly.id_category = id_category.value
 
@@ -273,7 +278,12 @@ async function getProduct() {
     try {
       const productSpecific = await httpGetProduct.getSpecificProduct(id_product.value)
 
-      dataProduct.value = UtilsFormateProduct.formateSpecificProduct(productSpecific)
+      const datasFormated = UtilsFormateProduct.formateSpecificProduct(productSpecific)
+
+      dataProduct.value = datasFormated.dataProduct
+      basesCalculation.value = datasFormated.basesCalculation
+      resultCalculation.value = datasFormated.resultCalculation
+      costOfAllIngredients.value = datasFormated.costOfAllIngredients
 
       categoryAlreadySelected(productSpecific.id_category)
     } catch (error: unknown) {
@@ -361,17 +371,20 @@ function updateNameProduct() {
     <Loading v-if="showLoading" />
     <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
-    <div class="flex items-center h-20 bg-muted gap-4 px-4">
+    <div class="flex items-center h-[7em] bg-muted gap-4 px-4">
       <div class="flex-1">
-        <Input class="bg-white w-full" name="nameProduct" type="text" v-model="dataProduct.nameProduct"
+        <label for="nameProduct" class="text-white">Nome do produto:</label>
+        <Input class="bg-white w-full" id="nameProduct" type="text" autocomplete="off" v-model="dataProduct.nameProduct"
           @change="updateNameProduct" placeholder="Nome do produto" />
       </div>
       <div class="flex-1">
-        <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
-          :items="dataFormatedToComboBox" name="selectedCategory" v-model="selectedCategory"
-          @itemSelected="handleItemSelected" />
+        <label for="category" class="text-white">Categoria:</label>
+        <Combobox id="category" :titleInput="'Selecione uma categoria...'"
+          :titleSearch="'Pesquise por uma categoria...'" :items="dataFormatedToComboBox" name="selectedCategory"
+          v-model="selectedCategory" @itemSelected="handleItemSelected" />
       </div>
       <div class="flex-1">
+        <label for="productJoker" class="text-white">Este é um produto coringa?</label>
         <SelectBoolean v-model="dataProduct.isJoker" />
       </div>
     </div>
@@ -442,7 +455,7 @@ function updateNameProduct() {
             </td>
             <!-- Custo do ingrediente -->
             <td class="p-3">
-              <p class="text-gray-700">R$ {{ data.ingredient_cost }}</p>
+              <p class="text-gray-700">R$ {{ data.ingredient_cost?.toFixed(2) }}</p>
             </td>
           </tr>
         </tbody>
@@ -495,25 +508,25 @@ function updateNameProduct() {
         <!-- Custo da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo da receita:</p>
-          <p class="text-base font-semibold">R$ {{ costOfAllIngredients }}</p>
+          <p class="text-base font-semibold">R$ {{ costOfAllIngredients?.toFixed(2) }}</p>
         </div>
 
         <!-- Custo fixo -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo fixo:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.fixed_cost }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.fixed_cost?.toFixed(2) }}</p>
         </div>
 
         <!-- Mão de Obra -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Mão de Obra:</p>
-          <p class="text-base font-semibold">R$ {{ basesCalculation.labor }}</p>
+          <p class="text-base font-semibold">R$ {{ basesCalculation.labor?.toFixed(2) }}</p>
         </div>
 
         <!-- Lucro -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Lucro:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.profit }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.profit?.toFixed(2) }}</p>
         </div>
       </div>
 
@@ -522,17 +535,17 @@ function updateNameProduct() {
         <!-- Valor final da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Valor final:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.final_recipe_price }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.final_recipe_price?.toFixed(2) }}</p>
         </div>
         <!-- Custo total da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo total:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.revenue_cost }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.revenue_cost?.toFixed(2) }}</p>
         </div>
         <!-- Valor da unidade -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Valor/unidade:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.price_per_unit }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.price_per_unit?.toFixed(2) }}</p>
         </div>
       </div>
     </div>
