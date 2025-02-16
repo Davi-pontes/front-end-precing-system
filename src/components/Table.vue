@@ -33,7 +33,7 @@ import { Input } from '@/components/ui/input'
 import { valueUpdater } from '@/lib/utils'
 import { ref, watch } from 'vue'
 import type { IUpdatedIngredient, IUpdateIngredient } from '@/interface/Ingredient'
-import FormIngredient from './FormIngredient.vue'
+import FormIngredient from './FormUpdateIngredient.vue'
 
 const props = defineProps<{
   columns: ColumnDef<TData>[]

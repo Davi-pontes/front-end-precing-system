@@ -16,7 +16,7 @@ import InputNumber from '@/components/InputNumber.vue'
 import InputPercentage from '@/components/InputPercentage.vue'
 import { CircleX } from 'lucide-vue-next';
 import type { IProductIngredient } from '@/interface/Ingredient'
-import type { IProduct, IProductRender } from '@/interface/Product'
+import type { IProduct } from '@/interface/Product'
 import { HttpGetProduct } from '@/http/product/get-product'
 import { UtilsFormateProduct } from '@/utils/formate-product'
 import { HttpCreateProduct } from '@/http/product/create-product'
@@ -24,6 +24,7 @@ import { HttpUpdateProduct } from '@/http/product/update-product'
 import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIngredient'
 import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
 import type { ICategory } from '@/interface/Category'
+import { HttpCalculationProductWithIngredient } from '@/http/calculation/calculationProductIngredient'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
@@ -35,22 +36,28 @@ const httpGetProductJoker = new HttpGetProductJoker(axios, urlApiBackEnd)
 const httpGetProductIngredient = new HttpGetProductIngredient(axios, urlApiBackEnd)
 const httpCreateProduct = new HttpCreateProduct(axios, urlApiBackEnd)
 const httpUpdateProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
+const httpCalculation = new HttpCalculationProductWithIngredient(axios, urlApiBackEnd)
 
-const dataProduct = ref<IProductRender>({
+const costOfAllIngredients = ref(0)
+
+const dataProduct = ref<any>({
   nameProduct: '',
-  income: 1,
-  recipeTime: 0,
-  operationalCost: 0,
-  profitPecentage: 0,
   isJoker: '0',
-  costOfAllIngredients: 0,
-  fixedCost: 0,
-  profit: 0,
-  priceFinalRevenue: 0,
-  pricePerUnit: 0,
-  costOfRevenue: 0,
-  labor: 0
 });
+const basesCalculation = ref({
+  income: 1,
+  recipe_time: 0,
+  profit_percentage: 0,
+  labor: 0,
+  operacional_cost: 0,
+})
+const resultCalculation = ref({
+  fixed_cost: 0,
+  profit: 0,
+  final_recipe_price: 0,
+  price_per_unit: 0,
+  revenue_cost: 0,
+})
 
 
 const id_product = ref<string | null>(null)
@@ -103,51 +110,35 @@ async function controllerCreated() {
   }
 }
 
-function updateAllNumbers(functionThatCalled: boolean) {
-  if (id_product.value && !functionThatCalled) thereWasChanged.value = true
-  calculatecostOfAllIngredients()
-  calculateCostFixed()
-  calculateProfit()
-  calculateFinalRevenuePrice()
-  calculatePricePerUnit()
-  calculateCostOfRevenue()
-}
+async function updateAllNumbers(functionThatCalled: boolean) {
+  try {
+    if (id_product.value && !functionThatCalled) thereWasChanged.value = true
 
-function calculatecostOfAllIngredients(): void {
-  if (allProductIngredient.value) {
-    const totalCost = allProductIngredient.value.reduce((acc, data) => acc + data.ingredient_cost, 0)
-    dataProduct.value.costOfAllIngredients = parseFloat(totalCost.toFixed(2))
+    const dataToSendService = {
+      productInformation: {
+        ...basesCalculation.value, cost_of_all_ingredients: costOfAllIngredients.value
+      },
+      productIngredients: allProductIngredient.value
+    }
+
+    const data = await httpCalculation.calculationDatasProductWithIngredient(dataToSendService)
+
+    costOfAllIngredients.value = data.cost_of_all_ingredients
+
+    resultCalculation.value = {
+      fixed_cost: data.fixed_cost,
+      profit: data.profit,
+      final_recipe_price: data.final_recipe_price,
+      price_per_unit: data.price_per_unit,
+      revenue_cost: data.revenue_cost
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      handleError(error.response?.data)
+    } else {
+      handleError('Estamos com problema no momento por favor tente mais tarde!')
+    }
   }
-}
-
-function calculateCostFixed(): void {
-  if (dataProduct.value.operationalCost === 0) {
-    return
-  }
-  const result = (dataProduct.value.costOfAllIngredients * dataProduct.value.operationalCost) / 100
-  dataProduct.value.fixedCost = parseFloat(result.toFixed(2))
-}
-
-function calculateProfit(): void {
-  const resultCalculateProfit =
-    ((dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost) * (dataProduct.value.profitPecentage * 100)) / 100
-  dataProduct.value.profit = parseFloat(resultCalculateProfit.toFixed(2))
-}
-
-function calculateFinalRevenuePrice(): void {
-  const resultCalculatepriceFinalRevenue =
-    dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost + dataProduct.value.profit
-  dataProduct.value.priceFinalRevenue = parseFloat(resultCalculatepriceFinalRevenue.toFixed(2))
-}
-
-function calculatePricePerUnit(): void {
-  const resultCalculatePricePerUnit = dataProduct.value.priceFinalRevenue / dataProduct.value.income
-  dataProduct.value.pricePerUnit = parseFloat(resultCalculatePricePerUnit.toFixed(2))
-}
-
-function calculateCostOfRevenue(): void {
-  const resultCalculateCostOfRevenue = dataProduct.value.costOfAllIngredients + dataProduct.value.fixedCost
-  dataProduct.value.costOfRevenue = parseFloat(resultCalculateCostOfRevenue.toFixed(2))
 }
 
 function calculateCostOfAnIngredient(index: number): void {
@@ -168,8 +159,8 @@ function calculateCostOfAnIngredient(index: number): void {
 
 function handleProductJokerSelected(item: any): void {
   const productJokerSelected = productsJoker.value.find(it => it.id_product === item.value)
-  
-  if(productJokerSelected){
+
+  if (productJokerSelected) {
     const ingredient_cost =
       productJokerSelected.revenue_cost / productJokerSelected.income
     const ingredientCostFormated = parseFloat(ingredient_cost.toFixed(2))
@@ -210,7 +201,12 @@ function validateIfThereIsANumber0(index: number) {
 }
 
 function prepareData() {
-  const productDataAssembly = UtilsFormateProduct.formatedProductDataToSend(dataProduct.value)
+  const productDataAssembly = UtilsFormateProduct.formatedProductDataToSend(
+    dataProduct.value,
+    basesCalculation.value,
+    resultCalculation.value,
+    costOfAllIngredients.value
+  )
 
   productDataAssembly.id_category = id_category.value
 
@@ -282,7 +278,12 @@ async function getProduct() {
     try {
       const productSpecific = await httpGetProduct.getSpecificProduct(id_product.value)
 
-      dataProduct.value = UtilsFormateProduct.formateSpecificProduct(productSpecific)
+      const datasFormated = UtilsFormateProduct.formateSpecificProduct(productSpecific)
+
+      dataProduct.value = datasFormated.dataProduct
+      basesCalculation.value = datasFormated.basesCalculation
+      resultCalculation.value = datasFormated.resultCalculation
+      costOfAllIngredients.value = datasFormated.costOfAllIngredients
 
       categoryAlreadySelected(productSpecific.id_category)
     } catch (error: unknown) {
@@ -370,17 +371,20 @@ function updateNameProduct() {
     <Loading v-if="showLoading" />
     <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
-    <div class="flex items-center h-20 bg-muted gap-4 px-4">
+    <div class="flex items-center h-[6em] bg-muted gap-4 px-4">
       <div class="flex-1">
-        <Input class="bg-white w-full" name="nameProduct" type="text" v-model="dataProduct.nameProduct"
+        <label for="nameProduct" class="text-white block">Nome do produto:</label>
+        <Input class="bg-white w-full" id="nameProduct" type="text" autocomplete="off" v-model="dataProduct.nameProduct"
           @change="updateNameProduct" placeholder="Nome do produto" />
       </div>
       <div class="flex-1">
-        <Combobox :titleInput="'Selecione uma categoria...'" :titleSearch="'Pesquise por uma categoria...'"
-          :items="dataFormatedToComboBox" name="selectedCategory" v-model="selectedCategory"
-          @itemSelected="handleItemSelected" />
+        <label for="category" class="text-white block">Categoria:</label>
+        <Combobox id="category" :titleInput="'Selecione uma categoria...'"
+          :titleSearch="'Pesquise por uma categoria...'" :items="dataFormatedToComboBox" name="selectedCategory"
+          v-model="selectedCategory" @itemSelected="handleItemSelected" />
       </div>
       <div class="flex-1">
+        <label for="productJoker" class="text-white block">Este é um produto coringa?</label>
         <SelectBoolean v-model="dataProduct.isJoker" />
       </div>
     </div>
@@ -389,17 +393,17 @@ function updateNameProduct() {
         <!-- Cabeçalho da tabela -->
         <thead class="bg-[#5A6FA5] text-white sticky top-0">
           <tr>
-            <th class="p-3 text-left"></th>
-            <th class="p-3 text-left font-medium">NOME DO INGREDIENTE</th>
-            <th class="p-3 text-left font-medium">
-              PESO <span class="font-normal text-sm">(Peso que o ingrediente foi comprado.)</span>
+            <th class="p-3"></th>
+            <th class="p-3 font-normal">NOME DO INGREDIENTE</th>
+            <th class="p-3 font-normal">
+              PESO <span class="font-normal text-sm block">(Peso que o ingrediente foi comprado.)</span>
             </th>
-            <th class="p-3 text-left font-medium">UNIDADE</th>
-            <th class="p-3 text-left font-medium">PREÇO EM R$</th>
-            <th class="p-3 text-left font-medium">
-              QUANTIDADE <span class="font-normal text-sm">(Quantidade que vai ser usada no produto.)</span>
+            <th class="p-3 font-normal">UNIDADE</th>
+            <th class="p-3 font-normal">PREÇO EM R$</th>
+            <th class="p-3 font-normal">
+              QUANTIDADE <span class="font-normal text-sm block">(Quantidade que vai ser usada no produto.)</span>
             </th>
-            <th class="p-3 text-left font-medium">CUSTO DO INGREDIENTE</th>
+            <th class="p-3 font-normal">CUSTO DO INGREDIENTE</th>
           </tr>
         </thead>
 
@@ -450,8 +454,8 @@ function updateNameProduct() {
                 class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
             </td>
             <!-- Custo do ingrediente -->
-            <td class="p-3">
-              <p class="text-gray-700">R$ {{ data.ingredient_cost }}</p>
+            <td class="p-3 text-center">
+              <p class="text-gray-700">R$ {{ data.ingredient_cost?.toFixed(2) }}</p>
             </td>
           </tr>
         </tbody>
@@ -473,56 +477,56 @@ function updateNameProduct() {
         <!-- Rendimentos -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Rendimentos:</p>
-          <InputNumber v-model="dataProduct.income" @change="updateAllNumbers(false)" @update="updateAllNumbers(false)"
-            class="w-[10em] px-2 py-1 text-sm" />
+          <InputNumber v-model="basesCalculation.income" @change="updateAllNumbers(false)"
+            @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Tempo da receita -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Tempo da receita (min):</p>
-          <InputNumber v-model="dataProduct.recipeTime" @change="updateAllNumbers(false)"
+          <InputNumber v-model="basesCalculation.recipe_time" @change="updateAllNumbers(false)"
             @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Porcentagem de lucro -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Lucro (%):</p>
-          <InputPercentage v-model="dataProduct.profitPecentage" @change="updateAllNumbers(false)"
+          <InputPercentage v-model="basesCalculation.profit_percentage" @change="updateAllNumbers(false)"
             @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
 
         <!-- Custo Operacional -->
         <div class="flex items-center justify-between p-1 bg-[#5A6FA5]  rounded-md">
           <p class="text-base">Custo Operacional:</p>
-          <InputCurrency v-model="dataProduct.operationalCost" @change="updateAllNumbers(false)"
+          <InputCurrency v-model="basesCalculation.operacional_cost" @change="updateAllNumbers(false)"
             @update="updateAllNumbers(false)" class="w-[10em] px-2 py-1 text-sm" />
         </div>
       </div>
 
       <!-- Coluna 2: Custos e valores calculados -->
       <div class="flex flex-col w-1/2 gap-4">
-        <!-- Custo da receita -->
+        <!-- Custo com ingredientes -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
-          <p class="text-base">Custo da receita:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.costOfAllIngredients }}</p>
+          <p class="text-base">Custo com ingrediente(s):</p>
+          <p class="text-base font-semibold">R$ {{ costOfAllIngredients?.toFixed(2) }}</p>
         </div>
 
         <!-- Custo fixo -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo fixo:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.fixedCost }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.fixed_cost?.toFixed(2) }}</p>
         </div>
 
         <!-- Mão de Obra -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Mão de Obra:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.labor }}</p>
+          <p class="text-base font-semibold">R$ {{ basesCalculation.labor?.toFixed(2) }}</p>
         </div>
 
         <!-- Lucro -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Lucro:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.profit }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.profit?.toFixed(2) }}</p>
         </div>
       </div>
 
@@ -531,17 +535,17 @@ function updateNameProduct() {
         <!-- Valor final da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Valor final:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.priceFinalRevenue }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.final_recipe_price?.toFixed(2) }}</p>
         </div>
         <!-- Custo total da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo total:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.costOfRevenue }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.revenue_cost?.toFixed(2) }}</p>
         </div>
         <!-- Valor da unidade -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Valor/unidade:</p>
-          <p class="text-base font-semibold">R$ {{ dataProduct.pricePerUnit }}</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.price_per_unit?.toFixed(2) }}</p>
         </div>
       </div>
     </div>

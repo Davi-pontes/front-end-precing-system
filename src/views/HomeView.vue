@@ -56,23 +56,7 @@ async function getAllCategoryAndProduct(): Promise<void> {
   }
 }
 function handleUpdate(data: any) {
-  if (data && data.only === 1) {
-    router.push({
-      path: 'product/add',
-      query: {
-        id: idUser.value,
-        idP: data.id_product
-      }
-    })
-  } else {
-    router.push({
-      path: 'register',
-      query: {
-        idU: idUser.value,
-        idP: data.id_product
-      }
-    })
-  }
+  handleRedirection(data)
 }
 async function handleDelete(dataToDeleted: any) {
   try {
@@ -99,15 +83,28 @@ function productDeletedUpdateData(data: any) {
     (it) => it.id_product !== data.id_product
   )
 }
+function handleRedirection(data: any) {
+  if (data && data.only === 1) {
+    router.push({
+      path: 'product/add',
+      query: {
+        id: idUser.value,
+        idP: data.id_product
+      }
+    })
+  } else {
+    router.push({
+      path: 'register',
+      query: {
+        idU: idUser.value,
+        idP: data.id_product
+      }
+    })
+  }
+}
 //Função que leva usuario pra ver os detalhes do produto
 function handleDetail(data: any) {
-  router.push({
-    path: 'product/add',
-    query: {
-      id: idUser.value,
-      idP: data.id_product
-    }
-  })
+  handleRedirection(data)
 }
 // Função para mostrar alertas de error
 function handleError(message: string) {

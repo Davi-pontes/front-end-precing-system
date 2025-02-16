@@ -13,6 +13,7 @@ import {
 const props = defineProps<{
   label: string
   datas: any
+  showDelete?:boolean 
   onUpdate?: (data: any) => void
   onDelete?: (data: any) => void
   onDetail?: (data: any) => void
@@ -47,8 +48,8 @@ function handleDetail() {
       <DropdownMenuLabel>{{ label }}</DropdownMenuLabel>
       <DropdownMenuItem @click="handleUpdate()"> Alterar </DropdownMenuItem>
       <DropdownMenuItem @click="handleDetail()">Ver detalhes</DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem @click="handleDelete()">Deletar</DropdownMenuItem>
+      <DropdownMenuSeparator v-if="showDelete"/>
+      <DropdownMenuItem v-if="showDelete" @click="handleDelete()">Deletar</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

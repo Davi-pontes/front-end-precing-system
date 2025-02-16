@@ -114,7 +114,7 @@ async function handleDelete(dataToDeleted: any) {
   try {
     const categoryDeleted = await httpDeleteCategory.deleteCatory(dataToDeleted.id)
 
-    handleAlert('Produto deletado com sucesso!')
+    handleAlert('Categoria deletada com sucesso!')
     productDeletedUpdateData(categoryDeleted)
 
   } catch (error) {
