@@ -505,9 +505,9 @@ function updateNameProduct() {
 
       <!-- Coluna 2: Custos e valores calculados -->
       <div class="flex flex-col w-1/2 gap-4">
-        <!-- Custo da receita -->
+        <!-- Custo com ingredientes -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
-          <p class="text-base">Custo da receita:</p>
+          <p class="text-base">Custo com ingrediente(s):</p>
           <p class="text-base font-semibold">R$ {{ costOfAllIngredients?.toFixed(2) }}</p>
         </div>
 

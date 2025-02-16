@@ -2,15 +2,19 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { X, RotateCw } from 'lucide-vue-next'
+import { X, LoaderCircle } from 'lucide-vue-next'
 import type { IUpdateIngredient } from '@/interface/Ingredient'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import * as z from 'zod'
 import Input from './ui/input/Input.vue'
 import Button from './ui/button/Button.vue'
 import SelectUnit from './SelectUnit.vue'
+import CardUpdatedProducts from '@/components/CardUpdatedProducts.vue'
+import type { IProduct } from '@/interface/Product'
 
-const showIconRotateCw = ref(false)
+const showLoader = ref(false)
+const bottomEl = ref<HTMLElement | null>(null);
+
 const formSchema = toTypedSchema(
   z.object({
     id: z.number().optional(),
@@ -23,9 +27,9 @@ const formSchema = toTypedSchema(
     price: z.number({ message: 'Adicione o preço.' }).min(1, { message: 'Preço não pode ser 0.' })
   })
 )
-
 const props = defineProps<{
   selectdIngredient: IUpdateIngredient
+  updatedProducts: IProduct[]
 }>()
 
 const emit = defineEmits(['close', 'dataToupdate'])
@@ -35,7 +39,7 @@ const form = useForm({
 })
 
 const onSubmit = form.handleSubmit(async (values) => {
-  showIconRotateCw.value = true
+  showLoader.value = true
 
   const formatedData = {
     changeInformation: {
@@ -46,7 +50,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       weight: values.weight
     }
   }
-  showIconRotateCw.value = true
+  showLoader.value = true
   emit('dataToupdate', formatedData)
 })
 
@@ -64,15 +68,28 @@ function propagateInitialValues() {
     })
   }
 }
-
+function goToBottom() {
+  nextTick(() => {
+    bottomEl.value?.scrollIntoView({ behavior: "smooth" });
+  });
+}
 onMounted(() => {
   propagateInitialValues()
+})
+watch(() => props.updatedProducts, () => {
+  showLoader.value = false
+  goToBottom()
 })
 </script>
 
 <template>
-  <div class="absolute" style="z-index: 10">
-    <div class="flex w-[95%] h-[25dvh] bg-white border border-[#d1cece] rounded-lg overflow-auto">
+  <div class="absolute z-10">
+    <div
+      class="flex w-[100%] h-[25dvh] max-h-[30dvh] bg-white border border-[#d1cece] shadow-lg rounded-lg overflow-auto">
+      <div v-if="showLoader"
+        class="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center rounded-lg justify-center z-20">
+        <LoaderCircle class="w-8 h-8 text-white animate-spin" />
+      </div>
       <form @submit.prevent="onSubmit" class="flex flex-col gap-4 p-4 w-full">
         <!-- Botão de Fechar e Linha -->
         <div class="flex flex-col w-full">
@@ -108,7 +125,7 @@ onMounted(() => {
           <!-- Peso -->
           <FormField name="weight" v-slot="{ field }">
             <FormItem>
-              <FormLabel>Peso</FormLabel>
+              <FormLabel>Peso em Gramas</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="Peso do ingrediente" v-bind="field" />
               </FormControl>
@@ -126,12 +143,16 @@ onMounted(() => {
             </FormItem>
           </FormField>
         </div>
+        <CardUpdatedProducts v-if="updatedProducts?.length > 0" :products="updatedProducts" />
         <!-- Botão de Salvar -->
-        <div class="w-full mt-auto mb-auto text-right">
-          <Button type="submit" class="bg-[#8095c7]">
-            <RotateCw v-if="showIconRotateCw" class="w-4 h-4 mr-2 animate-spin" />
-            <span v-else>Salvar alterações</span>
+        <div class="w-full mt-auto pb-4 text-right">
+          <Button v-if="updatedProducts?.length > 0" @click="close" class="w-[11em] bg-[#8095c7]">
+            <span>Voltar</span>
           </Button>
+          <Button v-else type="submit" class="w-[11em] bg-[#8095c7]">
+            <span>Atualizar ingrediente</span>
+          </Button>
+          <div ref="bottomEl"></div>
         </div>
       </form>
     </div>
