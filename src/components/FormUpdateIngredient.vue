@@ -29,7 +29,7 @@ const formSchema = toTypedSchema(
 )
 const props = defineProps<{
   selectdIngredient: IUpdateIngredient
-  updatedProducts: IProduct[]
+  updatedProducts?: IProduct[]
 }>()
 
 const emit = defineEmits(['close', 'dataToupdate'])
@@ -143,10 +143,10 @@ watch(() => props.updatedProducts, () => {
             </FormItem>
           </FormField>
         </div>
-        <CardUpdatedProducts v-if="updatedProducts?.length > 0" :products="updatedProducts" />
+        <CardUpdatedProducts v-if="(updatedProducts || []).length > 0" :products="updatedProducts || []" />
         <!-- Botão de Salvar -->
         <div class="w-full mt-auto pb-4 text-right">
-          <Button v-if="updatedProducts?.length > 0" @click="close" class="w-[11em] bg-[#8095c7]">
+          <Button v-if="(updatedProducts || []).length > 0" @click="close" class="w-[11em] bg-[#8095c7]">
             <span>Voltar</span>
           </Button>
           <Button v-else type="submit" class="w-[11em] bg-[#8095c7]">
