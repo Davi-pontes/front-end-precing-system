@@ -113,13 +113,14 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
     cell: (context: CustomCellContext<IColumnsTableProduct>) => {
       const { row, onUpdate, onDelete, onDetail } = context
       const datas = row.original
-
+      const showDelete = true
       return h(
         'div',
         { class: 'relative' },
         h(Dropdown, {
           label: 'Produto',
           datas,
+          showDelete,
           onUpdate: (data: any) => {
             if (onUpdate) {
               onUpdate(data)

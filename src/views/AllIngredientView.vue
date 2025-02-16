@@ -34,10 +34,10 @@ function handleRemoveAlertError() {
   messageForError.value = ''
 }
 // Função para mostrar alertas
-function handleAlert(message: string) {
-  messageForAlert.value = message
-  showMessageAlert.value = true
-}
+// function handleAlert(message: string) {
+//   messageForAlert.value = message
+//   showMessageAlert.value = true
+// }
 // Função para remover alertas
 function removeAlert() {
   showMessageAlert.value = false
@@ -67,10 +67,10 @@ async function sendDataToupdateIngredient(dataToUpdate: any) {
   try {
     dataToUpdate.idUser = idUser
     const { data } = await axios.patch(urlApiBackEnd + '/product/ingredient/specific', dataToUpdate,{withCredentials: true})
-    
     productsChanged.value = data.updatedNumbersIngredient.productUpdated
-
+    updatedValue(data.updatedIngredient)
   } catch (error: unknown) {
+    showPopUpUpdateIngredient.value = false
     if (error instanceof AxiosError) {
       handleError(error.response?.data)
     } else {
@@ -80,8 +80,8 @@ async function sendDataToupdateIngredient(dataToUpdate: any) {
 }
 function updatedValue(item: any) {
   ingredients.value = ingredients.value.map((it) =>
-    it.id_product === item.id_product
-      ? { ...it, quantity: item.quantity, updated_at: item.updated_at }
+    it.id === item.id
+      ? { ...it, price: item.price }
       : it
   )
 }

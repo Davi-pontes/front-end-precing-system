@@ -371,20 +371,20 @@ function updateNameProduct() {
     <Loading v-if="showLoading" />
     <MessageAlert :message="message" v-if="showMessage"></MessageAlert>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="removeAlertError" />
-    <div class="flex items-center h-[7em] bg-muted gap-4 px-4">
+    <div class="flex items-center h-[6em] bg-muted gap-4 px-4">
       <div class="flex-1">
-        <label for="nameProduct" class="text-white">Nome do produto:</label>
+        <label for="nameProduct" class="text-white block">Nome do produto:</label>
         <Input class="bg-white w-full" id="nameProduct" type="text" autocomplete="off" v-model="dataProduct.nameProduct"
           @change="updateNameProduct" placeholder="Nome do produto" />
       </div>
       <div class="flex-1">
-        <label for="category" class="text-white">Categoria:</label>
+        <label for="category" class="text-white block">Categoria:</label>
         <Combobox id="category" :titleInput="'Selecione uma categoria...'"
           :titleSearch="'Pesquise por uma categoria...'" :items="dataFormatedToComboBox" name="selectedCategory"
           v-model="selectedCategory" @itemSelected="handleItemSelected" />
       </div>
       <div class="flex-1">
-        <label for="productJoker" class="text-white">Este é um produto coringa?</label>
+        <label for="productJoker" class="text-white block">Este é um produto coringa?</label>
         <SelectBoolean v-model="dataProduct.isJoker" />
       </div>
     </div>
@@ -393,17 +393,17 @@ function updateNameProduct() {
         <!-- Cabeçalho da tabela -->
         <thead class="bg-[#5A6FA5] text-white sticky top-0">
           <tr>
-            <th class="p-3 text-left"></th>
-            <th class="p-3 text-left font-medium">NOME DO INGREDIENTE</th>
-            <th class="p-3 text-left font-medium">
-              PESO <span class="font-normal text-sm">(Peso que o ingrediente foi comprado.)</span>
+            <th class="p-3"></th>
+            <th class="p-3 font-normal">NOME DO INGREDIENTE</th>
+            <th class="p-3 font-normal">
+              PESO <span class="font-normal text-sm block">(Peso que o ingrediente foi comprado.)</span>
             </th>
-            <th class="p-3 text-left font-medium">UNIDADE</th>
-            <th class="p-3 text-left font-medium">PREÇO EM R$</th>
-            <th class="p-3 text-left font-medium">
-              QUANTIDADE <span class="font-normal text-sm">(Quantidade que vai ser usada no produto.)</span>
+            <th class="p-3 font-normal">UNIDADE</th>
+            <th class="p-3 font-normal">PREÇO EM R$</th>
+            <th class="p-3 font-normal">
+              QUANTIDADE <span class="font-normal text-sm block">(Quantidade que vai ser usada no produto.)</span>
             </th>
-            <th class="p-3 text-left font-medium">CUSTO DO INGREDIENTE</th>
+            <th class="p-3 font-normal">CUSTO DO INGREDIENTE</th>
           </tr>
         </thead>
 
@@ -454,7 +454,7 @@ function updateNameProduct() {
                 class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
             </td>
             <!-- Custo do ingrediente -->
-            <td class="p-3">
+            <td class="p-3 text-center">
               <p class="text-gray-700">R$ {{ data.ingredient_cost?.toFixed(2) }}</p>
             </td>
           </tr>

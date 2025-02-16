@@ -85,7 +85,7 @@ watch(() => props.updatedProducts, () => {
 <template>
   <div class="absolute z-10">
     <div
-      class="flex w-[100%] h-[25dvh] max-h-[30dvh] bg-white border border-[#d1cece] shadow-lg rounded-lg overflow-auto">
+      class="flex w-[100%] h-[15em] max-h-[30em] bg-white border border-[#d1cece] shadow-lg rounded-lg overflow-auto">
       <div v-if="showLoader"
         class="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center rounded-lg justify-center z-20">
         <LoaderCircle class="w-8 h-8 text-white animate-spin" />
