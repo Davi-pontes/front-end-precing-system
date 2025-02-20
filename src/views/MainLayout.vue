@@ -24,9 +24,11 @@ import {
 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import Alert from '@/components/Alert.vue'
 
 const nameUser = ref('Jhenifer doce')
 const idUser = ref('')
+const userFirstAccess = ref('')
 const route = useRoute()
 
 function getLocalStorage() {
@@ -35,6 +37,7 @@ function getLocalStorage() {
     const parsedObject = JSON.parse(localStorageObject)
     nameUser.value = parsedObject.name || ''
     idUser.value = parsedObject.id || ''
+    userFirstAccess.value = parsedObject.firstAccess
   }
 }
 function getNamepage(): string {
@@ -203,6 +206,7 @@ getLocalStorage()
             {{ namePage }}
           </h1>
         </div>
+        <Alert v-if="userFirstAccess"/>
         <div
           v-if="$route.path === '/home'"
           class="flex items-center border shadow-lg rounded-md p-4 gap-4"
