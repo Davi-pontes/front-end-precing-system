@@ -18,6 +18,7 @@ import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
 import HomeView from '@/views/HomeView.vue'
 import MainLayoutAdmin from '@/views/admin/MainLayoutAdmin.vue'
+import IndexSidebar from '@/views/IndexSidebar.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,14 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: LadingPageView,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: IndexSidebar,
       meta: {
         public: true
       }
