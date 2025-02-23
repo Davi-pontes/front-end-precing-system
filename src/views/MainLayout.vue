@@ -22,30 +22,34 @@ import {
   Boxes,
   Plus
 } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import Alert from '@/components/Alert.vue'
 
 const nameUser = ref('Jhenifer doce')
 const idUser = ref('')
+const userFirstAccess = ref('')
 const route = useRoute()
 
-function getLocalStorage() {
-  const localStorageObject = localStorage.getItem('User')
-  if (localStorageObject) {
-    const parsedObject = JSON.parse(localStorageObject)
-    nameUser.value = parsedObject.name || ''
-    idUser.value = parsedObject.id || ''
+function loadUserData() {
+  try {
+    const localStorageData = localStorage.getItem('User')
+    if (localStorageData) {
+      const userData = JSON.parse(localStorageData)
+      nameUser.value = userData.name || ''
+      idUser.value = userData.id || ''
+      userFirstAccess.value = userData.firstAccess || false
+    }
+  } catch (error) {
+    console.error('Erro ao carregar dados do localStorage:', error)
   }
 }
-function getNamepage(): string {
-  const name = route.name
-  if (name) return name.toString()
-  return 'Página'
-}
-const namePage = computed(() => getNamepage())
 
-getNamepage()
-getLocalStorage()
+// Computed property para obter o nome da rota
+const namePage = computed(() => route.name?.toString() || 'Página')
+
+// Carregar os dados quando o componente for montado
+onMounted(loadUserData)
 </script>
 
 <template>
@@ -203,6 +207,7 @@ getLocalStorage()
             {{ namePage }}
           </h1>
         </div>
+        <Alert v-if="userFirstAccess"/>
         <div
           v-if="$route.path === '/home'"
           class="flex items-center border shadow-lg rounded-md p-4 gap-4"

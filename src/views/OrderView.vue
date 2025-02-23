@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Combobox from '@/components/Combobox.vue'
 import axios, { AxiosError } from 'axios'
-import { useRoute } from 'vue-router'
 import { computed, ref } from 'vue'
 import type { ICommandItem } from '@/interface/Combobox'
 import type { IProduct } from '@/interface/Product'
@@ -21,11 +20,11 @@ import { columnsOrder } from '@/components/ColumnsOrder'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import type { IOrder } from '@/interface/Order'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 
-const route = useRoute()
-const idUser = route.query.id
+const idUser = getUserIdLocalStorage()
 const dataFormatedToComboBox = ref<ICommandItem[]>([])
 const itemsSelected = ref<IProduct[]>([])
 const allUserProducts = ref<IProduct[]>([])

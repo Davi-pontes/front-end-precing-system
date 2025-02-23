@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
@@ -19,6 +19,8 @@ import { HttpCreateProduct } from '@/http/product/create-product'
 import { HttpUpdateProduct } from '@/http/product/update-product'
 import { HttpCalculation } from '@/http/calculation/calculation'
 import type { IBasesCalculation } from '@/interface/Calculation'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
+
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
 
@@ -28,7 +30,6 @@ const httpPutProduct = new HttpUpdateProduct(axios, urlApiBackEnd)
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 const httpCalculation = new HttpCalculation(axios, urlApiBackEnd)
 
-const idUser = route.query.id
 const idProduct = route.query?.idP
 
 // Variáveis reativas
@@ -265,10 +266,8 @@ function handleCalculateSellingPrice() {
   sellingPriceAdded.value = true
   updateAllNumbers()
 }
-//Atualiza o resumo a cada alteração
-watch(() => datasProduct.value, () => {
-  console.log('Teste');
-}, { deep: true })
+
+const idUser = getUserIdLocalStorage()
 getCategoryData()
 if (idProduct) {
   getProductData()

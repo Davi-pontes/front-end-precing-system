@@ -1,18 +1,28 @@
 <script setup lang="ts">
+import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
 import { LoaderCircle } from 'lucide-vue-next';
+import { useUserStore } from '@/stores/UserStore';
 import type { RouteRecordName } from 'vue-router';
+import { HttpLogin } from '@/http/login/login';
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
-const email = ref<string | null>(null);
-const password = ref<string | null>(null);
+
+const httpLogin = new HttpLogin(axios, urlApiBackEnd)
+const credentials = ref<{
+  email: string,
+  password: string
+}>({
+  email: '',
+  password: ''
+})
 const routeName = ref<RouteRecordName | null | undefined>(null);
 const showSpinner = ref(false)
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore()
 
 const getRouteName = () => {
   routeName.value = route.name;
@@ -20,26 +30,27 @@ const getRouteName = () => {
 
 const login = async () => {
   try {
-    showSpinner.value=true
-    const { data } = await axios.post(
-      urlApiBackEnd + '/login',
-      {
-        email: email.value,
-        password: password.value
-      },
-      { withCredentials: true }
-    );
-    localStorage.setItem('User', JSON.stringify(data));
+    showSpinner.value = true
+
+    const authenticatedUser = await httpLogin.login(credentials.value)
+
+    const dataUser = {
+      id: authenticatedUser.id,
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      firstAccess: authenticatedUser.firstAccess
+    }
+    userStore.setUser(dataUser)
 
     if (routeName.value && routeName.value === 'loginAdmin') {
-      showSpinner.value=false
+      showSpinner.value = false
       router.push({ name: 'listUsersAdmin' });
     } else {
-      showSpinner.value=false
+      showSpinner.value = false
       router.push({ name: 'Inicio' });
     }
   } catch (error: any) {
-    showSpinner.value=false
+    showSpinner.value = false
     if (error.response && error.response.status) {
       alert('Login ou/e senha incorreto.');
     } else {
@@ -66,8 +77,8 @@ onMounted(() => {
     <div class="form">
       <div class="content">
         <h1>LOGIN</h1>
-        <input type="email" placeholder="E-mail" v-model="email" />
-        <input type="password" placeholder="Senha" v-model="password" @keyup.enter="login" />
+        <input type="email" placeholder="E-mail" v-model="credentials.email" />
+        <input type="password" placeholder="Senha" v-model="credentials.password" @keyup.enter="login" />
         <div>
           <button @click="login" :disabled="showSpinner">
             <LoaderCircle v-if="showSpinner" class="mr-3 size-5 animate-spin" />
