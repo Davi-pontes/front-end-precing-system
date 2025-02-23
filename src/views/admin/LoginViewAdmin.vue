@@ -1,55 +1,42 @@
-<script lang="ts">
+<script setup lang="ts">
 import axios from 'axios';
-import type { RouteRecordName } from 'vue-router'
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
-export default {
-  name: 'Login',
-  data() {
-    return {
-      email: null,
-      password: null,
-      routeName: null as RouteRecordName | null | undefined
-    }
-  },
-  created() {
-    this.getRouteName()
-  },
-  methods: {
-    getRouteName() {
-      this.routeName = this.$route.name
-    },
-    async login() {
+const email = ref<string | null>(null);
+    const password = ref<string | null>(null);
+    const route = useRoute();
+    const router = useRouter();
+    const routeName = ref(route.name);
+
+    onMounted(() => {
+      routeName.value = route.name;
+    });
+
+    async function login () {
       try {
         const { data } = await axios.post(
-          urlApiBackEnd + '/login',
-          {
-            email: this.email,
-            password: this.password
-          },
+          `${urlApiBackEnd}/login`,
+          { email: email.value, password: password.value },
           { withCredentials: true }
-        )
-        localStorage.setItem('User', JSON.stringify(data))
+        );
+        localStorage.setItem('User', JSON.stringify(data));
 
-        if (this.routeName && this.routeName === 'loginAdmin') {
-          this.$router.push({ name: 'AdminUsers' })
+        if (routeName.value === 'loginAdmin') {
+          router.push({ name: 'AdminUsers' });
         } else {
-          this.$router.push({ name: 'Inicio' })
+          router.push({ name: 'Inicio' });
         }
       } catch (error: any) {
-        if (error.response && error.response.status) {
-          alert('Login ou/e senha incorreto.')
+        if (error.response?.status) {
+          alert('Login ou/e senha incorreto.');
         } else {
-          alert('Não foi possível fazer o login, por favor entre em contato com o suporte.')
+          alert('Não foi possível fazer o login, por favor entre em contato com o suporte.');
         }
       }
-    },
-    createAccount(){
-      this.$router.push({ name: 'createAccount' })
-    }
-  }
-}
+    };
 </script>
 
 <template>

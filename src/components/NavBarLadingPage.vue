@@ -1,12 +1,5 @@
-<script lang="ts">
-export default {
-  name: 'NavBarLadingPage',
-  methods: {
-    gotHomePrecification() {
-      this.$router.push({ name: 'login' })
-    }
-  }
-}
+<script setup lang="ts">
+
 </script>
 <template>
   <main>
@@ -16,12 +9,13 @@ export default {
         src="../assets/Logo-helqui-com-corde-fundo.png"
         alt="logo-up"
       />
-      <button
+      <router-link :to="'/login'">
+        <button
         class="border-0 rounded-md text-lg w-20 h-9 md:w-20 md:h-10 transition duration-500 bg-[rgb(30,50,97)] text-white *:cursor-pointer"
-        @click="gotHomePrecification"
-      >
-        Login
-      </button>
+        >
+          Login
+        </button>
+      </router-link>
     </div>
   </main>
 </template>
