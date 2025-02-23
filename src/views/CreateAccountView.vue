@@ -1,45 +1,36 @@
-<script lang="ts">
-import axios, { AxiosError } from 'axios'
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios, { AxiosError } from 'axios';
 
-const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
+const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
+const router = useRouter();
+const user = ref({ name: null, phone_number: '', email: null, password: null });
 
-export default {
-  name: 'CreateAccount',
-  components: {},
-  data() {
-    return {
-      user: { name: null, phone_number: '', email: null, password: null },
-      showMessage: true,
-      message: ''
-    }
-  },
-  methods: {
-    formatPhoneNumber(numero: string): string {
-    const numeroFormatado = numero.replace(/\D/g, '');
-    return numeroFormatado;
-},
-    async registrationUser() {
-      try {
-        this.user.phone_number = this.formatPhoneNumber(this.user.phone_number)
-        await axios.post(urlApiBackEnd + '/sign-up', this.user, {
-          withCredentials: true
-        })
-        this.$router.push({ name: 'login' })
-        
-      } catch (error: unknown) {
-        if(error instanceof AxiosError){
-          console.log(error);
-        }
-      }
+const formatPhoneNumber = (numero: string): string => {
+  return numero.replace(/\D/g, '');
+};
+
+const registrationUser = async () => {
+  try {
+    user.value.phone_number = formatPhoneNumber(user.value.phone_number);
+    await axios.post(`${urlApiBackEnd}/sign-up`, user.value, {
+      withCredentials: true
+    });
+    router.push({ name: 'login' });
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      console.log(error);
     }
   }
-}
+};
 </script>
+
 
 <template>
   <main>
     <div class="image">
-      <img src="../assets/logo-relqui.png" alt="logo-up" />
+      <img src="../assets/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
     </div>
     <div class="form">
       <div class="content">
