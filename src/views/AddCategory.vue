@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import * as z from 'zod'
+import MessageAlert from '@/components/MessageAlert.vue'
+import MessageError from '@/components/MessageError.vue'
+import UpdateCategory from '@/components/UpdateCategory.vue'
+import TableComponent from '@/components/Table.vue'
 import { Button } from '@/components/ui/button'
 import {
   FormControl,
@@ -12,22 +17,16 @@ import axios, { AxiosError } from 'axios'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { ref } from 'vue'
-import * as z from 'zod'
-import { useRoute } from 'vue-router'
-import MessageAlert from '@/components/MessageAlert.vue'
-import MessageError from '@/components/MessageError.vue'
 import { HttpPostCategory } from '@/http/category/post-category'
 import type { ICategory } from '@/interface/Category'
 import { HttpGetCategory } from '@/http/category/get-category'
 import { columnsCategory } from '@/components/ColumnsCategory'
-import TableComponent from '@/components/Table.vue'
 import { HttpDeleteCategory } from '@/http/category/delete-category'
-import UpdateCategory from '@/components/UpdateCategory.vue'
 import { HttpPathCategory } from '@/http/category/update-category'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
-const route = useRoute()
-const idUser = route.query.id
+const idUser = ref('')
 const nameCategory = ref('')
 const messageForError = ref('')
 const messageForAlert = ref('')
@@ -35,7 +34,7 @@ const allCategory = ref<ICategory[]>([])
 const changeCategory = ref<ICategory>({
   id: '',
   name: '',
-  user_id: idUser as string
+  user_id: idUser.value
 })
 const showMessageErro = ref(false)
 const showMessageAlert = ref(false)
@@ -70,13 +69,13 @@ function removeAlertError() {
 }
 
 function prepareData(): ICategory {
-  const dataForSend = { name: nameCategory.value, user_id: idUser as string }
+  const dataForSend = { name: nameCategory.value, user_id: idUser.value as string }
 
   return dataForSend
 }
 async function allCategoryByIdUser() {
   try {
-    allCategory.value = await httpGetCategory.getAllCategory(idUser as string)
+    allCategory.value = await httpGetCategory.getAllCategory(idUser.value as string)
 
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -157,6 +156,7 @@ function productDeletedUpdateData(idCategory: string) {
 const { isFieldDirty } = useForm({
   validationSchema: formSchema
 })
+idUser.value = getUserIdLocalStorage()
 allCategoryByIdUser()
 </script>
 

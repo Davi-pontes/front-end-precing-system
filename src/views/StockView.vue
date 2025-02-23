@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
 import { ref } from 'vue'
 import axios from 'axios'
 import TableComponent from '@/components/Table.vue'
@@ -15,9 +14,9 @@ import {
 } from '@/components/ui/number-field'
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 import { Button } from '@/components/ui/button'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
-const route = useRoute()
-const idUser = route.query.id
+const idUser = getUserIdLocalStorage()
 const allIngredientStockByUser = ref([])
 const dataFormatedToComboBox = ref<ICommandItem[]>([])
 const selectedIngredient = ref('')

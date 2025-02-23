@@ -10,9 +10,11 @@ import MessageError from '@/components/MessageError.vue'
 import TagInput from '@/components/TagInput.vue'
 import { HttpGetCategory } from '@/http/category/get-category'
 import type { IProduct } from '@/interface/Product'
+import { useUserStore } from '@/stores/UserStore';
 import Card from '@/components/Card.vue'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const messageForError = ref('')
@@ -32,11 +34,13 @@ const idUser = ref('')
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 
 function getLocalStorage(): void {
-  const localStorageObject = localStorage.getItem('User')
-  if (localStorageObject) {
-    const parsedObject = JSON.parse(localStorageObject)
-    nameUser.value = parsedObject.name || ''
-    idUser.value = parsedObject.id || ''
+  try {
+    const userData = userStore.getUserData
+
+    nameUser.value = userData.name
+    idUser.value = userData.id
+  } catch (error) {
+    console.error('Erro ao carregar dados do localStorage:')
   }
 }
 async function getAllCategoryAndProduct(): Promise<void> {

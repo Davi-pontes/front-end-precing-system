@@ -5,6 +5,7 @@ export interface IUser {
     email: string;
     is_admin: boolean;
     first_access: string;
+    firstAccess: boolean;
     last_access: string;
     active: number
     product_count: string

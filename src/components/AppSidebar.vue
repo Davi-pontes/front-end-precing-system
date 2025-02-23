@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar'
-import NavMain from '@/components/NavMain.vue'
-import NavProjects from '@/components/NavProjects.vue'
+import NavRegister from '@/components/NavRegister.vue'
+import NavView from '@/components/NavView.vue'
 import NavUser from '@/components/NavUser.vue'
+import NavStock from './NavStock.vue'
 import TeamSwitcher from '@/components/TeamSwitcher.vue'
 import {
   Sidebar,
@@ -12,25 +13,35 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import {
-  BookOpen,
-  Bot,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  Package,
+  Boxes,
+  ShoppingBag,
+  ShoppingCart,
+  PackageOpen,
+  ChartNoAxesColumn 
 } from 'lucide-vue-next'
+import NavDashboard from './NavDashboard.vue'
+import { getUserDataLocalStorage } from '@/composables/getUserData'
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
+const userData = getUserDataLocalStorage()
 // This is sample data.
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
+    name: userData.name ||'',
+    email: userData.email ||'',
     avatar: '/avatars/shadcn.jpg',
   },
+  dashboard:[
+  {
+      title: 'DashBoard',
+      url: '/home',
+      icon: ChartNoAxesColumn,
+      isActive: true,
+    },
+  ],
   teams: [
     {
       name: 'Helqui',
@@ -38,116 +49,64 @@ const data = {
       plan: 'Enterprise',
     },
   ],
-  navMain: [
+  navRegister: [
     {
-      title: 'Playground',
-      url: '#',
-      icon: SquareTerminal,
+      title: 'Categoria',
+      url: '/category/add',
+      icon: Boxes,
       isActive: true,
-      items: [
-        {
-          title: 'Starred',
-          url: '#',
-        },
-        {
-          title: 'Settings',
-          url: '#',
-        },
-      ],
     },
     {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
+      title: 'Produto sem ingrediente',
+      url: '/product/add',
+      icon: Package,
     },
     {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
+      title: 'Produto com ingredientes',
+      url: '/register',
+      icon: ShoppingBag ,
     },
   ],
-  projects: [
+  navView: [
     {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
+      title: 'Categorias',
+      url: '/category/add',
+      icon: Boxes,
+      isActive: true,
     },
     {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
+      title: 'Produtos',
+      url: '/product/add',
+      icon: ShoppingCart ,
+      isActive: true,
+    },
+  ],
+  navStock: [
+    {
+      title: 'Estoque de produtos',
+      url: '/stock/product',
+      icon: PackageOpen,
+      isActive: true,
     },
     {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      title: 'Estoque de ingredientes',
+      url: '/stock/ingredient',
+      icon: PackageOpen ,
+      isActive: true,
     },
   ],
 }
 </script>
 <template>
-  <Sidebar v-bind="props">
+  <Sidebar class="bg-muted/50" v-bind="props">
     <SidebarHeader>
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
-      <NavProjects :projects="data.projects" />
+      <NavDashboard :items="data.dashboard"/>
+      <NavRegister :items="data.navRegister" />
+      <NavView :items="data.navView" />
+      <NavStock :items="data.navStock"/>
     </SidebarContent>
     <SidebarFooter>
       <NavUser :user="data.user" />

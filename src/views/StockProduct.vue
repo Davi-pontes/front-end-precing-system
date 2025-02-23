@@ -2,7 +2,6 @@
 import axios, { AxiosError } from 'axios'
 import TableComponent from '@/components/Table.vue'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
 import { columnsStockProduct } from '@/components/ColumnsStockProduct'
 import type { IStockProduct } from '@/interface/Stock'
 import type { IProduct } from '@/interface/Product'
@@ -18,10 +17,10 @@ import { Button } from '@/components/ui/button'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import type { ICommandItem } from '@/interface/Combobox'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 const urlComunicationBackEnd = import.meta.env.VITE_API_BACKEND
 
-const route = useRoute()
-const idUser = route.query.id
+const idUser = getUserIdLocalStorage()
 const allProductStockByUser = ref<IStockProduct[]>([])
 const allUserProducts = ref<IProduct[]>([])
 const selectedProduct = ref('')

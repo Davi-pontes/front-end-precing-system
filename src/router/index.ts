@@ -67,7 +67,7 @@ const router = createRouter({
     {
       path: '/admin/',
       name: 'mainAdmin',
-      component: MainLayoutAdmin,
+      component: IndexSidebar,
       meta: {
         public: true
       },
@@ -81,7 +81,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'mainLayout',
-      component: MainLayout,
+      component: IndexSidebar,
       meta: {
         auth: true
       },
