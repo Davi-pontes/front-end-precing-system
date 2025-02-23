@@ -19,10 +19,12 @@ import {
   ShoppingBag,
   ShoppingCart,
   PackageOpen,
-  ChartNoAxesColumn 
+  ChartNoAxesColumn,
+  HandCoins
 } from 'lucide-vue-next'
 import NavDashboard from './NavDashboard.vue'
 import { getUserDataLocalStorage } from '@/composables/getUserData'
+import NavOrder from './NavOrder.vue'
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
@@ -30,12 +32,12 @@ const userData = getUserDataLocalStorage()
 // This is sample data.
 const data = {
   user: {
-    name: userData.name ||'',
-    email: userData.email ||'',
+    name: userData.name || '',
+    email: userData.email || '',
     avatar: '/avatars/shadcn.jpg',
   },
-  dashboard:[
-  {
+  dashboard: [
+    {
       title: 'DashBoard',
       url: '/home',
       icon: ChartNoAxesColumn,
@@ -64,7 +66,7 @@ const data = {
     {
       title: 'Produto com ingredientes',
       url: '/register',
-      icon: ShoppingBag ,
+      icon: ShoppingBag,
     },
   ],
   navView: [
@@ -76,8 +78,8 @@ const data = {
     },
     {
       title: 'Produtos',
-      url: '/product/add',
-      icon: ShoppingCart ,
+      url: '/product',
+      icon: ShoppingCart,
       isActive: true,
     },
   ],
@@ -91,10 +93,18 @@ const data = {
     {
       title: 'Estoque de ingredientes',
       url: '/stock/ingredient',
-      icon: PackageOpen ,
+      icon: PackageOpen,
       isActive: true,
     },
   ],
+  navSale: [
+    {
+      title: 'Registrar venda',
+      url: '/order',
+      icon: HandCoins,
+      isActive: true,
+    }
+  ]
 }
 </script>
 <template>
@@ -103,10 +113,11 @@ const data = {
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
-      <NavDashboard :items="data.dashboard"/>
+      <NavDashboard :items="data.dashboard" />
       <NavRegister :items="data.navRegister" />
       <NavView :items="data.navView" />
-      <NavStock :items="data.navStock"/>
+      <NavStock :items="data.navStock" />
+      <NavOrder :items="data.navSale"/>
     </SidebarContent>
     <SidebarFooter>
       <NavUser :user="data.user" />

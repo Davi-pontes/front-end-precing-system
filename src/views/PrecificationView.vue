@@ -25,6 +25,7 @@ import { HttpGetProductIngredient } from '@/http/productIngredient/get-productIn
 import { HttpGetProductJoker } from '@/http/productJoker/get-productJoker'
 import type { ICategory } from '@/interface/Category'
 import { HttpCalculationProductWithIngredient } from '@/http/calculation/calculationProductIngredient'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const route = useRoute()
@@ -86,13 +87,13 @@ const showMessageErro = ref(false)
 
 onMounted(async () => {
   showLoading.value = true
-  await getQuery()
+  await getIdUser()
   await controllerCreated()
   showLoading.value = false
 })
 
-async function getQuery() {
-  idUser.value = route.query.idU
+async function getIdUser() {
+  idUser.value = getUserIdLocalStorage()
 }
 
 async function controllerCreated() {
