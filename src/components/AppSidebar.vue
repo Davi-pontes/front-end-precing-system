@@ -20,7 +20,9 @@ import {
   ShoppingCart,
   PackageOpen,
   ChartNoAxesColumn,
-  HandCoins
+  HandCoins,
+  Settings,
+  LogOut
 } from 'lucide-vue-next'
 import NavDashboard from './NavDashboard.vue'
 import { getUserDataLocalStorage } from '@/composables/getUserData'
@@ -35,6 +37,17 @@ const data = {
     name: userData.name || '',
     email: userData.email || '',
     avatar: '/avatars/shadcn.jpg',
+    options: [{
+      title: 'Configurações',
+      url: '/settings',
+      icon: Settings
+    },
+    {
+      title: 'Sair',
+      url: '/',
+      icon: LogOut
+    }
+]
   },
   dashboard: [
     {
@@ -108,19 +121,19 @@ const data = {
 }
 </script>
 <template>
-  <Sidebar class="bg-muted/50" v-bind="props">
+  <Sidebar class="bg-muted/50 lg:bg-muted/50" v-bind="props">
     <SidebarHeader>
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
       <NavDashboard :items="data.dashboard" />
-      <NavRegister :items="data.navRegister" />
+      <NavRegister class="hidden lg:block" :items="data.navRegister"/>
       <NavView :items="data.navView" />
-      <NavStock :items="data.navStock" />
-      <NavOrder :items="data.navSale"/>
+      <NavStock class="hidden lg:block" :items="data.navStock" />
+      <NavOrder class="hidden lg:block" :items="data.navSale"/>
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser :user="data.user"/>
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

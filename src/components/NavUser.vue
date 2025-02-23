@@ -7,7 +7,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -21,14 +20,18 @@ import {
 } from '@/components/ui/sidebar'
 import {
   ChevronsUpDown,
-  LogOut,
-  Settings
+  type LucideIcon
 } from 'lucide-vue-next'
 defineProps<{
   user: {
     name: string
     email: string
     avatar: string
+    options:{
+      title:string, 
+      url:string,
+      icon: LucideIcon
+    }[]
   }
 }>()
 const { isMobile } = useSidebar()
@@ -70,17 +73,13 @@ const { isMobile } = useSidebar()
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Settings />
-              Configurações
+          <DropdownMenuItem as-child class="cursor-pointer" v-for="(item, index) in user.options" :key="item.title">
+              <router-link :to="item.url">
+                <component :is="item.icon"/>
+                <span>{{ item.title }}</span>
+              </router-link>
+              <DropdownMenuSeparator v-if="index !== user.options.length - 1"/>
             </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LogOut />
-            Sair
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>

@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import axios, { AxiosError } from 'axios'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import type { IPaymentMethod, IPaymentMethodParams } from '@/interface/PaymentMethod'
 import CardPaymentMethod from '@/components/CardPaymentMethod.vue'
 import CardProfile from '@/components/CardProfile.vue'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
-const route = useRoute()
-const idUser = route.query.id
+const idUser = getUserIdLocalStorage()
 
 const showMessageAlert = ref<boolean>(false)
 const showMessageErro = ref<boolean>(false)

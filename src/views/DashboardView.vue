@@ -1,30 +1,27 @@
 <script setup lang="ts">
-import axios, { AxiosError } from 'axios'
-import type { ICategoryWithProducts } from '@/interface/Category'
-import { ref } from 'vue'
+import axios from 'axios'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
-import { HttpGetCategory } from '@/http/category/get-category'
-import type { IProduct } from '@/interface/Product'
 import Card from '@/components/Card.vue'
+import { ref } from 'vue'
 import { getUserDataLocalStorage } from '@/composables/getUserData'
+import { HttpGetDataToDashBoard } from '@/http/dashboard/get-data'
+import type { IDashboard } from '@/interface/Dashboard'
+import { HttpError } from '@/errors/errorsHttp'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const messageForError = ref('')
 const showMessageErro = ref(false)
 const messageForAlert = ref('')
 const showMessageAlert = ref(false)
-const allCategoryAndProducts = ref<ICategoryWithProducts>({
-  category: [],
-  products: [],
-  totalProducts: 0,
+const dataToDashboard = ref<IDashboard>({
+  totalProduct: 0,
   averageProfit: 0
 })
-const productToRender = ref<IProduct[]>([])
 const nameUser = ref('')
 const idUser = ref('')
 
-const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
+const httpGetDataDashboard = new HttpGetDataToDashBoard(axios,urlApiBackEnd)
 
 function getLocalStorage(): void {
   try {
@@ -36,17 +33,15 @@ function getLocalStorage(): void {
     console.error('Erro ao carregar dados do localStorage:')
   }
 }
-async function getAllCategoryAndProduct(): Promise<void> {
+async function getDataToDashboard(): Promise<void> {
   try {
-    const data = await httpGetCategory.getAllCategoryAndProduct(idUser.value)
+    const data = await httpGetDataDashboard.getDataToDashboard(idUser.value)
 
-    if (data) {
-      allCategoryAndProducts.value = data
-      productToRender.value = allCategoryAndProducts.value.products
-    }
+    if (data) dataToDashboard.value = data
+    
   } catch (error) {
-    if (error instanceof AxiosError) {
-      handleError(error.response?.data)
+    if (error instanceof HttpError) {
+      handleError(error.message)
     } else {
       handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
     }
@@ -67,7 +62,7 @@ function removeAlert() {
   showMessageAlert.value = false
 }
 getLocalStorage()
-getAllCategoryAndProduct()
+getDataToDashboard()
 </script>
 
 <template>
@@ -77,10 +72,10 @@ getAllCategoryAndProduct()
     <div class="w-full border shadow-lg rounded-md p-4 my-7">
       <Card>
         <template v-slot:qtdProducts>
-          {{ allCategoryAndProducts.totalProducts }}
+          {{ dataToDashboard.totalProduct }}
         </template>
         <template v-slot:averageProfit>
-          {{ allCategoryAndProducts.averageProfit ? allCategoryAndProducts.averageProfit.toFixed(2) : 0 }}
+          {{ dataToDashboard.averageProfit ? dataToDashboard.averageProfit.toFixed(2) : 0 }}
         </template>
       </Card>
     </div>

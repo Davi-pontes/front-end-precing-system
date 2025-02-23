@@ -18,6 +18,7 @@ import { Plus } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore';
+import Alert from '@/components/Alert.vue'
 
 const userStore = useUserStore()
 const route = useRoute()
@@ -61,6 +62,7 @@ onMounted(loadUserData)
         <h1 class=" text-lg font-semibold md:text-2xl">
           {{ namePage }}
         </h1>
+        <Alert v-if="dataUser.firstAccess"/>
         <div v-if="route.path === '/home'" class="flex items-center border shadow-lg rounded-md p-4 gap-4">
           <router-link :to="{
             path: '/category/add',
