@@ -1,9 +1,14 @@
-import type { ColumnDef } from '@tanstack/vue-table'
+import type { CellContext, ColumnDef } from '@tanstack/vue-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowUpDown } from 'lucide-vue-next'
 import { h } from 'vue'
 import Button from './ui/button/Button.vue'
 import type { IColumnsTableUser } from '@/interface/User'
+import Switch from './ui/switch/Switch.vue'
+
+interface CustomCellContext<TData> extends CellContext<TData, unknown> {
+  onUpdate?: (data: any) => void
+}
 
 export const columnsUser: ColumnDef<IColumnsTableUser>[] = [
   {
@@ -58,7 +63,21 @@ export const columnsUser: ColumnDef<IColumnsTableUser>[] = [
     header: 'Ultimo acesso'
   },
   {
-    accessorKey: 'active',
+    id: 'actions',
+    enableHiding: false,
+    cell: (context: CustomCellContext<IColumnsTableUser>) => {
+      const {row, onUpdate} = context
+      const datas = row.original
+      return h(Switch,{
+        modelValue: datas.active,
+        "onUpdate:modelValue": () => {
+          if(onUpdate){
+            onUpdate(datas)
+          }
+        },
+      })
+
+    },
     header: 'Ativo'
   },
   {
