@@ -4,6 +4,7 @@ import { ArrowUpDown } from 'lucide-vue-next'
 import { h } from 'vue'
 import Button from './ui/button/Button.vue'
 import type { IColumnsTableUser } from '@/interface/User'
+import Switch from './ui/switch/Switch.vue'
 
 export const columnsUser: ColumnDef<IColumnsTableUser>[] = [
   {
@@ -58,7 +59,18 @@ export const columnsUser: ColumnDef<IColumnsTableUser>[] = [
     header: 'Ultimo acesso'
   },
   {
-    accessorKey: 'active',
+    id: 'actions',
+    enableHiding: false,
+    cell: ({row}) => {
+      return h(Switch,{
+        modelValue: row.original.active,
+        "onUpdate:modelValue": (newValue) => {
+          row.original.active = newValue; // Atualiza o estado local da linha
+          console.log("Novo estado:", newValue);
+        },
+      })
+
+    },
     header: 'Ativo'
   },
   {
