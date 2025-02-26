@@ -6,7 +6,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/UserStore';
 import type { RouteRecordName } from 'vue-router';
 import { HttpLogin } from '@/http/login/login';
-
+import MessageError from '@/components/MessageError.vue'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
 
 const httpLogin = new HttpLogin(axios, urlApiBackEnd)
@@ -19,6 +19,9 @@ const credentials = ref<{
 })
 const routeName = ref<RouteRecordName | null | undefined>(null);
 const showSpinner = ref(false)
+
+const showMessageErro = ref(false)
+const messageForError = ref('')
 
 const route = useRoute();
 const router = useRouter();
@@ -62,7 +65,11 @@ const login = async () => {
 const createAccount = () => {
   router.push({ name: 'createAccount' });
 };
-
+// Função para mostrar alertas de error
+function handleError(message: string) {
+  messageForError.value = message
+  showMessageErro.value = true
+}
 onMounted(() => {
   getRouteName();
 });
@@ -71,6 +78,7 @@ onMounted(() => {
 
 <template>
   <main>
+    <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="showMessageErro = false" />
     <div class="image">
       <img src="../assets/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
     </div>

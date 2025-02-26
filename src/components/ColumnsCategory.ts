@@ -59,13 +59,14 @@ export const columnsCategory: ColumnDef<IColumnsTableCategory>[] = [
     cell: (context: CustomCellContext<IColumnsTableCategory>) => {
       const { row, onUpdate, onDelete, onDetail } = context
       const datas = row.original
-
+      const showDelete = true
       return h(
         'div',
         { class: 'relative' },
         h(Dropdown, {
           label: 'Categoria',
           datas,
+          showDelete,
           onUpdate: (data: any) => {
             if (onUpdate) {
               onUpdate(data)
