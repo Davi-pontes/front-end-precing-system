@@ -1,42 +1,58 @@
 <script setup lang="ts">
+import { HttpLogin } from '@/http/login/login';
+import { useUserStore } from '@/stores/UserStore';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
-const email = ref<string | null>(null);
-    const password = ref<string | null>(null);
-    const route = useRoute();
-    const router = useRouter();
-    const routeName = ref(route.name);
+const httpLogin = new HttpLogin(axios, urlApiBackEnd)
 
-    onMounted(() => {
-      routeName.value = route.name;
-    });
+const credentials = ref<{
+  email: string,
+  password: string
+}>({
+  email: '',
+  password: ''
+})
 
-    async function login () {
-      try {
-        const { data } = await axios.post(
-          `${urlApiBackEnd}/login`,
-          { email: email.value, password: password.value },
-          { withCredentials: true }
-        );
-        localStorage.setItem('User', JSON.stringify(data));
+const route = useRoute();
+const router = useRouter();
+const routeName = ref(route.name);
 
-        if (routeName.value === 'loginAdmin') {
-          router.push({ name: 'AdminUsers' });
-        } else {
-          router.push({ name: 'Inicio' });
-        }
-      } catch (error: any) {
-        if (error.response?.status) {
-          alert('Login ou/e senha incorreto.');
-        } else {
-          alert('Não foi possível fazer o login, por favor entre em contato com o suporte.');
-        }
-      }
-    };
+const userStore = useUserStore()
+
+onMounted(() => {
+  routeName.value = route.name;
+});
+
+async function login() {
+  try {
+    const authenticatedUser = await httpLogin.login(credentials.value)
+    
+    const dataUser = {
+      id: authenticatedUser.id,
+      name: authenticatedUser.name,
+      email: authenticatedUser.email,
+      firstAccess: authenticatedUser.firstAccess
+    }
+
+    userStore.setUser(dataUser)
+
+    if (routeName.value === 'loginAdmin') {
+      router.push({ name: 'AdminUsers' });
+    } else {
+      router.push({ name: 'Inicio' });
+    }
+  } catch (error: any) {
+    if (error.response?.status) {
+      alert('Login ou/e senha incorreto.');
+    } else {
+      alert('Não foi possível fazer o login, por favor entre em contato com o suporte.');
+    }
+  }
+};
 </script>
 
 <template>
@@ -47,8 +63,8 @@ const email = ref<string | null>(null);
     <div class="form">
       <div class="content">
         <h1>LOGIN</h1>
-        <input type="email" placeholder="E-mail" v-model="email" />
-        <input type="password" placeholder="Senha" v-model="password" @keyup.enter="login" />
+        <input type="email" placeholder="E-mail" v-model="credentials.email" />
+        <input type="password" placeholder="Senha" v-model="credentials.password" @keyup.enter="login" />
         <div>
           <button @click="login">Login</button>
         </div>
