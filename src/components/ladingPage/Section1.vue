@@ -15,17 +15,17 @@ import DemonstrationImages2 from './DemonstrationImages2.vue';
                 <span class="text-muted font-[Lato-Black] text-[34px]/[1.2] text-left
               md:text-[50px]">
                     O sistema definitivo para precificação ágil e inteligente.</span>
-                <H2 class="text-muted font-[Lato-Bold] text-[22px]/[1.2]  font-regular text-left
+                <h2 class="text-muted font-[Lato-Bold] text-[22px]/[1.2]  font-regular text-left
               md:text-[24px]">
                     Precificar seus produtos vai além de cobrir custos – é estratégia para maximizar lucros e crescer.
-                </H2>
+                </h2>
                 <Button2 class="self-end top-5 md:self-center">Começar
                     grátis
                 </Button2>
             </div>
             <div class="flex justify-center md:w-3/4 flex-col md:h-full">
                 <DemonstrationImages2 class="top-[-2em] md:top-[-3em]" />
-                <DemonstrationImages1 class="left-24 top-[13em] md:top-[-4em] md:left-[13em]" />
+                <DemonstrationImages1 class="left-24 top-[13em] md:top-[-4em]" />
             </div>
         </section>
     </section>
