@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Menu from './MenuLadingPage.vue'
-import LogoHelqui from '@/assets/LogoSemOnomeTecnologi.png'
+import LogoHelqui from '@/assets/img/LogoSemOnomeTecnologi.png'
 </script>
 
 <template>

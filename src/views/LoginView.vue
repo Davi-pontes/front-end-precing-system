@@ -80,7 +80,7 @@ onMounted(() => {
   <main>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="showMessageErro = false" />
     <div class="image">
-      <img src="../assets/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
+      <img src="../assets/img/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
     </div>
     <div class="form">
       <div class="content">
