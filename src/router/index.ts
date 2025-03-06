@@ -20,6 +20,7 @@ import Dashboard from '@/views/DashboardView.vue'
 //import MainLayoutAdmin from '@/views/admin/MainLayoutAdmin.vue'
 import IndexSidebar from '@/views/IndexSidebar.vue'
 import ProductView from '@/views/ProductView.vue'
+import LadingPageNewView from '@/views/LadingPageNewView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,14 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: LadingPageView,
+      meta: {
+        public: true
+      }
+    },
+    {
+      path: '/new',
+      name: 'home',
+      component: LadingPageNewView,
       meta: {
         public: true
       }
