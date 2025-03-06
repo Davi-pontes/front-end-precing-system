@@ -523,33 +523,31 @@ function updateNameProduct() {
           <p class="text-base">Mão de Obra:</p>
           <p class="text-base font-semibold">R$ {{ basesCalculation.labor?.toFixed(2) }}</p>
         </div>
-
-        <!-- Lucro -->
-        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
-          <p class="text-base">Lucro:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.profit?.toFixed(2) }}</p>
-        </div>
       </div>
 
       <!-- Coluna 3: Custo total da receita -->
       <div class="flex flex-col w-1/2 gap-4">
-        <!-- Valor final da receita -->
-        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
-          <p class="text-base">Valor final:</p>
-          <p class="text-base font-semibold">R$ {{ resultCalculation.final_recipe_price?.toFixed(2) }}</p>
-        </div>
         <!-- Custo total da receita -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
           <p class="text-base">Custo total:</p>
           <p class="text-base font-semibold">R$ {{ resultCalculation.revenue_cost?.toFixed(2) }}</p>
         </div>
+        <!-- Lucro -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Lucro:</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.profit?.toFixed(2) }}</p>
+        </div>
+        <!-- Valor final da receita -->
+        <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
+          <p class="text-base">Valor final:</p>
+          <p class="text-base font-semibold">R$ {{ resultCalculation.final_recipe_price?.toFixed(2) }}</p>
+        </div>
         <!-- Valor da unidade -->
         <div class="flex items-center justify-between p-2 bg-[#5A6FA5]  rounded-md hover:bg-gray-700 transition-colors">
-          <p class="text-base">Valor/unidade:</p>
+          <p class="text-base">Preço por unidade:</p>
           <p class="text-base font-semibold">R$ {{ resultCalculation.price_per_unit?.toFixed(2) }}</p>
         </div>
       </div>
     </div>
-
   </div>
 </template>
