@@ -12,7 +12,7 @@ import Button from './ButtonLadingPage.vue'
         </ul>
         <Button class="w-[128px] text-[14px]"> Cadastre-se </Button>
     </section>
-    <section class="font-[Lato-Bold] text-(--secondcolor) text-[14px] flex flex-row gap-[25px] md:hidden">
+    <section class="font-[Lato-Bold] text-white text-[14px] flex flex-row gap-[25px] md:hidden">
         <router-link to="/login">Login</router-link>
     </section>
     <!-- <Menu color="white" /> -->
