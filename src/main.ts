@@ -2,7 +2,6 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import '@fortawesome/fontawesome-free/css/all.min.css'
 import { MaskInput } from 'vue-3-mask'
 import { createPinia } from 'pinia';
 import axios from 'axios';

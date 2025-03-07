@@ -1,6 +1,6 @@
 {
   "name": "helqui-client",
-  "version": "1.39.0",
+  "version": "1.39.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,12 +14,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.6.0",
-    "@fortawesome/fontawesome-svg-core": "^6.6.0",
-    "@fortawesome/free-brands-svg-icons": "^6.6.0",
-    "@fortawesome/free-regular-svg-icons": "^6.6.0",
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
-    "@fortawesome/vue-fontawesome": "^3.0.8",
     "@radix-icons/vue": "^1.0.0",
     "@tanstack/vue-table": "^8.20.5",
     "@vee-validate/zod": "^4.15.0",
@@ -46,7 +40,7 @@
     "@tsconfig/node20": "^20.1.4",
     "@types/jsdom": "^21.1.6",
     "@types/node": "^20.14.10",
-    "@types/vue-the-mask": "^0.11.5",
+    "@types/vue-the-mask": "^0.11.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/compiler-sfc": "^3.5.11",
     "@vue/eslint-config-prettier": "^9.0.0",
@@ -63,8 +57,7 @@
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.12",
     "typescript": "~5.4.0",
-    "vite": "^5.3.3",
-    "vitest": "^1.4.0",
+    "vite": "^6.2.1",
     "vue-tsc": "^2.0.11"
   },
   "description": "This template should help get you started developing with Vue 3 in Vite.",
