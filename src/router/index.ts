@@ -186,25 +186,25 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const isPublicRoute = to.meta?.public;
+
+  if (isPublicRoute) {
+    return next();
+  }
+
   try {
-    const validate = await Auth.validate()
+    const isAuthenticated = await Auth.validate();
 
-    if (to.meta?.public && to.name !== 'login') {
-      return next()
-    } else if (to.name === 'login') {
-      return next()
-    }
-
-    if (validate) {
-      return next()
+    if (isAuthenticated) {
+      return next();
     } else {
-      return next({ name: 'login' })
+      return next({ name: 'login' });
     }
   } catch (error) {
     if (to.name !== 'home') {
-      return next({ name: 'home' })
+      return next({ name: 'home' });
     }
-    next()
+    next();
   }
-})
+});
 export default router
