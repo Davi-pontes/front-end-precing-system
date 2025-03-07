@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios, { AxiosError } from 'axios';
+import LogoHelqui from '@/assets/img/Logo-helqui-com-corde-fundo.png'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
 const router = useRouter();
@@ -30,7 +31,7 @@ const registrationUser = async () => {
 <template>
   <main>
     <div class="image">
-      <img src="../assets/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
+      <img :src="LogoHelqui" alt="logo-up" />
     </div>
     <div class="form">
       <div class="content">

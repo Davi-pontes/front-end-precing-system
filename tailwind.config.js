@@ -102,7 +102,14 @@ module.exports = {
   			'accordion-up': 'accordion-up 0.2s ease-out',
   			'collapsible-down': 'collapsible-down 0.2s ease-in-out',
   			'collapsible-up': 'collapsible-up 0.2s ease-in-out'
-  		}
+  		},
+		fontFamily:{
+			"Lato-Regular": ["Lato-Regular"],
+			"Lato-Bold": ["Lato-Bold"],
+			"Lato-Black": ["Lato-Black"],
+			"Montserrat-ExtraBold": ["Montserrat-ExtraBold"],
+			"Montserrat-Bold": ["Montserrat-Bold"],
+		}
   	}
   },
   plugins: [animate, require("tailwindcss-animate")],

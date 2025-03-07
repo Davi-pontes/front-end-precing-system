@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import { ShoppingCart } from 'lucide-vue-next';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

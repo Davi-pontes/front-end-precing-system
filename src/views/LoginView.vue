@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/UserStore';
 import type { RouteRecordName } from 'vue-router';
 import { HttpLogin } from '@/http/login/login';
 import MessageError from '@/components/MessageError.vue'
+import LogoHelqui from '@/assets/img/Logo-helqui-com-corde-fundo.png'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND;
 
 const httpLogin = new HttpLogin(axios, urlApiBackEnd)
@@ -66,10 +67,10 @@ const createAccount = () => {
   router.push({ name: 'createAccount' });
 };
 // Função para mostrar alertas de error
-function handleError(message: string) {
-  messageForError.value = message
-  showMessageErro.value = true
-}
+// function handleError(message: string) {
+//   messageForError.value = message
+//   showMessageErro.value = true
+// }
 onMounted(() => {
   getRouteName();
 });
@@ -80,7 +81,7 @@ onMounted(() => {
   <main>
     <MessageError v-if="showMessageErro" :message="messageForError" @removeAlert="showMessageErro = false" />
     <div class="image">
-      <img src="../assets/Logo-helqui-com-corde-fundo.png" alt="logo-up" />
+      <img :src="LogoHelqui" alt="logo-up" />
     </div>
     <div class="form">
       <div class="content">

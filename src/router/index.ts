@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Precification from '../views/PrecificationView.vue'
-import LadingPageView from '../views/LadingPage.vue'
 import AllIngredientView from '@/views/AllIngredientView.vue'
 import StockView from '@/views/StockView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -20,6 +19,7 @@ import Dashboard from '@/views/DashboardView.vue'
 //import MainLayoutAdmin from '@/views/admin/MainLayoutAdmin.vue'
 import IndexSidebar from '@/views/IndexSidebar.vue'
 import ProductView from '@/views/ProductView.vue'
+import LadingPageView from '@/views/LadingPageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,14 +28,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: LadingPageView,
-      meta: {
-        public: true
-      }
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: IndexSidebar,
       meta: {
         public: true
       }
