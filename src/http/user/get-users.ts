@@ -1,5 +1,6 @@
 import type { IUser } from '@/interface/User'
 import type { Axios } from 'axios'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
 export class HttpGetUser {
   private axios: Axios
@@ -12,7 +13,12 @@ export class HttpGetUser {
 
   async getUsers(): Promise<Array<IUser>> {
     try {
-      const { data } = await this.axios.get(this.baseUrl + '/user', {
+      const idUser = getUserIdLocalStorage()
+
+      const { data } = await this.axios.get(this.baseUrl + '/admin/user', {
+        params: {
+          idUser
+        },
         withCredentials: true
       })
       return data

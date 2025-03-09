@@ -17,7 +17,8 @@ import AddCategory from '@/views/AddCategory.vue'
 import Settings from '@/views/Settings.vue'
 import Dashboard from '@/views/DashboardView.vue'
 //import MainLayoutAdmin from '@/views/admin/MainLayoutAdmin.vue'
-import IndexSidebar from '@/views/IndexSidebar.vue'
+import MainLayout from '@/views/MainLayout.vue'
+import MainLayoutAdmin from '@/views/admin/MainLayoutAdmin.vue'
 import ProductView from '@/views/ProductView.vue'
 import LadingPageView from '@/views/LadingPageView.vue'
 
@@ -60,9 +61,9 @@ const router = createRouter({
     {
       path: '/admin/',
       name: 'mainAdmin',
-      component: IndexSidebar,
+      component: MainLayoutAdmin,
       meta: {
-        public: true
+        auth: true
       },
       children:[{
         path: 'users',
@@ -74,7 +75,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'mainLayout',
-      component: IndexSidebar,
+      component: MainLayout,
       meta: {
         auth: true
       },

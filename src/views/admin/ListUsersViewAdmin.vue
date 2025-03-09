@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import axios from 'axios'
-import TableComponent from '@/components/Table.vue'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import TableComponent from '@/components/Table.vue'
 import { columnsUser } from '@/components/ColumnsUsers'
 import { HttpGetUser } from '@/http/user/get-users'
 import type { IUser } from '@/interface/User'
@@ -10,12 +11,16 @@ import { HttpUpdateUser } from '@/http/user/update-user'
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const httpGetUser = new HttpGetUser(axios, urlApiBackEnd)
 const httpUpdateUser = new HttpUpdateUser(axios, urlApiBackEnd)
-
+const router = useRouter();
 const allUsers = ref<IUser[]>([])
 
 async function getAllUsers() {
-  const data = await httpGetUser.getUsers()
-  allUsers.value = data
+  try {
+    const data = await httpGetUser.getUsers()
+    allUsers.value = data
+  } catch (error) {
+    router.push({ name: 'loginAdmin' });
+  }
 }
 async function handleUpdate(user: IUser) {
   try {
