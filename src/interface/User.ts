@@ -15,7 +15,7 @@ export interface IColumnsTableUser {
   nome: string
   numero: string
   email: string
-  admin: boolean
+  is_admin: boolean
   primeiroAcesso: string
   ultimoAcesso: string
   active: boolean
