@@ -38,7 +38,7 @@ function getLocalStorage(): void {
 async function getDataToDashboard(): Promise<void> {
   try {
     const data = await httpGetDataDashboard.getDataToDashboard(idUser.value)
-
+    
     if (data) dataToDashboard.value = data
 
   } catch (error) {

@@ -21,7 +21,7 @@ defineProps<{ products: IProduct[] }>()
                 Top 3 produtos que mais lhe dá lucro.
             </CardDescription>
         </CardHeader>
-        <CardContent class="space-y-2" v-for="product in products" :key="product.name">
+        <CardContent class=" space-y-2" v-for="product in products" :key="product.name">
             <div class="space-y-1">
                 <Span>{{ product.name }}</Span>
             </div>
