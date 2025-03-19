@@ -22,7 +22,8 @@ import {
   ChartNoAxesColumn,
   HandCoins,
   Settings,
-  LogOut
+  LogOut,
+  ShoppingBasket 
 } from 'lucide-vue-next'
 import NavDashboard from './NavDashboard.vue'
 import { getUserDataLocalStorage } from '@/composables/getUserData'
@@ -93,6 +94,12 @@ const data = {
       title: 'Produtos',
       url: '/product',
       icon: ShoppingCart,
+      isActive: true,
+    },
+    {
+      title: 'Ingredientes',
+      url: '/ingredients',
+      icon: ShoppingBasket,
       isActive: true,
     },
   ],

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import axios, { AxiosError } from 'axios'
 import TableComponent from '@/components/Table.vue'
-import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import type { IIngredient } from '@/interface/Ingredient'
 import { columnsIngredient } from '@/components/ColumnsIngredient'
@@ -9,11 +8,11 @@ import FormIngredient from '@/components/FormUpdateIngredient.vue'
 import MessageAlert from '@/components/MessageAlert.vue'
 import MessageError from '@/components/MessageError.vue'
 import type { IProduct } from '@/interface/Product'
+import { getUserIdLocalStorage } from '@/composables/getUserId'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
-const route = useRoute()
-const idUser = route.query.id as string
+const idUser = getUserIdLocalStorage()
 const ingredients = ref<IIngredient[]>([])
 const dataToUpdate = ref()
 const messageForError = ref('')

@@ -8,6 +8,7 @@ import { getUserDataLocalStorage } from '@/composables/getUserData'
 import { HttpGetDataToDashBoard } from '@/http/dashboard/get-data'
 import type { IDashboard } from '@/interface/Dashboard'
 import { HttpError } from '@/errors/errorsHttp'
+import TopProducts from '@/components/TopProducts.vue'
 
 const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 const messageForError = ref('')
@@ -16,12 +17,13 @@ const messageForAlert = ref('')
 const showMessageAlert = ref(false)
 const dataToDashboard = ref<IDashboard>({
   totalProduct: 0,
-  averageProfit: 0
+  averageProfit: 0,
+  productsWithHiguerProfit: []
 })
 const nameUser = ref('')
 const idUser = ref('')
 
-const httpGetDataDashboard = new HttpGetDataToDashBoard(axios,urlApiBackEnd)
+const httpGetDataDashboard = new HttpGetDataToDashBoard(axios, urlApiBackEnd)
 
 function getLocalStorage(): void {
   try {
@@ -36,9 +38,9 @@ function getLocalStorage(): void {
 async function getDataToDashboard(): Promise<void> {
   try {
     const data = await httpGetDataDashboard.getDataToDashboard(idUser.value)
-
-    if (data) dataToDashboard.value = data
     
+    if (data) dataToDashboard.value = data
+
   } catch (error) {
     if (error instanceof HttpError) {
       handleError(error.message)
@@ -78,6 +80,7 @@ getDataToDashboard()
           {{ dataToDashboard.averageProfit ? dataToDashboard.averageProfit.toFixed(2) : 0 }}
         </template>
       </Card>
+      <TopProducts :products="dataToDashboard.productsWithHiguerProfit" />
     </div>
   </div>
 </template>
