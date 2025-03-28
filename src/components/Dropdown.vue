@@ -17,6 +17,7 @@ const props = defineProps<{
   onUpdate?: (data: any) => void
   onDelete?: (data: any) => void
   onDetail?: (data: any) => void
+  onDuplicate?: (data: any) => void
 }>()
 
 function handleUpdate() {
@@ -34,6 +35,11 @@ function handleDetail() {
     props.onDetail(props.datas)
   }
 }
+function handleDuplicate(){
+  if (props.onDuplicate) {
+    props.onDuplicate(props.datas)
+  }
+}
 </script>
 
 <template>
@@ -47,6 +53,7 @@ function handleDetail() {
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>{{ label }}</DropdownMenuLabel>
       <DropdownMenuItem @click="handleUpdate()"> Alterar </DropdownMenuItem>
+      <DropdownMenuItem @click="handleDuplicate()"> Duplicar </DropdownMenuItem>
       <DropdownMenuItem @click="handleDetail()">Ver detalhes</DropdownMenuItem>
       <DropdownMenuSeparator v-if="showDelete"/>
       <DropdownMenuItem v-if="showDelete" @click="handleDelete()">Deletar</DropdownMenuItem>

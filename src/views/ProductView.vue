@@ -12,6 +12,7 @@ import type { IProduct } from '@/interface/Product';
 import { getUserIdLocalStorage } from '@/composables/getUserId';
 import { useRouter } from 'vue-router';
 import { HttpDeleteProduct } from '@/http/product/delete-product';
+import { HttpDuplicateProduct } from '@/http/product/duplicate-product';
 
 const router = useRouter()
 
@@ -19,6 +20,7 @@ const urlApiBackEnd = import.meta.env.VITE_API_BACKEND
 
 const httpGetCategory = new HttpGetCategory(axios, urlApiBackEnd)
 const httpDeleteProduct = new HttpDeleteProduct(axios, urlApiBackEnd)
+const httpDuplicateProduct = new HttpDuplicateProduct(axios, urlApiBackEnd)
 
 const messageForError = ref('')
 const showMessageErro = ref(false)
@@ -71,6 +73,15 @@ async function getAllCategoryAndProduct(): Promise<void> {
 function handleUpdate(data: any) {
     handleRedirection(data)
 }
+async function handleDuplicate(data: any) {
+    try {
+        const duplicatedProduct = await httpDuplicateProduct.duplicateProduct(data.id_product)
+        productToRender.value = [...productToRender.value, duplicatedProduct].sort((a, b) => a.name.localeCompare(b.name))
+
+    } catch (error) {
+        handleError('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.')
+    }
+}
 async function handleDelete(dataToDeleted: any) {
     try {
         const data = await httpDeleteProduct.deleteProduct(dataToDeleted.id_product)
@@ -94,7 +105,7 @@ function productDeletedUpdateData(data: any) {
 }
 //Metodo que leva usuario pra ver os detalhes do produto
 function handleDetail(data: any) {
-  handleRedirection(data)
+    handleRedirection(data)
 }
 //Método que valida pra qual rota levar o usuario e redirecionar ele
 function handleRedirection(data: any) {
@@ -140,7 +151,7 @@ onMounted(() => {
             @filter="filterProductByCategory" v-model="allCategoryAndProducts.category" />
         <TableComponent :columns="columnsProduct" :data-props="productToRender"
             :informationsInputSearch="{ placeHolder: 'Filtre por nome.', searchProperty: 'name' }"
-            @update="handleUpdate" @delete="handleDelete" @detail="handleDetail">
+            @update="handleUpdate" @delete="handleDelete" @detail="handleDetail" @duplicate="handleDuplicate">
         </TableComponent>
     </div>
 </template>

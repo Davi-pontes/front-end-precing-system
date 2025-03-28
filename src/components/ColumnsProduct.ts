@@ -10,6 +10,7 @@ interface CustomCellContext<TData> extends CellContext<TData, unknown> {
   onUpdate?: (data: any) => void
   onDelete?: (data: any) => void
   onDetail?: (data: any) => void
+  onDuplicate?: (data: any) => void
 }
 
 export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
@@ -111,7 +112,7 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
     id: 'actions',
     enableHiding: false,
     cell: (context: CustomCellContext<IColumnsTableProduct>) => {
-      const { row, onUpdate, onDelete, onDetail } = context
+      const { row, onUpdate, onDelete, onDetail, onDuplicate } = context
       const datas = row.original
       const showDelete = true
       return h(
@@ -134,6 +135,11 @@ export const columnsProduct: ColumnDef<IColumnsTableProduct>[] = [
           onDetail: (data: any) => {
             if (onDetail) {
               onDetail(data)
+            }
+          },
+          onDuplicate: (data: any) => {
+            if (onDuplicate) {
+              onDuplicate(data)
             }
           }
         })
