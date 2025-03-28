@@ -40,7 +40,7 @@ const props = defineProps<{
   informationsInputSearch: { placeHolder: string; searchProperty: string }
   dataProps: TValue[]
 }>()
-const emit = defineEmits(['delete', 'update', 'detail'])
+const emit = defineEmits(['delete', 'update', 'detail','duplicate'])
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
@@ -97,6 +97,9 @@ function handleDelete(deleteData: any) {
 }
 function handleDetail(detailData: any) {
   emit('detail', detailData)
+}
+function handleDuplicate(duplicateData: any) {
+  emit('duplicate', duplicateData)
 }
 function closeFormIngredient() {
   showFormIngredient.value = false
@@ -193,7 +196,8 @@ function updateSpecificIngredient(updatedDatas: IUpdatedIngredient) {
                     ...cell.getContext(),
                     onUpdate: handleUpdate,
                     onDelete: handleDelete,
-                    onDetail: handleDetail
+                    onDetail: handleDetail,
+                    onDuplicate: handleDuplicate
                   }"
                 />
               </TableCell>
